@@ -1,6 +1,6 @@
 {
  "id": "berlinmar",
- "started": "2026-10-25T13:00:10Z",
+ "started": "2026-10-25T19:15:15Z",
  "sources": {
   "terrain_z11": {
    "status": "ok",
@@ -29,7 +29,11 @@
   "profile": {
    "status": "ok",
    "points": 206
+  },
+  "wx_replay": {
+   "status": "failed",
+   "error": "no URL answered"
   }
  },
- "finished": "2026-10-25T13:00:53Z"
+ "finished": "2026-10-25T19:42:15Z"
 }
