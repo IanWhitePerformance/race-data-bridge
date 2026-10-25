@@ -1,0 +1,101 @@
+{
+ "id": "nycmar",
+ "started": "2026-10-25T13:01:04Z",
+ "sources": {
+  "terrain_z11": {
+   "status": "ok",
+   "tiles": 6,
+   "got": 6,
+   "file": "terrain_z11_box.tif"
+  },
+  "terrain_z13": {
+   "status": "ok",
+   "tiles": 30,
+   "got": 30,
+   "file": "terrain_z13_course.tif"
+  },
+  "osm": {
+   "status": "ok",
+   "source": "geofabrik",
+   "features": 307341,
+   "kinds": {
+    "other": 34296,
+    "water": 608,
+    "highway": 193698,
+    "building": 78739
+   },
+   "file": "osm.geojson"
+  },
+  "profile": {
+   "status": "ok",
+   "points": 205
+  },
+  "us_naip": {
+   "status": "ok",
+   "chunks": 4,
+   "spots": 4,
+   "res_m": 8
+  },
+  "us_3dep_dem": {
+   "status": "ok",
+   "blocks": 52,
+   "tried": 52,
+   "file": "dem_course_3m_dm.tif",
+   "units": "decimetres"
+  },
+  "us_lidar": {
+   "status": "ok",
+   "resources": [
+    "USGS_Lidar_Point_Cloud_NJ_SdL5_2014_LAS_2015",
+    "NY_NewYorkCity"
+   ],
+   "cells": 111,
+   "cells_read": 111,
+   "buildings_with_height": 72555,
+   "trees_kept": 283325,
+   "trees_found": 615952,
+   "tile_stats": [
+    {
+     "tile": "c00000.tif",
+     "valid": 1.0,
+     "p50": 7.39,
+     "p99": 21.93
+    },
+    {
+     "tile": "c00001.tif",
+     "valid": 1.0,
+     "p50": 8.29,
+     "p99": 22.65
+    },
+    {
+     "tile": "c00004.tif",
+     "valid": 1.0,
+     "p50": 8.43,
+     "p99": 18.65
+    },
+    {
+     "tile": "c00005.tif",
+     "valid": 1.0,
+     "p50": 8.22,
+     "p99": 24.38
+    },
+    {
+     "tile": "c00003.tif",
+     "valid": 0.999,
+     "p50": 7.32,
+     "p99": 23.48
+    },
+    {
+     "tile": "c00002.tif",
+     "valid": 1.0,
+     "p50": 9.1,
+     "p99": 27.09
+    }
+   ],
+   "tile_failures": 0,
+   "minutes": 9.2,
+   "stopped_on_budget": false
+  }
+ },
+ "finished": "2026-10-25T13:19:04Z"
+}
