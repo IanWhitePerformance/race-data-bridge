@@ -1,0 +1,100 @@
+{
+ "id": "chicagomar",
+ "started": "2026-10-25T13:00:19Z",
+ "sources": {
+  "terrain_z11": {
+   "status": "ok",
+   "tiles": 2,
+   "got": 2,
+   "file": "terrain_z11_box.tif"
+  },
+  "terrain_z13": {
+   "status": "ok",
+   "tiles": 18,
+   "got": 18,
+   "file": "terrain_z13_course.tif"
+  },
+  "osm": {
+   "status": "ok",
+   "source": "geofabrik",
+   "features": 159424,
+   "kinds": {
+    "other": 25947,
+    "highway": 101080,
+    "water": 290,
+    "building": 32107
+   },
+   "file": "osm.geojson"
+  },
+  "profile": {
+   "status": "ok",
+   "points": 205
+  },
+  "us_naip": {
+   "status": "ok",
+   "chunks": 2,
+   "spots": 3,
+   "res_m": 8
+  },
+  "us_3dep_dem": {
+   "status": "ok",
+   "blocks": 36,
+   "tried": 36,
+   "file": "dem_course_3m_dm.tif",
+   "units": "decimetres"
+  },
+  "us_lidar": {
+   "status": "ok",
+   "resources": [
+    "USGS_LPC_IL_4County_Cook_2017_LAS_2019"
+   ],
+   "cells": 75,
+   "cells_read": 75,
+   "buildings_with_height": 29015,
+   "trees_kept": 260623,
+   "trees_found": 527138,
+   "tile_stats": [
+    {
+     "tile": "c00003.tif",
+     "valid": 1.0,
+     "p50": 5.28,
+     "p99": 20.41
+    },
+    {
+     "tile": "c00005.tif",
+     "valid": 1.0,
+     "p50": 6.15,
+     "p99": 30.78
+    },
+    {
+     "tile": "c00001.tif",
+     "valid": 1.0,
+     "p50": 10.74,
+     "p99": 27.07
+    },
+    {
+     "tile": "c00004.tif",
+     "valid": 1.0,
+     "p50": 11.24,
+     "p99": 25.64
+    },
+    {
+     "tile": "c00002.tif",
+     "valid": 1.0,
+     "p50": 10.17,
+     "p99": 31.47
+    },
+    {
+     "tile": "c00000.tif",
+     "valid": 1.0,
+     "p50": 10.62,
+     "p99": 53.88
+    }
+   ],
+   "tile_failures": 0,
+   "minutes": 47.3,
+   "stopped_on_budget": false
+  }
+ },
+ "finished": "2026-10-25T13:53:42Z"
+}
