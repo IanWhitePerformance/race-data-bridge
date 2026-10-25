@@ -1,6 +1,6 @@
 {
  "id": "sydneymar",
- "started": "2026-10-25T19:15:00Z",
+ "started": "2026-10-25T19:59:07Z",
  "sources": {
   "terrain_z11": {
    "status": "ok",
@@ -34,7 +34,24 @@
    "status": "ok",
    "urls": 10,
    "saved": 10
+  },
+  "s2_box": {
+   "status": "ok",
+   "scenes": [
+    "S2C_56HLH_20250314_0_L2A"
+   ],
+   "res_m": 8,
+   "epsg": 32756,
+   "cover": 0.999
+  },
+  "osm_detail": {
+   "status": "ok",
+   "chunks": 4,
+   "answered": 3,
+   "elements": 34829,
+   "tagged": 10887,
+   "file": "osm_detail.json"
   }
  },
- "finished": "2026-10-25T19:18:33Z"
+ "finished": "2026-10-25T20:42:57Z"
 }
