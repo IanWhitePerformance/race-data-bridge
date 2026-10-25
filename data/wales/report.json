@@ -1,0 +1,15 @@
+{
+ "id": "wales",
+ "started": "2026-10-25T13:08:27Z",
+ "sources": {
+  "osm_detail": {
+   "status": "ok",
+   "chunks": 25,
+   "answered": 25,
+   "elements": 42656,
+   "tagged": 9509,
+   "file": "osm_detail.json"
+  }
+ },
+ "finished": "2026-10-25T13:38:01Z"
+}
