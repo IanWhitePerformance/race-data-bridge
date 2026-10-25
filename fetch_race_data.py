@@ -1267,13 +1267,53 @@ def do_leaftype():
     if not nok:raise RuntimeError('no leaf-type chunks: '+'; '.join(ERR[:3]))
     done('leaftype',file='leaftype_10m.tif',chunks=nok,errors=ERR[:5],cover={k:round(x,3) for k,x in cov.items()},valid=round(float(v.size/A.size),3),minutes=round((time.time()-t0)/60,1),licence='Copernicus Land Monitoring Service, free and open with attribution')
 
+
+# ---------------- OSM corridor detail ----------------
+def do_osm_detail():
+    """Everything a map builder places by hand within reach of the course, from Overpass in corridor queries ('around' the decimated course
+    line, a few km at a time so no query is large): street lamps, benches, bins, bollards, signals, crossings, bus stops, shelters,
+    fountains, barriers (fences, walls, hedges, guard rails), man_made, power lines and towers (400 m), trees with species, historic,
+    artwork, playgrounds and pitches, and every building and building:part with all its tags (colour, material, roof shape, levels).
+    Writes osm_detail.json (Overpass JSON, merged, de-duplicated)."""
+    servers=['https://overpass-api.de/api/interpreter','https://overpass.kumi.systems/api/interpreter','https://overpass.private.coffee/api/interpreter']
+    pts=[(float(a),float(b)) for a,b in spec['line']];out=[]
+    for la,lo in pts:
+        if not out or math.hypot((la-out[-1][0])*kz,(lo-out[-1][1])*kx)>=0.12:out.append((la,lo))
+    if spec.get('swim'):out+=[(float(a),float(b)) for a,b in spec['swim'][::3]]
+    chunks=[out[i:i+60] for i in range(0,len(out),55)]
+    seen={};nq=0
+    def q_for(ch,r=140):
+        a='(around:%d,%s)'%(r,','.join('%.5f,%.5f'%p for p in ch));ap='(around:400,%s)'%','.join('%.5f,%.5f'%p for p in ch)
+        return ('[out:json][timeout:180];(nwr[highway~"^(street_lamp|bus_stop|traffic_signals|crossing|stop|give_way|steps)$"]%s;'
+                'nwr[amenity~"^(bench|waste_basket|shelter|fountain|bicycle_parking|drinking_water|toilets|clock|telephone|post_box|vending_machine)$"]%s;'
+                'nwr[barrier]%s;nwr[man_made]%s;nwr[natural~"^(tree|tree_row|beach|cliff|rock|stone)$"]%s;nwr[historic]%s;'
+                'nwr[tourism~"^(artwork|viewpoint|information|attraction)$"]%s;nwr[leisure~"^(playground|pitch|park|garden|marina|slipway|picnic_table|outdoor_seating|bandstand)$"]%s;'
+                'nwr[building]%s;nwr["building:part"]%s;nwr[advertising]%s;nwr[power]%s;);out body;>;out skel qt;')%(a,a,a,a,a,a,a,a,a,a,a,ap)
+    for ci,ch in enumerate(chunks):
+        q=q_for(ch);ok=False
+        for k in range(6):
+            s_=servers[k%len(servers)]
+            try:
+                r=requests.post(s_,data={'data':q},headers=UA,timeout=240)
+                if r.status_code!=200 or not r.text.lstrip().startswith('{'):time.sleep(8*(k+1));continue
+                for e in r.json().get('elements',[]):
+                    key=(e['type'],e['id'])
+                    if key not in seen or ('tags' in e and 'tags' not in seen[key]):seen[key]=e
+                ok=True;nq+=1;break
+            except Exception as ex:log('osm_detail chunk',ci,'try',k,str(ex)[:120]);time.sleep(8*(k+1))
+        if not ok:log('osm_detail chunk',ci,'gave up')
+        time.sleep(2)
+    els=list(seen.values());json.dump({'elements':els},open(os.path.join(OUT,'osm_detail.json'),'w'),separators=(',',':'))
+    tagged=sum(1 for e in els if e.get('tags'))
+    if nq==0:return failed('osm_detail','no Overpass server answered')
+    done('osm_detail',chunks=len(chunks),answered=nq,elements=len(els),tagged=tagged,file='osm_detail.json')
 # ---------------- run ----------------
 ONLY=[x for x in os.environ.get('ONLY','').split(',') if x]
 def run():
     if ONLY:   # re-run selected sources only, keeping the rest of the report
         try:REPORT['sources']=json.load(open(os.path.join(OUT,'report.json'))).get('sources',{})
         except Exception:pass
-        F={'leaftype':do_leaftype,'osm':do_osm,'terrain':do_terrain,'profile':do_profile,'nz':do_nz,'ndsm':do_nz_ndsm if spec.get('region')=='nz' else None,'bayern':do_bayern,'bayern_probe':do_bayern_probe if spec.get('region')=='bayern' else None,'lod2':do_bayern_lod2 if spec.get('region')=='bayern' else None,'us_lidar':do_us_lidar if spec.get('region')=='us' else None,'us':do_us if spec.get('region')=='us' else None,'hessen':do_hessen if spec.get('region')=='hessen' else None,'hessen_box':do_hessen_box if spec.get('region')=='hessen' else None,'hessen_spots':do_hessen_spots if spec.get('region')=='hessen' else None,'us_spots':do_us_spots if spec.get('region')=='us' else None,'wales':do_wales if spec.get('region')=='wales' else None,'england':do_england if spec.get('region')=='england' else None,'france':do_france if spec.get('region')=='france' else None}
+        F={'osm_detail':do_osm_detail,'leaftype':do_leaftype,'osm':do_osm,'terrain':do_terrain,'profile':do_profile,'nz':do_nz,'ndsm':do_nz_ndsm if spec.get('region')=='nz' else None,'bayern':do_bayern,'bayern_probe':do_bayern_probe if spec.get('region')=='bayern' else None,'lod2':do_bayern_lod2 if spec.get('region')=='bayern' else None,'us_lidar':do_us_lidar if spec.get('region')=='us' else None,'us':do_us if spec.get('region')=='us' else None,'hessen':do_hessen if spec.get('region')=='hessen' else None,'hessen_box':do_hessen_box if spec.get('region')=='hessen' else None,'hessen_spots':do_hessen_spots if spec.get('region')=='hessen' else None,'us_spots':do_us_spots if spec.get('region')=='us' else None,'wales':do_wales if spec.get('region')=='wales' else None,'england':do_england if spec.get('region')=='england' else None,'france':do_france if spec.get('region')=='france' else None}
         for k in ONLY:
             fn=F.get(k)
             if not fn:continue
@@ -1281,7 +1321,7 @@ def run():
             except Exception as e:failed(k,e);traceback.print_exc()
             save_report()
         REPORT['finished']=time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime());save_report();return
-    for name,fn in(('terrain',do_terrain),('osm',do_osm),('profile',do_profile)):
+    for name,fn in(('terrain',do_terrain),('osm',do_osm),('osm_detail',do_osm_detail),('profile',do_profile)):
         try:fn()
         except Exception as e:failed(name,e);traceback.print_exc()
         save_report()

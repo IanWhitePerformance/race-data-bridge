@@ -8,7 +8,7 @@ on:
         description: race id (taupo, roth, hawaii703) or all
         default: all
       only:
-        description: optional comma list of sources to re-run (osm, ndsm, nz, bayern, bayern_probe, lod2, us_lidar, terrain, profile); empty runs everything
+        description: optional comma list of sources to re-run (osm, osm_detail, ndsm, nz, bayern, bayern_probe, lod2, us_lidar, terrain, profile); empty runs everything
         default: ''
       lidar_max_cells:
         description: optional cap on US LiDAR cells, for a quick test run
@@ -60,7 +60,8 @@ jobs:
       - run: pip install requests numpy pillow rasterio pyproj scipy shapely
       - name: fetch ${{ matrix.id }}
         run: |
-          ONLY="${{ github.event.inputs.only || '' }}" LIDAR_MAX_CELLS="${{ github.event.inputs.lidar_max_cells || '' }}" timeout 300m python3 fetch_race_data.py courses/${{ matrix.id }}.json || echo "fetch for ${{ matrix.id }} stopped early"
+          f=courses/${{ matrix.id }}.json; [ -f $f ] || f=courses-done/${{ matrix.id }}.json
+          ONLY="${{ github.event.inputs.only || '' }}" LIDAR_MAX_CELLS="${{ github.event.inputs.lidar_max_cells || '' }}" timeout 300m python3 fetch_race_data.py $f || echo "fetch for ${{ matrix.id }} stopped early"
       - name: commit ${{ matrix.id }}
         run: |
           git config user.name "race-data bot"; git config user.email "actions@users.noreply.github.com"
