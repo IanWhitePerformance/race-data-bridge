@@ -1,6 +1,6 @@
 {
  "id": "chicagomar",
- "started": "2026-10-25T13:00:19Z",
+ "started": "2026-10-25T19:14:49Z",
  "sources": {
   "terrain_z11": {
    "status": "ok",
@@ -94,7 +94,12 @@
    "tile_failures": 0,
    "minutes": 47.3,
    "stopped_on_budget": false
+  },
+  "wx_replay": {
+   "status": "ok",
+   "urls": 10,
+   "saved": 10
   }
  },
- "finished": "2026-10-25T13:53:42Z"
+ "finished": "2026-10-25T19:18:21Z"
 }
