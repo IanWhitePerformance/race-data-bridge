@@ -1,6 +1,6 @@
 {
  "id": "londonmar",
- "started": "2026-10-25T14:40:20Z",
+ "started": "2026-10-25T19:43:49Z",
  "sources": {
   "terrain_z11": {
    "status": "ok",
@@ -131,7 +131,12 @@
    "elements": 154815,
    "tagged": 38112,
    "file": "osm_detail.json"
+  },
+  "wx_replay": {
+   "status": "ok",
+   "urls": 10,
+   "saved": 10
   }
  },
- "finished": "2026-10-25T14:56:51Z"
+ "finished": "2026-10-25T19:47:23Z"
 }
