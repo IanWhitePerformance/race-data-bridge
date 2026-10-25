@@ -1,0 +1,35 @@
+{
+ "id": "tokyomar",
+ "started": "2026-10-25T13:00:33Z",
+ "sources": {
+  "terrain_z11": {
+   "status": "ok",
+   "tiles": 2,
+   "got": 2,
+   "file": "terrain_z11_box.tif"
+  },
+  "terrain_z13": {
+   "status": "ok",
+   "tiles": 14,
+   "got": 14,
+   "file": "terrain_z13_course.tif"
+  },
+  "osm": {
+   "status": "ok",
+   "source": "geofabrik",
+   "features": 224268,
+   "kinds": {
+    "other": 13440,
+    "water": 916,
+    "highway": 108212,
+    "building": 101700
+   },
+   "file": "osm.geojson"
+  },
+  "profile": {
+   "status": "ok",
+   "points": 206
+  }
+ },
+ "finished": "2026-10-25T13:04:57Z"
+}
