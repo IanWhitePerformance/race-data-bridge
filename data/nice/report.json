@@ -1,0 +1,15 @@
+{
+ "id": "nice",
+ "started": "2026-10-25T13:08:26Z",
+ "sources": {
+  "osm_detail": {
+   "status": "ok",
+   "chunks": 36,
+   "answered": 35,
+   "elements": 106950,
+   "tagged": 23268,
+   "file": "osm_detail.json"
+  }
+ },
+ "finished": "2026-10-25T14:54:34Z"
+}
