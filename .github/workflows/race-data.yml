@@ -18,7 +18,7 @@ on:
     paths: ['courses/**', 'fetch_race_data.py', '.github/workflows/race-data.yml']
 permissions:
   contents: write
-concurrency: race-data
+concurrency: race-data-${{ github.event.inputs.race || github.sha }}   # one run per race at a time; different races run side by side
 jobs:
   # which courses to fetch: the one named on a manual run, all of courses/ for 'all', or on a push the course files that changed
   plan:
