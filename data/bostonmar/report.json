@@ -1,6 +1,6 @@
 {
  "id": "bostonmar",
- "started": "2026-10-25T13:00:10Z",
+ "started": "2026-10-25T19:14:49Z",
  "sources": {
   "terrain_z11": {
    "status": "ok",
@@ -96,7 +96,12 @@
    "tile_failures": 0,
    "minutes": 33.5,
    "stopped_on_budget": false
+  },
+  "wx_replay": {
+   "status": "ok",
+   "urls": 10,
+   "saved": 10
   }
  },
- "finished": "2026-10-25T13:44:17Z"
+ "finished": "2026-10-25T19:18:23Z"
 }
