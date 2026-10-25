@@ -1321,6 +1321,23 @@ def do_s2box():
         if not used:raise RuntimeError('no Sentinel-2 scene covered the box (%d found): %s'%(len(scenes),' | '.join(S2_ERRS[:4])[:900]))
         write_tif(os.path.join(OUT,'ortho_box_8m.tif'),dst,tr,crs);done('s2_box',scenes=used,res_m=8,epsg=epsg,cover=round(float((dst.max(0)>0).mean()),3))
     except Exception as e:failed('s2_box',e);traceback.print_exc()
+def do_zenodo_meta():
+    """Research: the licence, files and column header of candidate marathon results datasets on Zenodo (record ids in the spec's
+    'zenodo' list, default 6959864), without downloading the whole files. Writes zenodo_meta.json."""
+    out={}
+    for rid in spec.get('zenodo') or [6959864]:
+        try:
+            m=requests.get('https://zenodo.org/api/records/%s'%rid,headers=UA,timeout=60).json();md=m.get('metadata',{})
+            rec={'title':md.get('title'),'license':md.get('license'),'creators':[c.get('name') for c in md.get('creators',[])],'description':(md.get('description') or '')[:3000],'files':[]}
+            for f in m.get('files',[]):
+                link=f.get('links',{}).get('self');head=''
+                try:
+                    r=requests.get(link,headers=dict(UA,Range='bytes=0-20000'),timeout=60);head=r.text[:20000]
+                except Exception as ex:head='ERR '+str(ex)[:100]
+                rec['files'].append({'key':f.get('key'),'size':f.get('size'),'link':link,'head':head})
+            out[str(rid)]=rec
+        except Exception as ex:out[str(rid)]={'error':str(ex)[:300]}
+    json.dump(out,open(os.path.join(OUT,'zenodo_meta.json'),'w'),indent=1);done('zenodo_meta',records=len(out))
 def do_wx_replay():
     """Hourly weather the race page asks for (Open-Meteo archive URLs listed in the course spec under 'wx_urls'), saved as replay files
     data/<id>/wx/<sha1 of the URL>.json so a page can be tested offline with the real history. Research and testing only."""
@@ -1342,7 +1359,7 @@ def run():
     if ONLY:   # re-run selected sources only, keeping the rest of the report
         try:REPORT['sources']=json.load(open(os.path.join(OUT,'report.json'))).get('sources',{})
         except Exception:pass
-        F={'s2box':do_s2box,'wx_replay':do_wx_replay,'osm_detail':do_osm_detail,'leaftype':do_leaftype,'osm':do_osm,'terrain':do_terrain,'profile':do_profile,'nz':do_nz,'ndsm':do_nz_ndsm if spec.get('region')=='nz' else None,'bayern':do_bayern,'bayern_probe':do_bayern_probe if spec.get('region')=='bayern' else None,'lod2':do_bayern_lod2 if spec.get('region')=='bayern' else None,'us_lidar':do_us_lidar if spec.get('region')=='us' else None,'us':do_us if spec.get('region')=='us' else None,'hessen':do_hessen if spec.get('region')=='hessen' else None,'hessen_box':do_hessen_box if spec.get('region')=='hessen' else None,'hessen_spots':do_hessen_spots if spec.get('region')=='hessen' else None,'us_spots':do_us_spots if spec.get('region')=='us' else None,'wales':do_wales if spec.get('region')=='wales' else None,'england':do_england if spec.get('region')=='england' else None,'france':do_france if spec.get('region')=='france' else None}
+        F={'zenodo_meta':do_zenodo_meta,'s2box':do_s2box,'wx_replay':do_wx_replay,'osm_detail':do_osm_detail,'leaftype':do_leaftype,'osm':do_osm,'terrain':do_terrain,'profile':do_profile,'nz':do_nz,'ndsm':do_nz_ndsm if spec.get('region')=='nz' else None,'bayern':do_bayern,'bayern_probe':do_bayern_probe if spec.get('region')=='bayern' else None,'lod2':do_bayern_lod2 if spec.get('region')=='bayern' else None,'us_lidar':do_us_lidar if spec.get('region')=='us' else None,'us':do_us if spec.get('region')=='us' else None,'hessen':do_hessen if spec.get('region')=='hessen' else None,'hessen_box':do_hessen_box if spec.get('region')=='hessen' else None,'hessen_spots':do_hessen_spots if spec.get('region')=='hessen' else None,'us_spots':do_us_spots if spec.get('region')=='us' else None,'wales':do_wales if spec.get('region')=='wales' else None,'england':do_england if spec.get('region')=='england' else None,'france':do_france if spec.get('region')=='france' else None}
         for k in ONLY:
             fn=F.get(k)
             if not fn:continue
