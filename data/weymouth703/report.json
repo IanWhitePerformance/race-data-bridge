@@ -1,0 +1,15 @@
+{
+ "id": "weymouth703",
+ "started": "2026-10-25T13:08:32Z",
+ "sources": {
+  "osm_detail": {
+   "status": "ok",
+   "chunks": 13,
+   "answered": 13,
+   "elements": 31244,
+   "tagged": 6386,
+   "file": "osm_detail.json"
+  }
+ },
+ "finished": "2026-10-25T13:37:49Z"
+}
