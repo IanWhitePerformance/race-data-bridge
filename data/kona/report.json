@@ -1,0 +1,15 @@
+{
+ "id": "kona",
+ "started": "2026-10-25T13:08:21Z",
+ "sources": {
+  "osm_detail": {
+   "status": "ok",
+   "chunks": 21,
+   "answered": 20,
+   "elements": 13013,
+   "tagged": 1937,
+   "file": "osm_detail.json"
+  }
+ },
+ "finished": "2026-10-25T13:58:29Z"
+}
