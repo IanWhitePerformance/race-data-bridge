@@ -1,0 +1,35 @@
+{
+ "id": "sydneymar",
+ "started": "2026-10-25T13:00:18Z",
+ "sources": {
+  "terrain_z11": {
+   "status": "ok",
+   "tiles": 4,
+   "got": 4,
+   "file": "terrain_z11_box.tif"
+  },
+  "terrain_z13": {
+   "status": "ok",
+   "tiles": 15,
+   "got": 15,
+   "file": "terrain_z13_course.tif"
+  },
+  "osm": {
+   "status": "ok",
+   "source": "geofabrik",
+   "features": 106768,
+   "kinds": {
+    "other": 24718,
+    "water": 686,
+    "highway": 63610,
+    "building": 17754
+   },
+   "file": "osm.geojson"
+  },
+  "profile": {
+   "status": "ok",
+   "points": 207
+  }
+ },
+ "finished": "2026-10-25T13:01:47Z"
+}
