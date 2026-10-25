@@ -1308,6 +1308,19 @@ def do_osm_detail():
     if nq==0:return failed('osm_detail','no Overpass server answered')
     done('osm_detail',chunks=len(chunks),answered=nq,elements=len(els),tagged=tagged,file='osm_detail.json')
 # ---------------- run ----------------
+def do_s2box():
+    """Colour for any course outside the national recipes: a Sentinel-2 (Copernicus, free) mosaic of the box at 8 m in the local UTM zone."""
+    from pyproj import Transformer
+    lonc=(W+E)/2;latc=(S+N)/2;epsg=(32600 if latc>=0 else 32700)+int((lonc+180)//6)+1
+    T=Transformer.from_crs('EPSG:4326','EPSG:%d'%epsg,always_xy=True)
+    xs,ys=zip(*[T.transform(a,b) for a in(W,E) for b in(S,N)]);x0,x1,y0,y1=min(xs),max(xs),min(ys),max(ys);crs=CRS.from_epsg(epsg)
+    try:
+        months=(11,12,1,2,3) if latc<0 else (5,6,7,8,9)
+        scenes=_s2_scenes((W,S,E,N),months=months);res_m=8;ncol=int((x1-x0)/res_m);nrow=int((y1-y0)/res_m);tr=from_origin(x0,y1,res_m,res_m)
+        dst,used=_s2_mosaic(scenes,crs,tr,(nrow,ncol))
+        if not used:raise RuntimeError('no Sentinel-2 scene covered the box (%d found): %s'%(len(scenes),' | '.join(S2_ERRS[:4])[:900]))
+        write_tif(os.path.join(OUT,'ortho_box_8m.tif'),dst,tr,crs);done('s2_box',scenes=used,res_m=8,epsg=epsg,cover=round(float((dst.max(0)>0).mean()),3))
+    except Exception as e:failed('s2_box',e);traceback.print_exc()
 def do_wx_replay():
     """Hourly weather the race page asks for (Open-Meteo archive URLs listed in the course spec under 'wx_urls'), saved as replay files
     data/<id>/wx/<sha1 of the URL>.json so a page can be tested offline with the real history. Research and testing only."""
@@ -1329,7 +1342,7 @@ def run():
     if ONLY:   # re-run selected sources only, keeping the rest of the report
         try:REPORT['sources']=json.load(open(os.path.join(OUT,'report.json'))).get('sources',{})
         except Exception:pass
-        F={'wx_replay':do_wx_replay,'osm_detail':do_osm_detail,'leaftype':do_leaftype,'osm':do_osm,'terrain':do_terrain,'profile':do_profile,'nz':do_nz,'ndsm':do_nz_ndsm if spec.get('region')=='nz' else None,'bayern':do_bayern,'bayern_probe':do_bayern_probe if spec.get('region')=='bayern' else None,'lod2':do_bayern_lod2 if spec.get('region')=='bayern' else None,'us_lidar':do_us_lidar if spec.get('region')=='us' else None,'us':do_us if spec.get('region')=='us' else None,'hessen':do_hessen if spec.get('region')=='hessen' else None,'hessen_box':do_hessen_box if spec.get('region')=='hessen' else None,'hessen_spots':do_hessen_spots if spec.get('region')=='hessen' else None,'us_spots':do_us_spots if spec.get('region')=='us' else None,'wales':do_wales if spec.get('region')=='wales' else None,'england':do_england if spec.get('region')=='england' else None,'france':do_france if spec.get('region')=='france' else None}
+        F={'s2box':do_s2box,'wx_replay':do_wx_replay,'osm_detail':do_osm_detail,'leaftype':do_leaftype,'osm':do_osm,'terrain':do_terrain,'profile':do_profile,'nz':do_nz,'ndsm':do_nz_ndsm if spec.get('region')=='nz' else None,'bayern':do_bayern,'bayern_probe':do_bayern_probe if spec.get('region')=='bayern' else None,'lod2':do_bayern_lod2 if spec.get('region')=='bayern' else None,'us_lidar':do_us_lidar if spec.get('region')=='us' else None,'us':do_us if spec.get('region')=='us' else None,'hessen':do_hessen if spec.get('region')=='hessen' else None,'hessen_box':do_hessen_box if spec.get('region')=='hessen' else None,'hessen_spots':do_hessen_spots if spec.get('region')=='hessen' else None,'us_spots':do_us_spots if spec.get('region')=='us' else None,'wales':do_wales if spec.get('region')=='wales' else None,'england':do_england if spec.get('region')=='england' else None,'france':do_france if spec.get('region')=='france' else None}
         for k in ONLY:
             fn=F.get(k)
             if not fn:continue
