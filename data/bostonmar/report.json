@@ -1,0 +1,102 @@
+{
+ "id": "bostonmar",
+ "started": "2026-10-25T13:00:10Z",
+ "sources": {
+  "terrain_z11": {
+   "status": "ok",
+   "tiles": 8,
+   "got": 8,
+   "file": "terrain_z11_box.tif"
+  },
+  "terrain_z13": {
+   "status": "ok",
+   "tiles": 40,
+   "got": 40,
+   "file": "terrain_z13_course.tif"
+  },
+  "osm": {
+   "status": "ok",
+   "source": "geofabrik",
+   "features": 195450,
+   "kinds": {
+    "other": 19359,
+    "highway": 133772,
+    "water": 3866,
+    "building": 38453
+   },
+   "file": "osm.geojson"
+  },
+  "profile": {
+   "status": "ok",
+   "points": 211
+  },
+  "us_naip": {
+   "status": "ok",
+   "chunks": 6,
+   "spots": 4,
+   "res_m": 8
+  },
+  "us_3dep_dem": {
+   "status": "ok",
+   "blocks": 68,
+   "tried": 68,
+   "file": "dem_course_3m_dm.tif",
+   "units": "decimetres"
+  },
+  "us_lidar": {
+   "status": "ok",
+   "resources": [
+    "MA_CentralEastern_1_2021",
+    "MA_NE_CMGP_Sandy_Z19_A1_2015",
+    "ARRA-LFTNE_Massachusetts_2011"
+   ],
+   "cells": 132,
+   "cells_read": 132,
+   "buildings_with_height": 35141,
+   "trees_kept": 452047,
+   "trees_found": 1066716,
+   "tile_stats": [
+    {
+     "tile": "c00002.tif",
+     "valid": 1.0,
+     "p50": 7.01,
+     "p99": 23.94
+    },
+    {
+     "tile": "c00001.tif",
+     "valid": 1.0,
+     "p50": 9.7,
+     "p99": 26.31
+    },
+    {
+     "tile": "c00003.tif",
+     "valid": 0.987,
+     "p50": 7.88,
+     "p99": 25.79
+    },
+    {
+     "tile": "c00004.tif",
+     "valid": 1.0,
+     "p50": 7.51,
+     "p99": 24.42
+    },
+    {
+     "tile": "c00005.tif",
+     "valid": 1.0,
+     "p50": 10.28,
+     "p99": 27.28
+    },
+    {
+     "tile": "c00000.tif",
+     "valid": 0.999,
+     "p50": 11.92,
+     "p99": 146.09
+    }
+   ],
+   "tile_failures": 0,
+   "minutes": 33.5,
+   "stopped_on_budget": false
+  }
+ },
+ "finished": "2026-10-25T13:44:17Z"
+}
