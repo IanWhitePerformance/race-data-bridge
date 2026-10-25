@@ -1,0 +1,15 @@
+{
+ "id": "chattanooga",
+ "started": "2026-10-25T13:08:29Z",
+ "sources": {
+  "osm_detail": {
+   "status": "ok",
+   "chunks": 38,
+   "answered": 35,
+   "elements": 36522,
+   "tagged": 6055,
+   "file": "osm_detail.json"
+  }
+ },
+ "finished": "2026-10-25T15:28:23Z"
+}
