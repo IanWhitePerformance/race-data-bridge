@@ -1,0 +1,15 @@
+{
+ "id": "frankfurt",
+ "started": "2026-10-25T13:08:23Z",
+ "sources": {
+  "osm_detail": {
+   "status": "ok",
+   "chunks": 24,
+   "answered": 23,
+   "elements": 152535,
+   "tagged": 28780,
+   "file": "osm_detail.json"
+  }
+ },
+ "finished": "2026-10-25T14:25:31Z"
+}
