@@ -1,0 +1,15 @@
+{
+ "id": "texas",
+ "started": "2026-10-25T13:08:26Z",
+ "sources": {
+  "osm_detail": {
+   "status": "ok",
+   "chunks": 18,
+   "answered": 17,
+   "elements": 33099,
+   "tagged": 5603,
+   "file": "osm_detail.json"
+  }
+ },
+ "finished": "2026-10-25T14:01:06Z"
+}
