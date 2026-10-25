@@ -1,6 +1,6 @@
 {
  "id": "bostonmar",
- "started": "2026-10-25T19:14:49Z",
+ "started": "2026-10-25T19:59:18Z",
  "sources": {
   "terrain_z11": {
    "status": "ok",
@@ -101,7 +101,15 @@
    "status": "ok",
    "urls": 10,
    "saved": 10
+  },
+  "osm_detail": {
+   "status": "ok",
+   "chunks": 4,
+   "answered": 4,
+   "elements": 68397,
+   "tagged": 11902,
+   "file": "osm_detail.json"
   }
  },
- "finished": "2026-10-25T19:18:23Z"
+ "finished": "2026-10-25T20:25:26Z"
 }
