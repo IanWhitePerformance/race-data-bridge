@@ -1,6 +1,6 @@
 {
  "id": "berlinmar",
- "started": "2026-10-25T19:44:02Z",
+ "started": "2026-10-25T19:59:05Z",
  "sources": {
   "terrain_z11": {
    "status": "ok",
@@ -34,7 +34,38 @@
    "status": "ok",
    "urls": 10,
    "saved": 10
+  },
+  "s2_box": {
+   "status": "ok",
+   "scenes": [
+    "S2A_33UUU_20260827_0_L2A"
+   ],
+   "res_m": 8,
+   "epsg": 32633,
+   "cover": 0.999
+  },
+  "osm_detail": {
+   "status": "ok",
+   "chunks": 4,
+   "answered": 3,
+   "elements": 155656,
+   "tagged": 38460,
+   "file": "osm_detail.json"
+  },
+  "leaftype": {
+   "status": "ok",
+   "file": "leaftype_10m.tif",
+   "chunks": 2,
+   "errors": [],
+   "cover": {
+    "not_tree": 0.0,
+    "broad": 0.862,
+    "conifer": 0.138
+   },
+   "valid": 0.287,
+   "minutes": 0.1,
+   "licence": "Copernicus Land Monitoring Service, free and open with attribution"
   }
  },
- "finished": "2026-10-25T19:47:36Z"
+ "finished": "2026-10-25T20:27:15Z"
 }
