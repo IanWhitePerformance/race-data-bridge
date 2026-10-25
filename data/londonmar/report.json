@@ -1,0 +1,129 @@
+{
+ "id": "londonmar",
+ "started": "2026-10-25T12:58:17Z",
+ "sources": {
+  "terrain_z11": {
+   "status": "ok",
+   "tiles": 6,
+   "got": 6,
+   "file": "terrain_z11_box.tif"
+  },
+  "terrain_z13": {
+   "status": "ok",
+   "tiles": 26,
+   "got": 26,
+   "file": "terrain_z13_course.tif"
+  },
+  "osm": {
+   "status": "ok",
+   "source": "geofabrik",
+   "features": 258990,
+   "kinds": {
+    "other": 48192,
+    "highway": 161369,
+    "water": 1193,
+    "building": 48236
+   },
+   "file": "osm.geojson"
+  },
+  "profile": {
+   "status": "ok",
+   "points": 207
+  },
+  "s2_box": {
+   "status": "ok",
+   "scenes": [
+    "S2C_30UXC_20260525_0_L2A",
+    "S2C_30UYC_20260813_0_L2A"
+   ],
+   "res_m": 8,
+   "cover": 1.0
+  },
+  "england_spots": {
+   "status": "ok",
+   "spots": 5,
+   "res_m": 1,
+   "method": "Sentinel-2 colour sharpened with the LiDAR surface model",
+   "colour_cover": [
+    0.999,
+    1.0,
+    1.0,
+    1.0,
+    0.999
+   ],
+   "errors": []
+  },
+  "england_dtm": {
+   "status": "ok",
+   "blocks": 37,
+   "tried": 37,
+   "file": "dem_course_3m_dm.tif",
+   "units": "decimetres",
+   "valid": 0.752
+  },
+  "england_ndsm": {
+   "status": "ok",
+   "cells": 85,
+   "cells_read": 85,
+   "buildings_with_height": 43415,
+   "trees_kept": 45000,
+   "trees_found": 68043,
+   "tile_stats": [
+    {
+     "tile": "s00001.tif",
+     "valid": 1.0,
+     "p50": 0.33,
+     "p99": 20.49
+    },
+    {
+     "tile": "s00000.tif",
+     "valid": 1.0,
+     "p50": 0.0,
+     "p99": 22.59
+    },
+    {
+     "tile": "s00005.tif",
+     "valid": 1.0,
+     "p50": 0.0,
+     "p99": 19.12
+    },
+    {
+     "tile": "s00004.tif",
+     "valid": 1.0,
+     "p50": 0.76,
+     "p99": 17.55
+    },
+    {
+     "tile": "s00002.tif",
+     "valid": 1.0,
+     "p50": 0.0,
+     "p99": 17.05
+    },
+    {
+     "tile": "s00003.tif",
+     "valid": 1.0,
+     "p50": 0.0,
+     "p99": 12.77
+    }
+   ],
+   "minutes": 1.4,
+   "stopped_on_budget": false,
+   "errors": []
+  },
+  "leaftype": {
+   "status": "ok",
+   "file": "leaftype_10m.tif",
+   "chunks": 2,
+   "errors": [],
+   "cover": {
+    "not_tree": 0.0,
+    "broad": 0.97,
+    "conifer": 0.03
+   },
+   "valid": 0.091,
+   "minutes": 0.1,
+   "licence": "Copernicus Land Monitoring Service, free and open with attribution"
+  }
+ },
+ "finished": "2026-10-25T13:09:37Z"
+}
