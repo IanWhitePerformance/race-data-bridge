@@ -1,6 +1,6 @@
 {
  "id": "tokyomar",
- "started": "2026-10-25T19:14:54Z",
+ "started": "2026-10-25T19:59:07Z",
  "sources": {
   "terrain_z11": {
    "status": "ok",
@@ -34,7 +34,24 @@
    "status": "ok",
    "urls": 10,
    "saved": 10
+  },
+  "s2_box": {
+   "status": "ok",
+   "scenes": [
+    "S2A_54SUE_20230517_0_L2A"
+   ],
+   "res_m": 8,
+   "epsg": 32654,
+   "cover": 0.999
+  },
+  "osm_detail": {
+   "status": "ok",
+   "chunks": 4,
+   "answered": 4,
+   "elements": 153542,
+   "tagged": 30781,
+   "file": "osm_detail.json"
   }
  },
- "finished": "2026-10-25T19:18:26Z"
+ "finished": "2026-10-25T20:18:50Z"
 }
