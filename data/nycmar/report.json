@@ -1,6 +1,6 @@
 {
  "id": "nycmar",
- "started": "2026-10-25T19:14:55Z",
+ "started": "2026-10-25T19:59:08Z",
  "sources": {
   "terrain_z11": {
    "status": "ok",
@@ -100,7 +100,15 @@
    "status": "ok",
    "urls": 10,
    "saved": 10
+  },
+  "osm_detail": {
+   "status": "ok",
+   "chunks": 4,
+   "answered": 4,
+   "elements": 129968,
+   "tagged": 27958,
+   "file": "osm_detail.json"
   }
  },
- "finished": "2026-10-25T19:18:28Z"
+ "finished": "2026-10-25T20:17:12Z"
 }
