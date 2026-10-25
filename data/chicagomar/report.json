@@ -1,6 +1,6 @@
 {
  "id": "chicagomar",
- "started": "2026-10-25T19:59:13Z",
+ "started": "2026-10-25T20:15:14Z",
  "sources": {
   "terrain_z11": {
    "status": "ok",
@@ -100,14 +100,10 @@
    "urls": 10,
    "saved": 10
   },
-  "osm_detail": {
+  "zenodo_meta": {
    "status": "ok",
-   "chunks": 4,
-   "answered": 4,
-   "elements": 131755,
-   "tagged": 23225,
-   "file": "osm_detail.json"
+   "records": 1
   }
  },
- "finished": "2026-10-25T20:13:12Z"
+ "finished": "2026-10-25T20:15:15Z"
 }
