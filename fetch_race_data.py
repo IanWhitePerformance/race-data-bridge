@@ -1308,12 +1308,28 @@ def do_osm_detail():
     if nq==0:return failed('osm_detail','no Overpass server answered')
     done('osm_detail',chunks=len(chunks),answered=nq,elements=len(els),tagged=tagged,file='osm_detail.json')
 # ---------------- run ----------------
+def do_wx_replay():
+    """Hourly weather the race page asks for (Open-Meteo archive URLs listed in the course spec under 'wx_urls'), saved as replay files
+    data/<id>/wx/<sha1 of the URL>.json so a page can be tested offline with the real history. Research and testing only."""
+    import hashlib
+    urls=spec.get('wx_urls') or [];d=os.path.join(OUT,'wx');os.makedirs(d,exist_ok=True);ok=0
+    for u in urls:
+        for k in range(4):
+            try:
+                r=requests.get(u,headers=UA,timeout=90)
+                if r.status_code==200 and r.text.lstrip()[:1] in '[{':
+                    open(os.path.join(d,hashlib.sha1(u.encode()).hexdigest()+'.json'),'w').write(r.text);ok+=1;break
+                time.sleep(6*(k+1))
+            except Exception as ex:log('wx_replay',str(ex)[:120]);time.sleep(6*(k+1))
+        time.sleep(1)
+    if not ok:return failed('wx_replay','no URL answered')
+    done('wx_replay',urls=len(urls),saved=ok)
 ONLY=[x for x in os.environ.get('ONLY','').split(',') if x]
 def run():
     if ONLY:   # re-run selected sources only, keeping the rest of the report
         try:REPORT['sources']=json.load(open(os.path.join(OUT,'report.json'))).get('sources',{})
         except Exception:pass
-        F={'osm_detail':do_osm_detail,'leaftype':do_leaftype,'osm':do_osm,'terrain':do_terrain,'profile':do_profile,'nz':do_nz,'ndsm':do_nz_ndsm if spec.get('region')=='nz' else None,'bayern':do_bayern,'bayern_probe':do_bayern_probe if spec.get('region')=='bayern' else None,'lod2':do_bayern_lod2 if spec.get('region')=='bayern' else None,'us_lidar':do_us_lidar if spec.get('region')=='us' else None,'us':do_us if spec.get('region')=='us' else None,'hessen':do_hessen if spec.get('region')=='hessen' else None,'hessen_box':do_hessen_box if spec.get('region')=='hessen' else None,'hessen_spots':do_hessen_spots if spec.get('region')=='hessen' else None,'us_spots':do_us_spots if spec.get('region')=='us' else None,'wales':do_wales if spec.get('region')=='wales' else None,'england':do_england if spec.get('region')=='england' else None,'france':do_france if spec.get('region')=='france' else None}
+        F={'wx_replay':do_wx_replay,'osm_detail':do_osm_detail,'leaftype':do_leaftype,'osm':do_osm,'terrain':do_terrain,'profile':do_profile,'nz':do_nz,'ndsm':do_nz_ndsm if spec.get('region')=='nz' else None,'bayern':do_bayern,'bayern_probe':do_bayern_probe if spec.get('region')=='bayern' else None,'lod2':do_bayern_lod2 if spec.get('region')=='bayern' else None,'us_lidar':do_us_lidar if spec.get('region')=='us' else None,'us':do_us if spec.get('region')=='us' else None,'hessen':do_hessen if spec.get('region')=='hessen' else None,'hessen_box':do_hessen_box if spec.get('region')=='hessen' else None,'hessen_spots':do_hessen_spots if spec.get('region')=='hessen' else None,'us_spots':do_us_spots if spec.get('region')=='us' else None,'wales':do_wales if spec.get('region')=='wales' else None,'england':do_england if spec.get('region')=='england' else None,'france':do_france if spec.get('region')=='france' else None}
         for k in ONLY:
             fn=F.get(k)
             if not fn:continue
