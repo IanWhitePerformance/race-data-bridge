@@ -1,6 +1,6 @@
 {
  "id": "sydneymar",
- "started": "2026-10-25T13:00:18Z",
+ "started": "2026-10-25T19:15:00Z",
  "sources": {
   "terrain_z11": {
    "status": "ok",
@@ -29,7 +29,12 @@
   "profile": {
    "status": "ok",
    "points": 207
+  },
+  "wx_replay": {
+   "status": "ok",
+   "urls": 10,
+   "saved": 10
   }
  },
- "finished": "2026-10-25T13:01:47Z"
+ "finished": "2026-10-25T19:18:33Z"
 }
