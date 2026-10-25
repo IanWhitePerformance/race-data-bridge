@@ -1,0 +1,15 @@
+{
+ "id": "taupo",
+ "started": "2026-10-25T13:08:28Z",
+ "sources": {
+  "osm_detail": {
+   "status": "ok",
+   "chunks": 12,
+   "answered": 12,
+   "elements": 25821,
+   "tagged": 5624,
+   "file": "osm_detail.json"
+  }
+ },
+ "finished": "2026-10-25T13:32:24Z"
+}
