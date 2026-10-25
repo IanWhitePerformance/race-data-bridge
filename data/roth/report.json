@@ -1,0 +1,15 @@
+{
+ "id": "roth",
+ "started": "2026-10-25T13:08:30Z",
+ "sources": {
+  "osm_detail": {
+   "status": "ok",
+   "chunks": 20,
+   "answered": 18,
+   "elements": 48598,
+   "tagged": 9757,
+   "file": "osm_detail.json"
+  }
+ },
+ "finished": "2026-10-25T14:40:03Z"
+}
