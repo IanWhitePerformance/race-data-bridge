@@ -1,6 +1,6 @@
 {
  "id": "nycmar",
- "started": "2026-10-25T13:01:04Z",
+ "started": "2026-10-25T19:14:55Z",
  "sources": {
   "terrain_z11": {
    "status": "ok",
@@ -95,7 +95,12 @@
    "tile_failures": 0,
    "minutes": 9.2,
    "stopped_on_budget": false
+  },
+  "wx_replay": {
+   "status": "ok",
+   "urls": 10,
+   "saved": 10
   }
  },
- "finished": "2026-10-25T13:19:04Z"
+ "finished": "2026-10-25T19:18:28Z"
 }
