@@ -1,6 +1,6 @@
 {
  "id": "londonmar",
- "started": "2026-10-25T12:58:17Z",
+ "started": "2026-10-25T14:40:20Z",
  "sources": {
   "terrain_z11": {
    "status": "ok",
@@ -123,7 +123,15 @@
    "valid": 0.091,
    "minutes": 0.1,
    "licence": "Copernicus Land Monitoring Service, free and open with attribution"
+  },
+  "osm_detail": {
+   "status": "ok",
+   "chunks": 4,
+   "answered": 4,
+   "elements": 154815,
+   "tagged": 38112,
+   "file": "osm_detail.json"
   }
  },
- "finished": "2026-10-25T13:09:37Z"
+ "finished": "2026-10-25T14:56:51Z"
 }
