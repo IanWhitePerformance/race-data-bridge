@@ -1,7 +1,23 @@
 {
  "id": "pembroke",
- "started": "2026-10-26T10:09:27Z",
+ "started": "2026-10-26T10:09:16Z",
  "sources": {
+  "terrain_z11": {
+   "status": "ok",
+   "tiles": 2,
+   "got": 2,
+   "file": "terrain_z11_box.tif"
+  },
+  "terrain_z13": {
+   "status": "ok",
+   "tiles": 2,
+   "got": 2,
+   "file": "terrain_z13_course.tif"
+  },
+  "osm": {
+   "status": "failed",
+   "error": "all Overpass endpoints failed and no Geofabrik extract is set for this course"
+  },
   "osm_detail": {
    "status": "ok",
    "chunks": 1,
@@ -9,7 +25,11 @@
    "elements": 1237,
    "tagged": 222,
    "file": "osm_detail.json"
+  },
+  "profile": {
+   "status": "ok",
+   "points": 5
   }
  },
- "finished": "2026-10-26T10:10:12Z"
+ "finished": "2026-10-26T10:18:39Z"
 }
