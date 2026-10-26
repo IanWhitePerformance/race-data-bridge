@@ -1,0 +1,12 @@
+{
+ "id": "wx-tri",
+ "started": "2026-10-26T12:10:07Z",
+ "sources": {
+  "wx_replay": {
+   "status": "ok",
+   "urls": 110,
+   "saved": 110
+  }
+ },
+ "finished": "2026-10-26T13:13:19Z"
+}
