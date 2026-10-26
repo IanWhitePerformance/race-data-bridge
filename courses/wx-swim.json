@@ -4,7 +4,16 @@
  "lat0": 51.0,
  "lon0": 0.0,
  "margin_km": 0.2,
- "line": 2,
+ "line": [
+  [
+   51.0,
+   0.0
+  ],
+  [
+   51.001,
+   0.001
+  ]
+ ],
  "wx_urls": [
   "https://marine-api.open-meteo.com/v1/marine?latitude=19.64&longitude=-156.005&hourly=wave_height%2Cwave_direction%2Cwave_period%2Cwind_wave_height%2Cswell_wave_height%2Cswell_wave_period%2Cswell_wave_direction&timezone=Pacific%2FHonolulu&start_date=2022-10-05&end_date=2022-10-06",
   "https://marine-api.open-meteo.com/v1/marine?latitude=19.64&longitude=-156.005&hourly=wave_height%2Cwave_direction%2Cwave_period%2Cwind_wave_height%2Cswell_wave_height%2Cswell_wave_period%2Cswell_wave_direction&timezone=Pacific%2FHonolulu&start_date=2022-10-05&end_date=2022-10-06&models=era5_ocean",
