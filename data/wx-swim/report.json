@@ -1,0 +1,12 @@
+{
+ "id": "wx-swim",
+ "started": "2026-10-26T14:30:07Z",
+ "sources": {
+  "wx_replay": {
+   "status": "ok",
+   "urls": 52,
+   "saved": 52
+  }
+ },
+ "finished": "2026-10-26T15:02:33Z"
+}
