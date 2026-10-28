@@ -1,0 +1,76 @@
+{
+ "taupo": [],
+ "kona": [],
+ "fra": [
+  {
+   "usaf": "106370",
+   "wban": "99999",
+   "name": "FRANKFURT MAIN",
+   "icao": "EDDF",
+   "lat": 50.026,
+   "lon": 8.543,
+   "elev": "+0110.9",
+   "km": 5.5
+  },
+  {
+   "usaf": "106330",
+   "wban": "99999",
+   "name": "WIESBADEN AAF",
+   "icao": "ETOU",
+   "lat": 50.05,
+   "lon": 8.325,
+   "elev": "+0140.5",
+   "km": 21.4
+  }
+ ],
+ "tx": [],
+ "cha": [],
+ "roth": [],
+ "nice": [
+  {
+   "usaf": "076900",
+   "wban": "99999",
+   "name": "NICE COTE D AZUR",
+   "icao": "LFMN",
+   "lat": 43.658,
+   "lon": 7.216,
+   "elev": "+0003.7",
+   "km": 5.7
+  },
+  {
+   "usaf": "076880",
+   "wban": "99999",
+   "name": "LA GAROUPE",
+   "icao": "",
+   "lat": 43.567,
+   "lon": 7.133,
+   "elev": "+0082.0",
+   "km": 17.7
+  },
+  {
+   "usaf": "076840",
+   "wban": "99999",
+   "name": "CANNES MANDELIEU",
+   "icao": "LFMD",
+   "lat": 43.542,
+   "lon": 6.953,
+   "elev": "+0004.0",
+   "km": 22.5
+  },
+  {
+   "usaf": "076810",
+   "wban": "99999",
+   "name": "LE DRAMONT",
+   "icao": "",
+   "lat": 43.417,
+   "lon": 6.85,
+   "elev": "+0126.0",
+   "km": 36.8
+  }
+ ],
+ "wey703": [],
+ "wal": [],
+ "h703": [],
+ "nice703": [],
+ "cha703": []
+}
