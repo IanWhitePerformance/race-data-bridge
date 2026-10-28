@@ -1389,12 +1389,15 @@ def do_wx_audit():
                 time.sleep(8*(k+1))
             except Exception as ex:time.sleep(8*(k+1));rep['om'][key]='err '+str(ex)[:100]
     for ven,v in (V.items() if not A.get('skip_om') else []):
-        pts=v['pts']+[[s['lat'],s['lon']] for s in st.get(ven,[])]
+        pts=([] if A.get('om_station_only') else v['pts'])+[[s['lat'],s['lon']] for s in st.get(ven,[])]
+        if not pts:continue
         for day in v['days']:
             base=dict(latitude=','.join('%.4f'%p[0] for p in pts),longitude=','.join('%.4f'%p[1] for p in pts),start_date=day,end_date=day,hourly=VAR,wind_speed_unit='ms',timezone=v['tz'])
-            for m in A.get('archive_models',[]):om('https://archive-api.open-meteo.com/v1/archive',dict(base,models=m),'%s_%s_ar_%s'%(ven,day,m));time.sleep(0.7)
-            for m in A.get('hf_models',[])+v.get('hf_extra',[]):om('https://historical-forecast-api.open-meteo.com/v1/forecast',dict(base,models=m),'%s_%s_hf_%s'%(ven,day,m));time.sleep(0.7)
+            for m in A.get('archive_models',[]):om('https://archive-api.open-meteo.com/v1/archive',dict(base,models=m),'%s_%s_ar_%s%s'%(ven,day,m,'_st' if A.get('om_station_only') else ''));time.sleep(0.7)
+            for m in A.get('hf_models',[])+v.get('hf_extra',[]):om('https://historical-forecast-api.open-meteo.com/v1/forecast',dict(base,models=m),'%s_%s_hf_%s%s'%(ven,day,m,'_st' if A.get('om_station_only') else ''));time.sleep(0.7)
         save_report()
+    if A.get('skip_obs'):
+        json.dump(rep,open(os.path.join(OUT,'wx_audit_report_%s.json'%('st' if A.get('om_station_only') else 'om')),'w'),indent=1);return done('wx_audit',om=sum(1 for x in rep['om'].values() if x=='ok'))
     # 3. station observations on race days (and the day either side), raw rows only
     for ven,v in V.items():
         want=set()
