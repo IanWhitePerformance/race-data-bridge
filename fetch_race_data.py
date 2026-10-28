@@ -1408,7 +1408,9 @@ def do_wx_audit():
             for y in sorted({x[:4] for x in want}):
                 key='%s_%s_%s'%(ven,sid,y)
                 try:
-                    r=requests.get('https://www.ncei.noaa.gov/data/global-hourly/access/%s/%s.csv'%(y,sid),headers=UA,timeout=180)
+                    r=requests.get('https://noaa-global-hourly-pds.s3.amazonaws.com/%s/%s.csv'%(y,sid),headers=UA,timeout=180)   # NOAA Open Data on AWS (the NCEI page now answers with an HTML page)
+                    if r.status_code!=200 or r.text.lstrip()[:1]=='<':r=requests.get('https://www.ncei.noaa.gov/data/global-hourly/access/%s/%s.csv'%(y,sid),headers=UA,timeout=180)
+                    if r.text.lstrip()[:1]=='<':rep['isd'][key]='html';continue
                     if r.status_code!=200:rep['isd'][key]=r.status_code;continue
                     L=r.text.splitlines();keep=[L[0]]+[x for x in L[1:] if x.count(',')>1 and x.split(',',2)[1].strip('"')[:10] in want]
                     open(os.path.join(ds,'isd_%s.csv'%key),'w').write('\n'.join(keep));rep['isd'][key]=len(keep)-1
