@@ -1,14 +1,14 @@
 {
  "id": "wx-audit",
- "started": "2026-10-28T17:34:40Z",
+ "started": "2026-10-28T17:43:14Z",
  "sources": {
   "wx_audit": {
    "status": "ok",
-   "om": 0,
-   "om_total": 0,
+   "om": 348,
+   "om_total": 348,
    "isd": 164,
    "iem": 110
   }
  },
- "finished": "2026-10-28T17:38:36Z"
+ "finished": "2026-10-28T19:55:40Z"
 }
