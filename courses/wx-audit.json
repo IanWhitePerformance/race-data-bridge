@@ -43,7 +43,8 @@
      "2024-03-02",
      "2025-03-01",
      "2026-03-07"
-    ]
+    ],
+    "hf_extra": []
    },
    "kona": {
     "tz": "Pacific/Honolulu",
@@ -76,7 +77,8 @@
      "2024-10-26",
      "2025-10-11",
      "2026-10-10"
-    ]
+    ],
+    "hf_extra": []
    },
    "fra": {
     "tz": "Europe/Berlin",
@@ -103,10 +105,7 @@
      "2025-06-29"
     ],
     "hf_extra": [
-     "icon_d2",
-     "icon_eu",
-     "dmi_harmonie_arome_europe",
-     "knmi_harmonie_arome_europe"
+     "icon_d2"
     ]
    },
    "tx": {
@@ -136,8 +135,7 @@
      "2026-04-18"
     ],
     "hf_extra": [
-     "ncep_hrrr_conus",
-     "ncep_nbm_conus"
+     "ncep_hrrr_conus"
     ]
    },
    "cha": {
@@ -162,8 +160,7 @@
      "2026-09-27"
     ],
     "hf_extra": [
-     "ncep_hrrr_conus",
-     "ncep_nbm_conus"
+     "ncep_hrrr_conus"
     ]
    },
    "roth": {
@@ -192,10 +189,7 @@
      "2026-07-05"
     ],
     "hf_extra": [
-     "icon_d2",
-     "icon_eu",
-     "dmi_harmonie_arome_europe",
-     "knmi_harmonie_arome_europe"
+     "icon_d2"
     ]
    },
    "nice": {
@@ -229,9 +223,7 @@
      "2025-06-29"
     ],
     "hf_extra": [
-     "meteofrance_arome_france_hd",
-     "meteofrance_arome_france",
-     "icon_eu"
+     "meteofrance_arome_france_hd"
     ]
    },
    "wey703": {
@@ -257,10 +249,7 @@
      "2026-09-20"
     ],
     "hf_extra": [
-     "ukmo_uk_deterministic_2km",
-     "icon_eu",
-     "dmi_harmonie_arome_europe",
-     "knmi_harmonie_arome_europe"
+     "ukmo_uk_deterministic_2km"
     ]
    },
    "wal": {
@@ -289,10 +278,7 @@
      "2026-09-13"
     ],
     "hf_extra": [
-     "ukmo_uk_deterministic_2km",
-     "icon_eu",
-     "dmi_harmonie_arome_europe",
-     "knmi_harmonie_arome_europe"
+     "ukmo_uk_deterministic_2km"
     ]
    },
    "h703": {
@@ -315,7 +301,8 @@
      "2024-06-01",
      "2025-05-31",
      "2026-05-30"
-    ]
+    ],
+    "hf_extra": []
    },
    "nice703": {
     "tz": "Europe/Paris",
@@ -342,9 +329,7 @@
      "2026-09-13"
     ],
     "hf_extra": [
-     "meteofrance_arome_france_hd",
-     "meteofrance_arome_france",
-     "icon_eu"
+     "meteofrance_arome_france_hd"
     ]
    },
    "cha703": {
@@ -370,8 +355,7 @@
      "2026-05-17"
     ],
     "hf_extra": [
-     "ncep_hrrr_conus",
-     "ncep_nbm_conus"
+     "ncep_hrrr_conus"
     ]
    }
   },
@@ -379,16 +363,16 @@
   "max_stations": 5,
   "archive_models": [
    "era5",
-   "era5_land",
    "ecmwf_ifs"
   ],
   "hf_models": [
    "best_match",
    "ecmwf_ifs",
    "gfs_global",
-   "icon_global",
-   "ukmo_global_deterministic_10km"
+   "ukmo_global_deterministic_10km",
+   "icon_global"
   ],
-  "skip_om": true
+  "skip_om": false,
+  "om_station_only": true
  }
 }
