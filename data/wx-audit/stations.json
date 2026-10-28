@@ -1,6 +1,58 @@
 {
- "taupo": [],
- "kona": [],
+ "taupo": [
+  {
+   "usaf": "932450",
+   "wban": "99999",
+   "name": "TAUPO AWS",
+   "icao": "",
+   "lat": -38.733,
+   "lon": 176.067,
+   "elev": "+0401.0",
+   "km": 4.7
+  }
+ ],
+ "kona": [
+  {
+   "usaf": "997173",
+   "wban": "99999",
+   "name": "KAWAIHAE",
+   "icao": "",
+   "lat": 20.037,
+   "lon": -155.829,
+   "elev": "+0001.0",
+   "km": 0.3
+  },
+  {
+   "usaf": "911975",
+   "wban": "21510",
+   "name": "KONA INTL AT KEAHOLE ARPT",
+   "icao": "PHKO",
+   "lat": 19.738,
+   "lon": -156.048,
+   "elev": "+0011.3",
+   "km": 1.4
+  },
+  {
+   "usaf": "911977",
+   "wban": "21508",
+   "name": "BRADSHAW ARMY AIRFIELD",
+   "icao": "PHSF",
+   "lat": 19.76,
+   "lon": -155.554,
+   "elev": "+1798.3",
+   "km": 37.1
+  },
+  {
+   "usaf": "999999",
+   "wban": "21514",
+   "name": "MAUNA LOA 5 NNE",
+   "icao": "",
+   "lat": 19.535,
+   "lon": -155.576,
+   "elev": "+3407.4",
+   "km": 45.4
+  }
+ ],
  "fra": [
   {
    "usaf": "106370",
@@ -23,10 +75,133 @@
    "km": 21.4
   }
  ],
- "tx": [],
- "cha": [],
- "roth": [],
+ "tx": [
+  {
+   "usaf": "722430",
+   "wban": "12960",
+   "name": "G BUSH INTERCONTINENTAL AP/HOUSTON AP",
+   "icao": "KIAH",
+   "lat": 29.984,
+   "lon": -95.361,
+   "elev": "+0027.5",
+   "km": 2.8
+  },
+  {
+   "usaf": "722429",
+   "wban": "53910",
+   "name": "HOOKS MEMORIAL AIRPT",
+   "icao": "KDWH",
+   "lat": 30.068,
+   "lon": -95.556,
+   "elev": "+0046.8",
+   "km": 12.6
+  },
+  {
+   "usaf": "720594",
+   "wban": "00188",
+   "name": "HOUSTON DUNN HELISTOP",
+   "icao": "KMCJ",
+   "lat": 29.717,
+   "lon": -95.383,
+   "elev": "+0069.2",
+   "km": 15.9
+  },
+  {
+   "usaf": "998481",
+   "wban": "99999",
+   "name": "MANCHESTER",
+   "icao": "",
+   "lat": 29.726,
+   "lon": -95.266,
+   "elev": "+0010.0",
+   "km": 17.5
+  },
+  {
+   "usaf": "722444",
+   "wban": "53902",
+   "name": "MONTGOMERY COUNTY AIRPORT",
+   "icao": "KCXO",
+   "lat": 30.361,
+   "lon": -95.418,
+   "elev": "+0069.4",
+   "km": 22.5
+  }
+ ],
+ "cha": [
+  {
+   "usaf": "723240",
+   "wban": "13882",
+   "name": "LOVELL FIELD AIRPORT",
+   "icao": "KCHA",
+   "lat": 35.034,
+   "lon": -85.2,
+   "elev": "+0204.0",
+   "km": 10.3
+  }
+ ],
+ "roth": [
+  {
+   "usaf": "107630",
+   "wban": "99999",
+   "name": "NURNBERG",
+   "icao": "EDDN",
+   "lat": 49.499,
+   "lon": 11.078,
+   "elev": "+0318.8",
+   "km": 27.5
+  },
+  {
+   "usaf": "107550",
+   "wban": "99999",
+   "name": "ANSBACH AHP / KATTERBACH GERMANY",
+   "icao": "ETEB",
+   "lat": 49.308,
+   "lon": 10.639,
+   "elev": "+0467.0",
+   "km": 33.4
+  },
+  {
+   "usaf": "108530",
+   "wban": "99999",
+   "name": "NEUBURG",
+   "icao": "ETSN",
+   "lat": 48.711,
+   "lon": 11.212,
+   "elev": "+0380.7",
+   "km": 39.0
+  },
+  {
+   "usaf": "108600",
+   "wban": "99999",
+   "name": "INGOLSTADT MANCHING",
+   "icao": "ETSI",
+   "lat": 48.716,
+   "lon": 11.534,
+   "elev": "+0366.4",
+   "km": 39.1
+  },
+  {
+   "usaf": "107750",
+   "wban": "99999",
+   "name": "HOHENFELS AAF",
+   "icao": "ETIH",
+   "lat": 49.218,
+   "lon": 11.836,
+   "elev": "+0443.5",
+   "km": 39.4
+  }
+ ],
  "nice": [
+  {
+   "usaf": "076950",
+   "wban": "99999",
+   "name": "CAP FERRAT",
+   "icao": "",
+   "lat": 43.683,
+   "lon": 7.333,
+   "elev": "+0144.0",
+   "km": 5.6
+  },
   {
    "usaf": "076900",
    "wban": "99999",
@@ -68,9 +243,214 @@
    "km": 36.8
   }
  ],
- "wey703": [],
- "wal": [],
- "h703": [],
- "nice703": [],
- "cha703": []
+ "wey703": [
+  {
+   "usaf": "038570",
+   "wban": "99999",
+   "name": "ISLE OF PORTLAND",
+   "icao": "",
+   "lat": 50.517,
+   "lon": -2.45,
+   "elev": "+0052.0",
+   "km": 11.2
+  },
+  {
+   "usaf": "038530",
+   "wban": "99999",
+   "name": "YEOVILTON",
+   "icao": "EGDY",
+   "lat": 51.009,
+   "lon": -2.639,
+   "elev": "+0022.9",
+   "km": 20.8
+  },
+  {
+   "usaf": "038620",
+   "wban": "99999",
+   "name": "BOURNEMOUTH",
+   "icao": "EGHH",
+   "lat": 50.78,
+   "lon": -1.843,
+   "elev": "+0011.6",
+   "km": 37.2
+  },
+  {
+   "usaf": "030755",
+   "wban": "99999",
+   "name": "MERRYFIELD ARPT / RNAS",
+   "icao": "EGDI",
+   "lat": 50.963,
+   "lon": -2.936,
+   "elev": "+0043.9",
+   "km": 37.8
+  }
+ ],
+ "wal": [
+  {
+   "usaf": "036040",
+   "wban": "99999",
+   "name": "MILFORD HAVEN CONSERVANCY BOARD",
+   "icao": "",
+   "lat": 51.7,
+   "lon": -5.05,
+   "elev": "+0032.0",
+   "km": 2.2
+  },
+  {
+   "usaf": "036050",
+   "wban": "99999",
+   "name": "PEMBRY SANDS",
+   "icao": "EGOP",
+   "lat": 51.717,
+   "lon": -4.367,
+   "elev": "+0003.0",
+   "km": 23.7
+  },
+  {
+   "usaf": "035020",
+   "wban": "99999",
+   "name": "ABERPORTH",
+   "icao": "EGUC",
+   "lat": 52.133,
+   "lon": -4.567,
+   "elev": "+0134.0",
+   "km": 38.7
+  }
+ ],
+ "h703": [
+  {
+   "usaf": "997173",
+   "wban": "99999",
+   "name": "KAWAIHAE",
+   "icao": "",
+   "lat": 20.037,
+   "lon": -155.829,
+   "elev": "+0001.0",
+   "km": 0.3
+  },
+  {
+   "usaf": "911975",
+   "wban": "21510",
+   "name": "KONA INTL AT KEAHOLE ARPT",
+   "icao": "PHKO",
+   "lat": 19.738,
+   "lon": -156.048,
+   "elev": "+0011.3",
+   "km": 29.9
+  },
+  {
+   "usaf": "911977",
+   "wban": "21508",
+   "name": "BRADSHAW ARMY AIRFIELD",
+   "icao": "PHSF",
+   "lat": 19.76,
+   "lon": -155.554,
+   "elev": "+1798.3",
+   "km": 38.6
+  }
+ ],
+ "nice703": [
+  {
+   "usaf": "076950",
+   "wban": "99999",
+   "name": "CAP FERRAT",
+   "icao": "",
+   "lat": 43.683,
+   "lon": 7.333,
+   "elev": "+0144.0",
+   "km": 5.6
+  },
+  {
+   "usaf": "076900",
+   "wban": "99999",
+   "name": "NICE COTE D AZUR",
+   "icao": "LFMN",
+   "lat": 43.658,
+   "lon": 7.216,
+   "elev": "+0003.7",
+   "km": 5.7
+  },
+  {
+   "usaf": "076880",
+   "wban": "99999",
+   "name": "LA GAROUPE",
+   "icao": "",
+   "lat": 43.567,
+   "lon": 7.133,
+   "elev": "+0082.0",
+   "km": 17.7
+  },
+  {
+   "usaf": "076840",
+   "wban": "99999",
+   "name": "CANNES MANDELIEU",
+   "icao": "LFMD",
+   "lat": 43.542,
+   "lon": 6.953,
+   "elev": "+0004.0",
+   "km": 24.8
+  },
+  {
+   "usaf": "076810",
+   "wban": "99999",
+   "name": "LE DRAMONT",
+   "icao": "",
+   "lat": 43.417,
+   "lon": 6.85,
+   "elev": "+0126.0",
+   "km": 40.9
+  }
+ ],
+ "cha703": [
+  {
+   "usaf": "723240",
+   "wban": "13882",
+   "name": "LOVELL FIELD AIRPORT",
+   "icao": "KCHA",
+   "lat": 35.034,
+   "lon": -85.2,
+   "elev": "+0204.0",
+   "km": 10.3
+  },
+  {
+   "usaf": "999999",
+   "wban": "63862",
+   "name": "VALLEY HEAD 1 SSW",
+   "icao": "",
+   "lat": 34.565,
+   "lon": -85.617,
+   "elev": "+0310.9",
+   "km": 27.6
+  },
+  {
+   "usaf": "A00013",
+   "wban": "63847",
+   "name": "ISBELL FIELD AIRPORT",
+   "icao": "K4A9",
+   "lat": 34.474,
+   "lon": -85.721,
+   "elev": "+0267.3",
+   "km": 41.5
+  },
+  {
+   "usaf": "723200",
+   "wban": "93801",
+   "name": "RICHARD B RUSSELL AIRPORT",
+   "icao": "KRMG",
+   "lat": 34.348,
+   "lon": -85.162,
+   "elev": "+0194.8",
+   "km": 47.1
+  },
+  {
+   "usaf": "722154",
+   "wban": "53885",
+   "name": "DALTON MUNICIPAL AIRPORT",
+   "icao": "KDNN",
+   "lat": 34.722,
+   "lon": -84.869,
+   "elev": "+0216.4",
+   "km": 47.7
+  }
+ ]
 }
