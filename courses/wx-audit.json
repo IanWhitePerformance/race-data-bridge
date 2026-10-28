@@ -1,0 +1,393 @@
+{
+ "id": "wx-audit",
+ "name": "Weather source audit: free models and stations at each course on past race days. Research only, no athlete data.",
+ "lat0": 51.0,
+ "lon0": 0.0,
+ "margin_km": 0.2,
+ "line": [
+  [
+   51.0,
+   0.0
+  ],
+  [
+   51.001,
+   0.001
+  ]
+ ],
+ "jobs": [
+  "wx_audit"
+ ],
+ "wx_audit": {
+  "venues": {
+   "taupo": {
+    "tz": "Pacific/Auckland",
+    "pts": [
+     [
+      -38.6919,
+      176.0788
+     ],
+     [
+      -38.592,
+      176.1534
+     ],
+     [
+      -38.4372,
+      176.316
+     ],
+     [
+      -38.5816,
+      176.305
+     ]
+    ],
+    "days": [
+     "2024-03-02",
+     "2025-03-01",
+     "2026-03-07"
+    ]
+   },
+   "kona": {
+    "tz": "Pacific/Honolulu",
+    "pts": [
+     [
+      19.64,
+      -155.995
+     ],
+     [
+      19.735,
+      -156.035
+     ],
+     [
+      19.93,
+      -155.86
+     ],
+     [
+      20.04,
+      -155.83
+     ],
+     [
+      20.23,
+      -155.83
+     ]
+    ],
+    "days": [
+     "2022-10-06",
+     "2022-10-08",
+     "2023-10-14",
+     "2024-10-26",
+     "2025-10-11",
+     "2026-10-10"
+    ]
+   },
+   "fra": {
+    "tz": "Europe/Berlin",
+    "pts": [
+     [
+      50.02,
+      8.62
+     ],
+     [
+      50.11,
+      8.68
+     ],
+     [
+      50.18,
+      8.74
+     ],
+     [
+      50.29,
+      8.92
+     ]
+    ],
+    "days": [
+     "2024-08-18",
+     "2025-06-29"
+    ],
+    "hf_extra": [
+     "icon_d2",
+     "icon_eu",
+     "dmi_harmonie_arome_europe",
+     "knmi_harmonie_arome_europe"
+    ]
+   },
+   "tx": {
+    "tz": "America/Chicago",
+    "pts": [
+     [
+      30.163,
+      -95.47
+     ],
+     [
+      30.1,
+      -95.43
+     ],
+     [
+      29.97,
+      -95.385
+     ],
+     [
+      29.86,
+      -95.362
+     ]
+    ],
+    "days": [
+     "2023-04-22",
+     "2024-04-27",
+     "2025-04-26",
+     "2026-04-18"
+    ],
+    "hf_extra": [
+     "ncep_hrrr_conus",
+     "ncep_nbm_conus"
+    ]
+   },
+   "cha": {
+    "tz": "America/New_York",
+    "pts": [
+     [
+      35.056,
+      -85.31
+     ],
+     [
+      35.15,
+      -85.25
+     ],
+     [
+      35.25,
+      -85.18
+     ]
+    ],
+    "days": [
+     "2024-09-29",
+     "2025-09-28",
+     "2026-09-27"
+    ],
+    "hf_extra": [
+     "ncep_hrrr_conus",
+     "ncep_nbm_conus"
+    ]
+   },
+   "roth": {
+    "tz": "Europe/Berlin",
+    "pts": [
+     [
+      49.25,
+      11.09
+     ],
+     [
+      49.19,
+      11.19
+     ],
+     [
+      49.05,
+      11.36
+     ],
+     [
+      49.13,
+      11.12
+     ]
+    ],
+    "days": [
+     "2024-07-07",
+     "2025-07-06",
+     "2026-07-05"
+    ],
+    "hf_extra": [
+     "icon_d2",
+     "icon_eu",
+     "dmi_harmonie_arome_europe",
+     "knmi_harmonie_arome_europe"
+    ]
+   },
+   "nice": {
+    "tz": "Europe/Paris",
+    "pts": [
+     [
+      43.695,
+      7.265
+     ],
+     [
+      43.73,
+      7.12
+     ],
+     [
+      43.745,
+      6.93
+     ],
+     [
+      43.78,
+      6.78
+     ],
+     [
+      43.795,
+      6.97
+     ]
+    ],
+    "days": [
+     "2022-06-26",
+     "2023-06-25",
+     "2024-06-16",
+     "2025-06-29"
+    ],
+    "hf_extra": [
+     "meteofrance_arome_france_hd",
+     "meteofrance_arome_france",
+     "icon_eu"
+    ]
+   },
+   "wey703": {
+    "tz": "Europe/London",
+    "pts": [
+     [
+      50.618,
+      -2.452
+     ],
+     [
+      50.728,
+      -2.365
+     ],
+     [
+      50.89,
+      -2.41
+     ]
+    ],
+    "days": [
+     "2023-09-17",
+     "2024-09-15",
+     "2025-09-14",
+     "2026-09-20"
+    ],
+    "hf_extra": [
+     "ukmo_uk_deterministic_2km",
+     "icon_eu",
+     "dmi_harmonie_arome_europe",
+     "knmi_harmonie_arome_europe"
+    ]
+   },
+   "wal": {
+    "tz": "Europe/London",
+    "pts": [
+     [
+      51.672,
+      -4.703
+     ],
+     [
+      51.676,
+      -4.915
+     ],
+     [
+      51.8,
+      -4.74
+     ],
+     [
+      51.68,
+      -5.05
+     ]
+    ],
+    "days": [
+     "2024-09-22",
+     "2025-09-21",
+     "2026-09-13"
+    ],
+    "hf_extra": [
+     "ukmo_uk_deterministic_2km",
+     "icon_eu",
+     "dmi_harmonie_arome_europe",
+     "knmi_harmonie_arome_europe"
+    ]
+   },
+   "h703": {
+    "tz": "Pacific/Honolulu",
+    "pts": [
+     [
+      19.9466,
+      -155.8657
+     ],
+     [
+      20.04,
+      -155.83
+     ],
+     [
+      20.23,
+      -155.83
+     ]
+    ],
+    "days": [
+     "2024-06-01",
+     "2025-05-31",
+     "2026-05-30"
+    ]
+   },
+   "nice703": {
+    "tz": "Europe/Paris",
+    "pts": [
+     [
+      43.695,
+      7.265
+     ],
+     [
+      43.73,
+      7.12
+     ],
+     [
+      43.785,
+      7.06
+     ]
+    ],
+    "days": [
+     "2022-06-26",
+     "2023-06-25",
+     "2024-06-16",
+     "2025-06-29",
+     "2026-09-12",
+     "2026-09-13"
+    ],
+    "hf_extra": [
+     "meteofrance_arome_france_hd",
+     "meteofrance_arome_france",
+     "icon_eu"
+    ]
+   },
+   "cha703": {
+    "tz": "America/New_York",
+    "pts": [
+     [
+      35.056,
+      -85.31
+     ],
+     [
+      34.88,
+      -85.36
+     ],
+     [
+      34.73,
+      -85.39
+     ]
+    ],
+    "days": [
+     "2023-05-21",
+     "2024-05-19",
+     "2025-05-18",
+     "2026-05-17"
+    ],
+    "hf_extra": [
+     "ncep_hrrr_conus",
+     "ncep_nbm_conus"
+    ]
+   }
+  },
+  "station_km": 45,
+  "max_stations": 4,
+  "archive_models": [
+   "era5",
+   "era5_land",
+   "ecmwf_ifs"
+  ],
+  "hf_models": [
+   "best_match",
+   "ecmwf_ifs",
+   "gfs_global",
+   "icon_global",
+   "ukmo_global_deterministic_10km"
+  ]
+ }
+}
