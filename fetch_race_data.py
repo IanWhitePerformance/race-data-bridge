@@ -1373,7 +1373,7 @@ def do_wx_audit():
             for r in rows:
                 try:la=float(r['LAT']);lo=float(r['LON'])
                 except Exception:continue
-                if not r['END'] or r['END'][:4]<yrs[-1] or r['BEGIN'][:4]>yrs[0]:continue
+                if not r['END'] or r['END'][:4]<yrs[0] or r['BEGIN'][:4]>yrs[0]:continue   # the station list's END date lags, so only require it to cover the first race year
                 dk=min(math.hypot((la-p[0])*110.574,(lo-p[1])*111.32*math.cos(math.radians(p[0]))) for p in v['pts'])
                 if dk<=A.get('station_km',45):c.append(dict(usaf=r['USAF'],wban=r['WBAN'],name=r['STATION NAME'],icao=r['ICAO'],lat=la,lon=lo,elev=r['ELEV(M)'],km=round(dk,1)))
             c.sort(key=lambda x:x['km']);st[ven]=c[:A.get('max_stations',6)]
@@ -1388,7 +1388,7 @@ def do_wx_audit():
                 if r.status_code==400:rep['om'][key]='400 '+r.text[:150];return
                 time.sleep(8*(k+1))
             except Exception as ex:time.sleep(8*(k+1));rep['om'][key]='err '+str(ex)[:100]
-    for ven,v in V.items():
+    for ven,v in (V.items() if not A.get('skip_om') else []):
         pts=v['pts']+[[s['lat'],s['lon']] for s in st.get(ven,[])]
         for day in v['days']:
             base=dict(latitude=','.join('%.4f'%p[0] for p in pts),longitude=','.join('%.4f'%p[1] for p in pts),start_date=day,end_date=day,hourly=VAR,wind_speed_unit='ms',timezone=v['tz'])
@@ -1407,7 +1407,7 @@ def do_wx_audit():
                 try:
                     r=requests.get('https://www.ncei.noaa.gov/data/global-hourly/access/%s/%s.csv'%(y,sid),headers=UA,timeout=180)
                     if r.status_code!=200:rep['isd'][key]=r.status_code;continue
-                    L=r.text.splitlines();keep=[L[0]]+[x for x in L[1:] if x.split(',',2)[1].strip('"')[:10] in want]
+                    L=r.text.splitlines();keep=[L[0]]+[x for x in L[1:] if x.count(',')>1 and x.split(',',2)[1].strip('"')[:10] in want]
                     open(os.path.join(ds,'isd_%s.csv'%key),'w').write('\n'.join(keep));rep['isd'][key]=len(keep)-1
                 except Exception as ex:rep['isd'][key]='err '+str(ex)[:100]
             if s.get('icao'):
