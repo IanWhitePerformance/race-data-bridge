@@ -1354,12 +1354,82 @@ def do_wx_replay():
         time.sleep(1)
     if not ok:return failed('wx_replay','no URL answered')
     done('wx_replay',urls=len(urls),saved=ok)
+def do_wx_audit():
+    """Weather source audit (research only): hourly weather from several free models at each course's weather points and at the
+    nearest weather stations, on past race days, so the planner's weather source can be chosen on evidence. Spec key 'wx_audit':
+    {venues:{id:{tz,pts:[[lat,lon]..],days:[..]}}, archive_models:[..], hf_models:[..], station_km, max_stations}.
+    Model data: Open-Meteo archive and historical-forecast APIs (research and testing only). Stations: NOAA ISD global hourly (NCEI) and the
+    Iowa Environmental Mesonet ASOS/METAR archive."""
+    import csv,io,datetime as dt
+    A=spec['wx_audit'];V=A['venues'];d=os.path.join(OUT,'om');ds=os.path.join(OUT,'st');os.makedirs(d,exist_ok=True);os.makedirs(ds,exist_ok=True)
+    rep={'om':{},'isd':{},'iem':{}}
+    VAR='temperature_2m,relative_humidity_2m,wind_speed_10m,wind_direction_10m,wind_gusts_10m,shortwave_radiation,surface_pressure,pressure_msl'
+    # 1. stations near each course (NOAA ISD station list), nearest first
+    st={}
+    try:
+        h=get('https://www.ncei.noaa.gov/pub/data/noaa/isd-history.csv',timeout=180).text;rows=list(csv.DictReader(io.StringIO(h)))
+        for ven,v in V.items():
+            yrs=sorted({x[:4] for x in v['days']});c=[]
+            for r in rows:
+                try:la=float(r['LAT']);lo=float(r['LON'])
+                except Exception:continue
+                if not r['END'] or r['END'][:4]<yrs[-1] or r['BEGIN'][:4]>yrs[0]:continue
+                dk=min(math.hypot((la-p[0])*110.574,(lo-p[1])*111.32*math.cos(math.radians(p[0]))) for p in v['pts'])
+                if dk<=A.get('station_km',45):c.append(dict(usaf=r['USAF'],wban=r['WBAN'],name=r['STATION NAME'],icao=r['ICAO'],lat=la,lon=lo,elev=r['ELEV(M)'],km=round(dk,1)))
+            c.sort(key=lambda x:x['km']);st[ven]=c[:A.get('max_stations',6)]
+        json.dump(st,open(os.path.join(OUT,'stations.json'),'w'),indent=1)
+    except Exception as ex:log('stations',str(ex)[:200]);rep['stations_error']=str(ex)[:300]
+    # 2. model data at course points + station points, one request per venue, day and model
+    def om(url,q,key):
+        for k in range(4):
+            try:
+                r=requests.get(url,params=q,headers=UA,timeout=120)
+                if r.status_code==200:open(os.path.join(d,key+'.json'),'w').write(r.text);rep['om'][key]='ok';return
+                if r.status_code==400:rep['om'][key]='400 '+r.text[:150];return
+                time.sleep(8*(k+1))
+            except Exception as ex:time.sleep(8*(k+1));rep['om'][key]='err '+str(ex)[:100]
+    for ven,v in V.items():
+        pts=v['pts']+[[s['lat'],s['lon']] for s in st.get(ven,[])]
+        for day in v['days']:
+            base=dict(latitude=','.join('%.4f'%p[0] for p in pts),longitude=','.join('%.4f'%p[1] for p in pts),start_date=day,end_date=day,hourly=VAR,wind_speed_unit='ms',timezone=v['tz'])
+            for m in A.get('archive_models',[]):om('https://archive-api.open-meteo.com/v1/archive',dict(base,models=m),'%s_%s_ar_%s'%(ven,day,m));time.sleep(0.7)
+            for m in A.get('hf_models',[])+v.get('hf_extra',[]):om('https://historical-forecast-api.open-meteo.com/v1/forecast',dict(base,models=m),'%s_%s_hf_%s'%(ven,day,m));time.sleep(0.7)
+        save_report()
+    # 3. station observations on race days (and the day either side), raw rows only
+    for ven,v in V.items():
+        want=set()
+        for day in v['days']:
+            t=dt.date.fromisoformat(day);want|={(t+dt.timedelta(days=k)).isoformat() for k in (-1,0,1)}
+        for s in st.get(ven,[]):
+            sid=s['usaf']+s['wban']
+            for y in sorted({x[:4] for x in want}):
+                key='%s_%s_%s'%(ven,sid,y)
+                try:
+                    r=requests.get('https://www.ncei.noaa.gov/data/global-hourly/access/%s/%s.csv'%(y,sid),headers=UA,timeout=180)
+                    if r.status_code!=200:rep['isd'][key]=r.status_code;continue
+                    L=r.text.splitlines();keep=[L[0]]+[x for x in L[1:] if x.split(',',2)[1].strip('"')[:10] in want]
+                    open(os.path.join(ds,'isd_%s.csv'%key),'w').write('\n'.join(keep));rep['isd'][key]=len(keep)-1
+                except Exception as ex:rep['isd'][key]='err '+str(ex)[:100]
+            if s.get('icao'):
+                for day in v['days']:
+                    t=dt.date.fromisoformat(day);a=t-dt.timedelta(days=1);b=t+dt.timedelta(days=2);key='%s_%s_%s'%(ven,s['icao'],day)
+                    q='station=%s&data=tmpf&data=relh&data=sknt&data=drct&data=gust&data=alti&data=mslp&year1=%d&month1=%d&day1=%d&year2=%d&month2=%d&day2=%d&tz=Etc%%2FUTC&format=onlycomma&latlon=yes&elev=yes&missing=empty&trace=empty&report_type=3&report_type=4'%(s['icao'],a.year,a.month,a.day,b.year,b.month,b.day)
+                    try:
+                        r=requests.get('https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?'+q,headers=UA,timeout=120)
+                        if r.status_code==200 and r.text.count('\n')>1:open(os.path.join(ds,'iem_%s.csv'%key),'w').write(r.text);rep['iem'][key]=r.text.count('\n')-1
+                        else:rep['iem'][key]=r.status_code
+                    except Exception as ex:rep['iem'][key]='err '+str(ex)[:100]
+                    time.sleep(1)
+    json.dump(rep,open(os.path.join(OUT,'wx_audit_report.json'),'w'),indent=1)
+    done('wx_audit',om=sum(1 for x in rep['om'].values() if x=='ok'),om_total=len(rep['om']),isd=len(rep['isd']),iem=len(rep['iem']))
 ONLY=[x for x in os.environ.get('ONLY','').split(',') if x]
 def run():
+    global ONLY
+    if not ONLY and spec.get('jobs'):ONLY=list(spec['jobs'])
     if ONLY:   # re-run selected sources only, keeping the rest of the report
         try:REPORT['sources']=json.load(open(os.path.join(OUT,'report.json'))).get('sources',{})
         except Exception:pass
-        F={'zenodo_meta':do_zenodo_meta,'s2box':do_s2box,'wx_replay':do_wx_replay,'osm_detail':do_osm_detail,'leaftype':do_leaftype,'osm':do_osm,'terrain':do_terrain,'profile':do_profile,'nz':do_nz,'ndsm':do_nz_ndsm if spec.get('region')=='nz' else None,'bayern':do_bayern,'bayern_probe':do_bayern_probe if spec.get('region')=='bayern' else None,'lod2':do_bayern_lod2 if spec.get('region')=='bayern' else None,'us_lidar':do_us_lidar if spec.get('region')=='us' else None,'us':do_us if spec.get('region')=='us' else None,'hessen':do_hessen if spec.get('region')=='hessen' else None,'hessen_box':do_hessen_box if spec.get('region')=='hessen' else None,'hessen_spots':do_hessen_spots if spec.get('region')=='hessen' else None,'us_spots':do_us_spots if spec.get('region')=='us' else None,'wales':do_wales if spec.get('region')=='wales' else None,'england':do_england if spec.get('region')=='england' else None,'france':do_france if spec.get('region')=='france' else None}
+        F={'wx_audit':do_wx_audit,'zenodo_meta':do_zenodo_meta,'s2box':do_s2box,'wx_replay':do_wx_replay,'osm_detail':do_osm_detail,'leaftype':do_leaftype,'osm':do_osm,'terrain':do_terrain,'profile':do_profile,'nz':do_nz,'ndsm':do_nz_ndsm if spec.get('region')=='nz' else None,'bayern':do_bayern,'bayern_probe':do_bayern_probe if spec.get('region')=='bayern' else None,'lod2':do_bayern_lod2 if spec.get('region')=='bayern' else None,'us_lidar':do_us_lidar if spec.get('region')=='us' else None,'us':do_us if spec.get('region')=='us' else None,'hessen':do_hessen if spec.get('region')=='hessen' else None,'hessen_box':do_hessen_box if spec.get('region')=='hessen' else None,'hessen_spots':do_hessen_spots if spec.get('region')=='hessen' else None,'us_spots':do_us_spots if spec.get('region')=='us' else None,'wales':do_wales if spec.get('region')=='wales' else None,'england':do_england if spec.get('region')=='england' else None,'france':do_france if spec.get('region')=='france' else None}
         for k in ONLY:
             fn=F.get(k)
             if not fn:continue
