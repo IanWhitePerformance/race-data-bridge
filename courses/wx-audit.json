@@ -375,8 +375,8 @@
     ]
    }
   },
-  "station_km": 45,
-  "max_stations": 4,
+  "station_km": 50,
+  "max_stations": 5,
   "archive_models": [
    "era5",
    "era5_land",
@@ -388,6 +388,7 @@
    "gfs_global",
    "icon_global",
    "ukmo_global_deterministic_10km"
-  ]
+  ],
+  "skip_om": true
  }
 }
