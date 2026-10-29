@@ -1,0 +1,5 @@
+{
+ "2025-07-06|temperature_2m": "err RuntimeError(\"Decoder error: Python I/O error TypeError: HTTPFileSystem._cat_file() missing 1 required positional argument: 'url'\")",
+ "2025-07-06|wind_speed_10m": "err FileNotFoundError('https://openmeteo.s3.amazonaws.com/data/dwd_icon_d2/wind_speed_10m/chunk_4021.om')",
+ "2025-07-06|wind_u_component_10m": "err RuntimeError(\"Decoder error: Python I/O error TypeError: HTTPFileSystem._cat_file() missing 1 required positional argument: 'url'\")"
+}
