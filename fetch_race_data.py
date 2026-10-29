@@ -12,7 +12,7 @@ Runs on a GitHub Actions runner (full internet). Sources, all open licences:
 Every source is optional: a failure is logged in race-data/<id>/report.json and the rest carries on.
 Usage: python3 fetch_race_data.py race-data/courses/taupo.json
 """
-import sys,os,json,math,time,io,re,threading,traceback
+import sys,os,json,math,time,io,re,threading,traceback,datetime as dt
 from concurrent.futures import ThreadPoolExecutor
 import requests
 import numpy as np
@@ -1354,6 +1354,80 @@ def do_wx_replay():
         time.sleep(1)
     if not ok:return failed('wx_replay','no URL answered')
     done('wx_replay',urls=len(urls),saved=ok)
+_OMS3=None
+def _om_reader(model,var,chunk):
+    import s3fs,omfiles
+    global _OMS3
+    if _OMS3 is None:_OMS3=s3fs.S3FileSystem(anon=True)
+    return omfiles.OmFileReader.from_fsspec(_OMS3,'openmeteo/data/%s/%s/chunk_%d.om'%(model,var,chunk))
+def _o1280():
+    import numpy as np
+    x,_=np.polynomial.legendre.leggauss(2560);lat=np.degrees(np.arcsin(x))[::-1]   # north to south
+    nl=np.array([4*(i+1)+16 if i<1280 else 4*(2560-i)+16 for i in range(2560)]);start=np.concatenate([[0],np.cumsum(nl)[:-1]])
+    return lat,nl,start
+def _om_series(model,var,utc0,n,chl,cache={}):
+    """hourly values for every grid cell of one variable from utc0 for n hours: returns (reader list, [(chunk, a, b)])"""
+    t0=dt.datetime(1970,1,1);h=int((dt.datetime.fromisoformat(utc0)-t0).total_seconds()//3600);parts=[]
+    while n>0:
+        ch=h//chl;off=h-ch*chl;k=min(n,chl-off);parts.append((ch,off,off+k));h+=k;n-=k
+    return parts
+def _om_read(model,var,parts,cell):
+    """cell: (iy,ix) for 3-D grids or (i,) for flat grids; returns list of values"""
+    out=[]
+    for ch,a,b in parts:
+        r=_om_reader(model,var,ch)
+        v=r[cell[0],cell[1],a:b] if len(cell)==2 else r[cell[0],a:b]
+        out+=[float(x) for x in v]
+    return out
+def _om_block(model,var,parts,y0,y1,x0,x1):
+    import numpy as np
+    blocks=[]
+    for ch,a,b in parts:
+        r=_om_reader(model,var,ch);blocks.append(np.asarray(r[y0:y1,x0:x1,a:b]))
+    return np.concatenate(blocks,axis=2)
+def grid_guess(g,la,lo):
+    """analytic cell for a point: ('yx',iy,ix) or ('flat',row,j)"""
+    if g['kind']=='ll':return ('yx',int(round((la-g['lat0'])/g['d'])),int(round(((lo-g['lon0'])%360)/g['d'])))
+    if g['kind'] in('proj','projxy'):
+        from pyproj import Transformer
+        T=Transformer.from_crs('EPSG:4326',g['proj'],always_xy=True);x,y=T.transform(lo,la)
+        if g['kind']=='proj':x0,y0=T.transform(g['ll'][1],g['ll'][0])
+        else:x0,y0=g['x0'],g['y0']
+        return ('yx',int(round((y-y0)/g['dx'])),int(round((x-x0)/g['dx'])))
+    if g['kind']=='o1280':
+        import numpy as np
+        lat,nl,start=_o1280();row=int(np.argmin(abs(lat-la)));j=int(round((lo%360)/(360/nl[row])))%nl[row];return ('flat',row,j)
+def do_wx_grid():
+    """Research only: check the grid lookup for each Open-Meteo open-data model against reference series (same model, API values),
+    searching a small window around the analytic cell. Writes data/<id>/grid_check.json."""
+    import subprocess,numpy as np
+    subprocess.run([sys.executable,'-m','pip','install','-q','omfiles','fsspec','s3fs','pyproj'],check=False)
+    A=spec['wx_grid'];W=A.get('win',4);res=[]
+    for R in A['refs']:
+        m=R['model'];g=A['grids'][m];chl=A['chunk_len'][m];parts=_om_series(m,'temperature_2m',R['utc0'],15,chl);ref=np.array(R['t'])
+        try:
+            kind,a,b=grid_guess(g,R['lat'],R['lon']);best=None
+            if kind=='yx':
+                blk=_om_block(m,'temperature_2m',parts,a-W,a+W+1,b-W,b+W+1)
+                for dy in range(blk.shape[0]):
+                    for dx_ in range(blk.shape[1]):
+                        e=float(np.nanmean(abs(blk[dy,dx_,:]-ref)))
+                        if best is None or e<best[0]:best=(e,dy-W,dx_-W)
+                e0=float(np.nanmean(abs(blk[W,W,:]-ref)))
+            else:
+                lat,nl,start=_o1280();cands=[]
+                for dr in range(-2,3):
+                    r=a+dr;jj=int(round((R['lon']%360)/(360/nl[r])))
+                    for dj in range(-2,3):cands.append((dr,dj,int(start[r]+(jj+dj)%nl[r])))
+                e0=None
+                for dr,dj,i in cands:
+                    v=np.array(_om_read(m,'temperature_2m',parts,(i,)));e=float(np.nanmean(abs(v-ref)))
+                    if dr==0 and dj==0:e0=e
+                    if best is None or e<best[0]:best=(e,dr,dj)
+            res.append(dict(model=m,ven=R['ven'],day=R['day'],pi=R['pi'],err_analytic=round(e0,3),err_best=round(best[0],3),shift=best[1:]))
+        except Exception as ex:res.append(dict(model=m,ven=R['ven'],day=R['day'],pi=R['pi'],error=repr(ex)[:300]))
+        log('grid',res[-1])
+    json.dump(res,open(os.path.join(OUT,'grid_check.json'),'w'),indent=1);done('wx_grid',refs=len(res))
 def do_wx_extra():
     """Research only. (a) read a point series from the Open-Meteo open-data bucket (ICON-D2 .om chunk) to prove the route works;
     (b) NOAA URMA Hawaii 2.5 km analyses at the Kona and 70.3 Hawaii weather points on race days; (c) BARRA2 R2 at the Taupō points."""
@@ -1541,7 +1615,7 @@ def run():
     if ONLY:   # re-run selected sources only, keeping the rest of the report
         try:REPORT['sources']=json.load(open(os.path.join(OUT,'report.json'))).get('sources',{})
         except Exception:pass
-        F={'wx_extra':do_wx_extra,'s3probe':do_s3probe,'wx_audit':do_wx_audit,'zenodo_meta':do_zenodo_meta,'s2box':do_s2box,'wx_replay':do_wx_replay,'osm_detail':do_osm_detail,'leaftype':do_leaftype,'osm':do_osm,'terrain':do_terrain,'profile':do_profile,'nz':do_nz,'ndsm':do_nz_ndsm if spec.get('region')=='nz' else None,'bayern':do_bayern,'bayern_probe':do_bayern_probe if spec.get('region')=='bayern' else None,'lod2':do_bayern_lod2 if spec.get('region')=='bayern' else None,'us_lidar':do_us_lidar if spec.get('region')=='us' else None,'us':do_us if spec.get('region')=='us' else None,'hessen':do_hessen if spec.get('region')=='hessen' else None,'hessen_box':do_hessen_box if spec.get('region')=='hessen' else None,'hessen_spots':do_hessen_spots if spec.get('region')=='hessen' else None,'us_spots':do_us_spots if spec.get('region')=='us' else None,'wales':do_wales if spec.get('region')=='wales' else None,'england':do_england if spec.get('region')=='england' else None,'france':do_france if spec.get('region')=='france' else None}
+        F={'wx_grid':do_wx_grid,'wx_extra':do_wx_extra,'s3probe':do_s3probe,'wx_audit':do_wx_audit,'zenodo_meta':do_zenodo_meta,'s2box':do_s2box,'wx_replay':do_wx_replay,'osm_detail':do_osm_detail,'leaftype':do_leaftype,'osm':do_osm,'terrain':do_terrain,'profile':do_profile,'nz':do_nz,'ndsm':do_nz_ndsm if spec.get('region')=='nz' else None,'bayern':do_bayern,'bayern_probe':do_bayern_probe if spec.get('region')=='bayern' else None,'lod2':do_bayern_lod2 if spec.get('region')=='bayern' else None,'us_lidar':do_us_lidar if spec.get('region')=='us' else None,'us':do_us if spec.get('region')=='us' else None,'hessen':do_hessen if spec.get('region')=='hessen' else None,'hessen_box':do_hessen_box if spec.get('region')=='hessen' else None,'hessen_spots':do_hessen_spots if spec.get('region')=='hessen' else None,'us_spots':do_us_spots if spec.get('region')=='us' else None,'wales':do_wales if spec.get('region')=='wales' else None,'england':do_england if spec.get('region')=='england' else None,'france':do_france if spec.get('region')=='france' else None}
         for k in ONLY:
             fn=F.get(k)
             if not fn:continue
