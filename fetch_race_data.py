@@ -1354,6 +1354,84 @@ def do_wx_replay():
         time.sleep(1)
     if not ok:return failed('wx_replay','no URL answered')
     done('wx_replay',urls=len(urls),saved=ok)
+def do_wx_extra():
+    """Research only. (a) read a point series from the Open-Meteo open-data bucket (ICON-D2 .om chunk) to prove the route works;
+    (b) NOAA URMA Hawaii 2.5 km analyses at the Kona and 70.3 Hawaii weather points on race days; (c) BARRA2 R2 at the Taupō points."""
+    import subprocess,datetime as dt
+    X=spec['wx_extra'];d=os.path.join(OUT,'x');os.makedirs(d,exist_ok=True);rep={}
+    subprocess.run([sys.executable,'-m','pip','install','-q','omfiles','fsspec','aiohttp','eccodes','cfgrib','xarray','h5netcdf','h5py','netCDF4'],check=False)
+    # (a) Open-Meteo bucket point read
+    try:
+        import fsspec,omfiles
+        a=X['om_test'];L=a['chunk_len'];t0=dt.datetime(1970,1,1)
+        fs=fsspec.filesystem('https')
+        out={}
+        for day in a['days']:
+            T=dt.datetime.fromisoformat(day);h=int((T-t0).total_seconds()//3600);ch=h//L;off=h-ch*L
+            for var in a['vars']:
+                url='https://openmeteo.s3.amazonaws.com/data/%s/%s/chunk_%d.om'%(a['model'],var,ch)
+                try:
+                    r=omfiles.OmFileReader.from_fsspec(fs,url) if hasattr(omfiles.OmFileReader,'from_fsspec') else omfiles.OmFilePyReader(fs.open(url))
+                    shp=r.shape;vals={}
+                    for nm,(la,lo) in a['pts'].items():
+                        iy=int(round((la-a['lat0'])/a['dlat']));ix=int(round((lo-a['lon0'])/a['dlon']))
+                        v=r[iy,ix,off:off+24] if len(shp)==3 else r[iy*a['nx']+ix,off:off+24]
+                        vals[nm]=[None if x!=x else round(float(x),2) for x in list(v)]
+                    out['%s|%s'%(day,var)]=dict(shape=list(shp),chunk=ch,offset=off,vals=vals)
+                except Exception as ex:out['%s|%s'%(day,var)]='err '+repr(ex)[:300]
+        json.dump(out,open(os.path.join(d,'om_test.json'),'w'),indent=1);rep['om_test']=sum(1 for v in out.values() if isinstance(v,dict))
+    except Exception as ex:rep['om_test']='err '+repr(ex)[:300]
+    # (b) URMA Hawaii
+    try:
+        import xarray as xr,numpy as np
+        u=X['urma'];res={}
+        for ven,v in u['venues'].items():
+            for day in v['days']:
+                T=dt.datetime.fromisoformat(day)+dt.timedelta(hours=5+10)   # 05:00 HST in UTC
+                rows=[]
+                for k in range(15):
+                    t=T+dt.timedelta(hours=k);url='https://noaa-urma-pds.s3.amazonaws.com/hiurma.%s/hiurma.t%02dz.2dvaranl_ndfd.grb2'%(t.strftime('%Y%m%d'),t.hour)
+                    f=os.path.join(d,'tmp.grb2');rec={}
+                    try:
+                        r=requests.get(url,headers=UA,timeout=120)
+                        if r.status_code!=200:rows.append({'url':url,'status':r.status_code});continue
+                        open(f,'wb').write(r.content)
+                        for flt in ({'typeOfLevel':'heightAboveGround','level':2},{'typeOfLevel':'heightAboveGround','level':10},{'typeOfLevel':'surface'}):
+                            try:
+                                ds=xr.open_dataset(f,engine='cfgrib',backend_kwargs={'filter_by_keys':flt,'indexpath':''})
+                                lat=ds['latitude'].values;lon=ds['longitude'].values%360
+                                for nm in ds.data_vars:
+                                    arr=ds[nm].values;rec.setdefault(nm,[])
+                                    for (la,lo) in v['pts']:
+                                        j=np.argmin((lat-la)**2+((lon-(lo%360))*np.cos(np.radians(la)))**2);rec[nm].append(round(float(arr.ravel()[j]),3))
+                            except Exception as ex:rec.setdefault('_err',[]).append(repr(ex)[:150])
+                        rows.append({'t':t.isoformat(),**rec})
+                    except Exception as ex:rows.append({'url':url,'err':repr(ex)[:200]})
+                res['%s_%s'%(ven,day)]=rows
+        json.dump(res,open(os.path.join(d,'urma.json'),'w'));rep['urma']={k:sum(1 for r in v if 't' in r) for k,v in res.items()}
+    except Exception as ex:rep['urma']='err '+repr(ex)[:300]
+    # (c) BARRA2 R2 (monthly files on the BoM open data bucket, read lazily over HTTP)
+    try:
+        import fsspec,xarray as xr,numpy as np
+        b=X['barra'];fs=fsspec.filesystem('https');res={}
+        base='https://bom-opendata-climate.s3.ap-southeast-2.amazonaws.com/'
+        for var in b['vars']:
+            lst=requests.get(base,params={'list-type':'2','prefix':b['root']+var+'/'},timeout=60).text
+            keys=re.findall(r'<Key>([^<]+\.nc)</Key>',lst)
+            for day in b['days']:
+                ym=day[:4]+day[5:7];k=[x for x in keys if ym+'-'+ym in x]
+                if not k:res['%s|%s'%(day,var)]='no file (have %s..%s)'%(keys[0][-16:] if keys else '-',keys[-1][-16:] if keys else '-');continue
+                try:
+                    ds=xr.open_dataset(fs.open(base+k[0]),engine='h5netcdf')
+                    sel=ds[var].sel(time=slice(day+'T00:00',day+'T23:59'))
+                    vals=[]
+                    for (la,lo) in b['pts']:vals.append([round(float(x),3) for x in sel.sel(lat=la,lon=lo,method='nearest').values])
+                    res['%s|%s'%(day,var)]=dict(time=[str(x)[:16] for x in sel.time.values],vals=vals)
+                except Exception as ex:res['%s|%s'%(day,var)]='err '+repr(ex)[:300]
+        json.dump(res,open(os.path.join(d,'barra.json'),'w'));rep['barra']={k:('ok' if isinstance(v,dict) else v) for k,v in res.items()}
+    except Exception as ex:rep['barra']='err '+repr(ex)[:300]
+    if os.path.exists(os.path.join(d,'tmp.grb2')):os.remove(os.path.join(d,'tmp.grb2'))
+    json.dump(rep,open(os.path.join(OUT,'wx_extra_report.json'),'w'),indent=1);done('wx_extra',**{k:(v if isinstance(v,(int,str)) else len(v)) for k,v in rep.items()})
 def do_s3probe():
     """List public weather buckets (Open-Meteo open data, NOAA RTMA/URMA, BARRA2) to see what history they hold. Research only."""
     import xml.etree.ElementTree as ET
@@ -1460,7 +1538,7 @@ def run():
     if ONLY:   # re-run selected sources only, keeping the rest of the report
         try:REPORT['sources']=json.load(open(os.path.join(OUT,'report.json'))).get('sources',{})
         except Exception:pass
-        F={'s3probe':do_s3probe,'wx_audit':do_wx_audit,'zenodo_meta':do_zenodo_meta,'s2box':do_s2box,'wx_replay':do_wx_replay,'osm_detail':do_osm_detail,'leaftype':do_leaftype,'osm':do_osm,'terrain':do_terrain,'profile':do_profile,'nz':do_nz,'ndsm':do_nz_ndsm if spec.get('region')=='nz' else None,'bayern':do_bayern,'bayern_probe':do_bayern_probe if spec.get('region')=='bayern' else None,'lod2':do_bayern_lod2 if spec.get('region')=='bayern' else None,'us_lidar':do_us_lidar if spec.get('region')=='us' else None,'us':do_us if spec.get('region')=='us' else None,'hessen':do_hessen if spec.get('region')=='hessen' else None,'hessen_box':do_hessen_box if spec.get('region')=='hessen' else None,'hessen_spots':do_hessen_spots if spec.get('region')=='hessen' else None,'us_spots':do_us_spots if spec.get('region')=='us' else None,'wales':do_wales if spec.get('region')=='wales' else None,'england':do_england if spec.get('region')=='england' else None,'france':do_france if spec.get('region')=='france' else None}
+        F={'wx_extra':do_wx_extra,'s3probe':do_s3probe,'wx_audit':do_wx_audit,'zenodo_meta':do_zenodo_meta,'s2box':do_s2box,'wx_replay':do_wx_replay,'osm_detail':do_osm_detail,'leaftype':do_leaftype,'osm':do_osm,'terrain':do_terrain,'profile':do_profile,'nz':do_nz,'ndsm':do_nz_ndsm if spec.get('region')=='nz' else None,'bayern':do_bayern,'bayern_probe':do_bayern_probe if spec.get('region')=='bayern' else None,'lod2':do_bayern_lod2 if spec.get('region')=='bayern' else None,'us_lidar':do_us_lidar if spec.get('region')=='us' else None,'us':do_us if spec.get('region')=='us' else None,'hessen':do_hessen if spec.get('region')=='hessen' else None,'hessen_box':do_hessen_box if spec.get('region')=='hessen' else None,'hessen_spots':do_hessen_spots if spec.get('region')=='hessen' else None,'us_spots':do_us_spots if spec.get('region')=='us' else None,'wales':do_wales if spec.get('region')=='wales' else None,'england':do_england if spec.get('region')=='england' else None,'france':do_france if spec.get('region')=='france' else None}
         for k in ONLY:
             fn=F.get(k)
             if not fn:continue
