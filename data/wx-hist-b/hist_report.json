@@ -1,0 +1,56 @@
+{
+ "texas": {
+  "days": 165,
+  "wanted": 165,
+  "by_src": {
+   "era5": 15,
+   "hrrr": 45,
+   "ifs": 105
+  }
+ },
+ "chattanooga": {
+  "days": 165,
+  "wanted": 165,
+  "by_src": {
+   "era5": 15,
+   "hrrr": 60,
+   "ifs": 90
+  }
+ },
+ "chattanooga703": {
+  "days": 169,
+  "wanted": 169,
+  "by_src": {
+   "era5": 15,
+   "hrrr": 63,
+   "ifs": 91
+  }
+ },
+ "bostonmar": {
+  "days": 165,
+  "wanted": 165,
+  "by_src": {
+   "era5": 15,
+   "hrrr": 45,
+   "ifs": 105
+  }
+ },
+ "chicagomar": {
+  "days": 165,
+  "wanted": 165,
+  "by_src": {
+   "era5": 15,
+   "hrrr": 60,
+   "ifs": 90
+  }
+ },
+ "nycmar": {
+  "days": 150,
+  "wanted": 150,
+  "by_src": {
+   "era5": 15,
+   "hrrr": 45,
+   "ifs": 90
+  }
+ }
+}
