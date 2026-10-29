@@ -3,45 +3,45 @@
   "days": 165,
   "wanted": 165,
   "by_src": {
+   "ifs": 90,
    "era5": 15,
-   "icon_d2": 60,
-   "ifs": 90
+   "icon_d2": 60
   }
  },
  "frankfurt": {
   "days": 166,
   "wanted": 166,
   "by_src": {
+   "ifs": 90,
    "era5": 15,
-   "icon_d2": 61,
-   "ifs": 90
+   "icon_d2": 61
   }
  },
  "berlinmar": {
   "days": 165,
   "wanted": 165,
   "by_src": {
+   "ifs": 90,
    "era5": 15,
-   "icon_d2": 60,
-   "ifs": 90
+   "icon_d2": 60
   }
  },
  "nice": {
   "days": 169,
   "wanted": 169,
   "by_src": {
-   "era5": 15,
+   "arome": 63,
    "ifs": 91,
-   "arome": 63
+   "era5": 15
   }
  },
  "nice703": {
   "days": 169,
   "wanted": 169,
   "by_src": {
-   "era5": 15,
+   "arome": 63,
    "ifs": 91,
-   "arome": 63
+   "era5": 15
   }
  }
 }
