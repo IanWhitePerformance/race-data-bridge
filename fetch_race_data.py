@@ -1396,7 +1396,7 @@ def om_geo(model,g):
         h=omfiles.OmFileReader.from_fsspec(_OMS3,'openmeteo/data/%s/static/HSURF.om'%model);G['hshape']=list(h.shape);G['hsurf']=h
     except Exception as ex:G['hsurf_err']=repr(ex)[:200]
     if g['kind'] in('proj','ll') and len(shp)>=2:
-        ny,nx=(shp[0],shp[1]) if len(shp)==3 else (None,None)
+        ny,nx=(shp[0],shp[1]) if len(shp)==3 and shp[0]>1 else (g.get('ny'),g.get('nx'))
         G['ny'],G['nx']=ny,nx
     if g['kind']=='proj':
         from pyproj import Transformer
@@ -1468,6 +1468,139 @@ def do_wx_grid():
         except Exception as ex:res.append(dict(model=m,ven=R['ven'],day=R['day'],pi=R['pi'],error=repr(ex)[:300]))
         log('grid',res[-1])
     json.dump(res,open(os.path.join(OUT,'grid_check.json'),'w'),indent=1);done('wx_grid',refs=len(res))
+def _om_vars(model):
+    try:return {p.rstrip('/').split('/')[-1] for p in _OMS3.ls('openmeteo/data/%s/'%model)}
+    except Exception:return set()
+def _om_range(model,g,var,cell,utc0,n,chl):
+    """values over n hours from utc0; chunks first, then the yearly file for years the chunks don't hold"""
+    try:return om_get(model,g,var,cell,_om_series(model,'',utc0,n,chl))
+    except FileNotFoundError:
+        t=dt.datetime.fromisoformat(utc0);y0=dt.datetime(t.year,1,1);a=int((t-y0).total_seconds()//3600)
+        r=omfiles.OmFileReader.from_fsspec(_OMS3,'openmeteo/data/%s/%s/year_%d.om'%(model,var,t.year));shp=r.shape
+        if cell[0]=='yx':v=r[cell[1],cell[2],a:a+n] if len(shp)==3 and shp[0]>1 else r[0,cell[1]*_GEO[model]['nx']+cell[2],a:a+n]
+        else:v=r[0,cell[1],a:a+n] if len(shp)==3 else r[cell[1],a:a+n]
+        out=[float(x) for x in np.asarray(v).ravel()]
+        if len(out)<n:raise FileNotFoundError('year file short')
+        return out
+def _om_point_days(model,g,rule,shift,lapse,chl,la,lo,z,tz,days,H0,H1):
+    """one course point, one model: {date: {ws,wd,wg,t,rh,ghi,p}} for local hours H0..H1"""
+    from zoneinfo import ZoneInfo
+    global omfiles
+    import omfiles
+    V=_om_vars(model);cell,h=(om_pick(model,g,la,lo,z) if rule=='pick' else (om_cells(model,g,la,lo,0)[0],None))
+    if h is None:h=om_hsurf(model,cell)
+    out={}
+    for day in days:
+        t0=dt.datetime.fromisoformat(day+'T%02d:00'%H0).replace(tzinfo=ZoneInfo(tz)).astimezone(dt.timezone.utc).replace(tzinfo=None)+dt.timedelta(hours=shift)
+        n=H1-H0+1;u0=t0.strftime('%Y-%m-%dT%H:00');rd=lambda v:_om_range(model,g,v,cell,u0,n,chl)
+        try:
+            T=rd('temperature_2m')
+            if 'wind_u_component_10m' in V:
+                U=rd('wind_u_component_10m');W=rd('wind_v_component_10m');ws=[math.hypot(a,b) for a,b in zip(U,W)];wd=[(math.degrees(math.atan2(-a,-b))+360)%360 for a,b in zip(U,W)]
+            else:ws=rd('wind_speed_10m');wd=rd('wind_direction_10m');ws=[x/3.6 if max(ws)>40 else x for x in ws]
+            if 'relative_humidity_2m' in V:RH=rd('relative_humidity_2m')
+            else:
+                D=rd('dew_point_2m');RH=[min(100,100*math.exp(17.625*d/(243.04+d))/math.exp(17.625*t/(243.04+t))) for t,d in zip(T,D)]
+            try:G=rd('wind_gusts_10m')
+            except Exception:G=[w*1.5 for w in ws]
+            try:SW=rd('shortwave_radiation')
+            except Exception:
+                try:SW=[a+b for a,b in zip(rd('direct_radiation'),rd('diffuse_radiation'))]
+                except Exception:SW=[None]*n
+            if lapse and h is not None and z is not None:T=[t+0.0065*(h-z) for t in T]
+            try:P=rd('surface_pressure');
+            except Exception:P=None
+            if P is None or (h is not None and z is not None and abs(h-z)>30):
+                try:M=rd('pressure_msl');P=[m*(1-0.0065*(z or 0)/(t+0.0065*(z or 0)+273.15))**5.257 for m,t in zip(M,T)]
+                except Exception:P=P or [1013.25*math.exp(-(z or 0)/8434)]*n
+            if any(x!=x for x in T+ws):continue
+            out[day]=dict(ws=[round(x,2) for x in ws],wd=[round(x) for x in wd],wg=[round(x,2) for x in G],t=[round(x,2) for x in T],rh=[round(x,1) for x in RH],
+                          ghi=[None if x is None or x!=x else round(x) for x in SW],p=[round(x,1) for x in P])
+        except Exception as ex:log('wx_hist',model,day,repr(ex)[:120])
+    return out
+def _urma_days(pts,days,H0,H1,tz,d):
+    """NOAA URMA Hawaii 2.5 km analyses at the points: {date: [per point dict]}"""
+    import xarray as xr
+    from zoneinfo import ZoneInfo
+    out={};lat=lon=None;idx=None
+    for day in days:
+        T0=dt.datetime.fromisoformat(day+'T%02d:00'%H0).replace(tzinfo=ZoneInfo(tz)).astimezone(dt.timezone.utc);rows=[]
+        for k in range(H1-H0+1):
+            t=T0+dt.timedelta(hours=k);url='https://noaa-urma-pds.s3.amazonaws.com/hiurma.%s/hiurma.t%02dz.2dvaranl_ndfd.grb2'%(t.strftime('%Y%m%d'),t.hour);f=os.path.join(d,'u.grb2')
+            try:
+                r=requests.get(url,headers=UA,timeout=120)
+                if r.status_code!=200:break
+                open(f,'wb').write(r.content);rec={}
+                for flt in ({'typeOfLevel':'heightAboveGround','level':2},{'typeOfLevel':'heightAboveGround','level':10},{'typeOfLevel':'surface'}):
+                    ds=xr.open_dataset(f,engine='cfgrib',backend_kwargs={'filter_by_keys':flt,'indexpath':''})
+                    if idx is None:
+                        la_=ds['latitude'].values;lo_=ds['longitude'].values%360
+                        idx=[int(np.argmin((la_-p[0])**2+((lo_-(p[1]%360))*math.cos(math.radians(p[0])))**2)) for p in pts]
+                    for nm in ds.data_vars:rec[nm]=[float(ds[nm].values.ravel()[j]) for j in idx]
+                    ds.close()
+                rows.append(rec)
+            except Exception as ex:log('urma',day,repr(ex)[:100]);break
+        if len(rows)!=H1-H0+1:continue
+        P=[]
+        for i in range(len(pts)):
+            T=[r['t2m'][i]-273.15 for r in rows];Td=[r['d2m'][i]-273.15 for r in rows]
+            P.append(dict(ws=[round(r['si10'][i],2) for r in rows],wd=[round(r['wdir10'][i]) for r in rows],wg=[round(r['i10fg'][i],2) for r in rows],t=[round(x,2) for x in T],
+                          rh=[round(min(100,100*math.exp(17.625*b/(243.04+b))/math.exp(17.625*a/(243.04+a))),1) for a,b in zip(T,Td)],p=[round(r['sp'][i]/100,1) for r in rows]))
+        out[day]=P
+    if os.path.exists(os.path.join(d,'u.grb2')):os.remove(os.path.join(d,'u.grb2'))
+    return out
+def do_wx_hist():
+    """Race-window weather history for each course from open archives (Open-Meteo open data on AWS, CC BY 4.0; NOAA URMA Hawaii, public domain),
+    written as data/<id>/hist/<race>.json in the planner's day format. Model per day: the course's chain, first model whose archive covers the day."""
+    import subprocess
+    subprocess.run([sys.executable,'-m','pip','install','-q','omfiles','fsspec','s3fs','pyproj','eccodes','cfgrib','xarray'],check=False)
+    import s3fs
+    global _OMS3
+    if _OMS3 is None:_OMS3=s3fs.S3FileSystem(anon=True)
+    A=spec['wx_hist'];d=os.path.join(OUT,'hist');os.makedirs(d,exist_ok=True);H0,H1=5,19;rep={}
+    only=[x for x in os.environ.get('HIST_ONLY','').split(',') if x] or A.get('only') or list(A['courses'])
+    for cid in only:
+        c=A['courses'][cid];mm,dd=map(int,c['md'].split('-'));days=[]
+        for y in range(A['y0'],A['y1']+1):
+            for k in range(-A['win'],A['win']+1):
+                t=dt.date(y,mm,dd)+dt.timedelta(days=k)
+                if t<=dt.date.today()-dt.timedelta(days=6):days.append(t.isoformat())
+        days+= [x for x in c.get('extra',[]) if x not in days]
+        res={};src={}
+        for link in c['chain']:
+            todo=[x for x in days if x not in res and x>=link.get('from','1900') and x<=link.get('to','2999')]
+            if not todo:continue
+            m=link['model']
+            try:
+                if m=='urma':
+                    U=_urma_days(c['pts'],todo,H0,H1,c['tz'],d)
+                    for day,P in U.items():res[day]=P;src[day]='urma'
+                else:
+                    g=A['grids'][m];R=A['rules'][m];per=[]
+                    for (la,lo,z) in c['pts']:per.append(_om_point_days(m,g,R['rule'],R['shift'],R['lapse'],A['chunk_len'][m],la,lo,z,c['tz'],todo,H0,H1))
+                    for day in todo:
+                        if all(day in p for p in per):res[day]=[p[day] for p in per];src[day]=link['tag']
+            except Exception as ex:log('wx_hist',cid,m,repr(ex)[:200])
+        # sun for URMA days (it has none): the next model in the chain at the same points
+        for day,P in res.items():
+            if src[day]=='urma' or any(x is None for p in P for x in p.get('ghi',[None])):
+                for link in c['chain']:
+                    m=link['model']
+                    if m=='urma':continue
+                    try:
+                        g=A['grids'][m];R=A['rules'][m]
+                        for i,(la,lo,z) in enumerate(c['pts']):
+                            q=_om_point_days(m,g,R['rule'],R['shift'],R['lapse'],A['chunk_len'][m],la,lo,z,c['tz'],[day],H0,H1)
+                            if day in q:P[i]['ghi']=q[day]['ghi']
+                        break
+                    except Exception:continue
+        out=dict(id=cid,h0=H0,made=time.strftime('%Y-%m-%d'),sources=sorted(set(src.values())),
+                 credit='NOAA URMA and HRRR (public domain), DWD ICON-D2 and ECMWF IFS/ERA5 (CC BY 4.0), Meteo-France AROME (Licence Ouverte 2.0), Met Office UKV (CC BY-SA 4.0), via Open-Meteo open data (CC BY 4.0)',
+                 days=[dict(date=k,h0=H0,src=src[k],pts=[{kk:(vv if kk!='ghi' else [0 if x is None else x for x in vv]) for kk,vv in p.items()} for p in res[k]]) for k in sorted(res)])
+        json.dump(out,open(os.path.join(d,cid+'.json'),'w'),separators=(',',':'))
+        rep[cid]=dict(days=len(res),wanted=len(days),by_src={s:sum(1 for v in src.values() if v==s) for s in set(src.values())})
+        log('wx_hist',cid,rep[cid]);json.dump(rep,open(os.path.join(OUT,'hist_report.json'),'w'),indent=1)
+    done('wx_hist',courses=len(rep))
 def do_wx_extra():
     """Research only. (a) read a point series from the Open-Meteo open-data bucket (ICON-D2 .om chunk) to prove the route works;
     (b) NOAA URMA Hawaii 2.5 km analyses at the Kona and 70.3 Hawaii weather points on race days; (c) BARRA2 R2 at the Taupō points."""
@@ -1655,7 +1788,7 @@ def run():
     if ONLY:   # re-run selected sources only, keeping the rest of the report
         try:REPORT['sources']=json.load(open(os.path.join(OUT,'report.json'))).get('sources',{})
         except Exception:pass
-        F={'wx_grid':do_wx_grid,'wx_extra':do_wx_extra,'s3probe':do_s3probe,'wx_audit':do_wx_audit,'zenodo_meta':do_zenodo_meta,'s2box':do_s2box,'wx_replay':do_wx_replay,'osm_detail':do_osm_detail,'leaftype':do_leaftype,'osm':do_osm,'terrain':do_terrain,'profile':do_profile,'nz':do_nz,'ndsm':do_nz_ndsm if spec.get('region')=='nz' else None,'bayern':do_bayern,'bayern_probe':do_bayern_probe if spec.get('region')=='bayern' else None,'lod2':do_bayern_lod2 if spec.get('region')=='bayern' else None,'us_lidar':do_us_lidar if spec.get('region')=='us' else None,'us':do_us if spec.get('region')=='us' else None,'hessen':do_hessen if spec.get('region')=='hessen' else None,'hessen_box':do_hessen_box if spec.get('region')=='hessen' else None,'hessen_spots':do_hessen_spots if spec.get('region')=='hessen' else None,'us_spots':do_us_spots if spec.get('region')=='us' else None,'wales':do_wales if spec.get('region')=='wales' else None,'england':do_england if spec.get('region')=='england' else None,'france':do_france if spec.get('region')=='france' else None}
+        F={'wx_hist':do_wx_hist,'wx_grid':do_wx_grid,'wx_extra':do_wx_extra,'s3probe':do_s3probe,'wx_audit':do_wx_audit,'zenodo_meta':do_zenodo_meta,'s2box':do_s2box,'wx_replay':do_wx_replay,'osm_detail':do_osm_detail,'leaftype':do_leaftype,'osm':do_osm,'terrain':do_terrain,'profile':do_profile,'nz':do_nz,'ndsm':do_nz_ndsm if spec.get('region')=='nz' else None,'bayern':do_bayern,'bayern_probe':do_bayern_probe if spec.get('region')=='bayern' else None,'lod2':do_bayern_lod2 if spec.get('region')=='bayern' else None,'us_lidar':do_us_lidar if spec.get('region')=='us' else None,'us':do_us if spec.get('region')=='us' else None,'hessen':do_hessen if spec.get('region')=='hessen' else None,'hessen_box':do_hessen_box if spec.get('region')=='hessen' else None,'hessen_spots':do_hessen_spots if spec.get('region')=='hessen' else None,'us_spots':do_us_spots if spec.get('region')=='us' else None,'wales':do_wales if spec.get('region')=='wales' else None,'england':do_england if spec.get('region')=='england' else None,'france':do_france if spec.get('region')=='france' else None}
         for k in ONLY:
             fn=F.get(k)
             if not fn:continue
