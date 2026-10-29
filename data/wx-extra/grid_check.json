@@ -4,419 +4,1040 @@
   "ven": "tx",
   "day": "2024-04-27",
   "pi": 0,
-  "error": "IndexError('Too many indices for array')"
+  "shape": [
+   1059,
+   1799,
+   145
+  ],
+  "hshape": [
+   1059,
+   1799
+  ],
+  "cell": [
+   "yx",
+   221,
+   966
+  ],
+  "h": 43.0,
+  "z": 41.0,
+  "e-2": 0.969,
+  "e-1": 0.599,
+  "e+0": 0.203,
+  "e+1": 0.774,
+  "e+2": 1.343
  },
  {
   "model": "ncep_hrrr_conus",
   "ven": "tx",
   "day": "2024-04-27",
   "pi": 1,
-  "error": "IndexError('Too many indices for array')"
+  "shape": [
+   1059,
+   1799,
+   145
+  ],
+  "hshape": [
+   1059,
+   1799
+  ],
+  "cell": [
+   "yx",
+   217,
+   967
+  ],
+  "h": 40.0,
+  "z": 40.0,
+  "e-2": 0.843,
+  "e-1": 0.477,
+  "e+0": 0.193,
+  "e+1": 0.69,
+  "e+2": 1.12
  },
  {
   "model": "ncep_hrrr_conus",
   "ven": "tx",
   "day": "2024-04-27",
   "pi": 2,
-  "error": "IndexError('Too many indices for array')"
+  "shape": [
+   1059,
+   1799,
+   145
+  ],
+  "hshape": [
+   1059,
+   1799
+  ],
+  "cell": [
+   "yx",
+   212,
+   967
+  ],
+  "h": 30.0,
+  "z": 30.0,
+  "e-2": 0.727,
+  "e-1": 0.56,
+  "e+0": 0.413,
+  "e+1": 0.663,
+  "e+2": 1.047
  },
  {
   "model": "ncep_hrrr_conus",
   "ven": "tx",
   "day": "2024-04-27",
   "pi": 3,
-  "error": "IndexError('Too many indices for array')"
+  "shape": [
+   1059,
+   1799,
+   145
+  ],
+  "hshape": [
+   1059,
+   1799
+  ],
+  "cell": [
+   "yx",
+   207,
+   968
+  ],
+  "h": 22.0,
+  "z": 22.0,
+  "e-2": 0.74,
+  "e-1": 0.51,
+  "e+0": 0.133,
+  "e+1": 0.447,
+  "e+2": 0.83
  },
  {
   "model": "ncep_hrrr_conus",
   "ven": "cha",
   "day": "2025-09-28",
   "pi": 0,
-  "err_analytic": 0.08,
-  "err_best": 0.08,
-  "shift": [
-   0,
-   0
-  ]
+  "shape": [
+   1059,
+   1799,
+   145
+  ],
+  "hshape": [
+   1059,
+   1799
+  ],
+  "cell": [
+   "yx",
+   425,
+   1269
+  ],
+  "h": 207.0,
+  "z": 200.0,
+  "e-2": 2.004,
+  "e-1": 1.061,
+  "e+0": 0.182,
+  "e+1": 1.226,
+  "e+2": 2.575
  },
  {
   "model": "ncep_hrrr_conus",
   "ven": "cha",
   "day": "2025-09-28",
   "pi": 1,
-  "err_analytic": 0.07,
-  "err_best": 0.07,
-  "shift": [
-   0,
-   0
-  ]
+  "shape": [
+   1059,
+   1799,
+   145
+  ],
+  "hshape": [
+   1059,
+   1799
+  ],
+  "cell": [
+   "yx",
+   430,
+   1271
+  ],
+  "h": 217.0,
+  "z": 219.0,
+  "e-2": 1.938,
+  "e-1": 1.028,
+  "e+0": 0.134,
+  "e+1": 1.344,
+  "e+2": 2.671
  },
  {
   "model": "ncep_hrrr_conus",
   "ven": "cha",
   "day": "2025-09-28",
   "pi": 2,
-  "err_analytic": 0.23,
-  "err_best": 0.227,
-  "shift": [
-   4,
-   4
-  ]
+  "shape": [
+   1059,
+   1799,
+   145
+  ],
+  "hshape": [
+   1059,
+   1799
+  ],
+  "cell": [
+   "yx",
+   435,
+   1272
+  ],
+  "h": 230.0,
+  "z": 224.0,
+  "e-2": 1.93,
+  "e-1": 1.062,
+  "e+0": 0.37,
+  "e+1": 1.19,
+  "e+2": 2.431
  },
  {
   "model": "ncep_hrrr_conus",
   "ven": "tx",
   "day": "2025-04-26",
   "pi": 0,
-  "err_analytic": 0.073,
-  "err_best": 0.073,
-  "shift": [
-   0,
-   0
-  ]
+  "shape": [
+   1059,
+   1799,
+   145
+  ],
+  "hshape": [
+   1059,
+   1799
+  ],
+  "cell": [
+   "yx",
+   221,
+   966
+  ],
+  "h": 43.0,
+  "z": 41.0,
+  "e-2": 1.662,
+  "e-1": 0.896,
+  "e+0": 0.191,
+  "e+1": 1.069,
+  "e+2": 2.078
  },
  {
   "model": "ncep_hrrr_conus",
   "ven": "tx",
   "day": "2025-04-26",
   "pi": 1,
-  "err_analytic": 0.027,
-  "err_best": 0.027,
-  "shift": [
-   0,
-   0
-  ]
+  "shape": [
+   1059,
+   1799,
+   145
+  ],
+  "hshape": [
+   1059,
+   1799
+  ],
+  "cell": [
+   "yx",
+   217,
+   967
+  ],
+  "h": 40.0,
+  "z": 40.0,
+  "e-2": 1.777,
+  "e-1": 0.897,
+  "e+0": 0.207,
+  "e+1": 1.103,
+  "e+2": 2.127
  },
  {
   "model": "ncep_hrrr_conus",
   "ven": "tx",
   "day": "2025-04-26",
   "pi": 2,
-  "err_analytic": 0.023,
-  "err_best": 0.023,
-  "shift": [
-   0,
-   0
-  ]
+  "shape": [
+   1059,
+   1799,
+   145
+  ],
+  "hshape": [
+   1059,
+   1799
+  ],
+  "cell": [
+   "yx",
+   212,
+   967
+  ],
+  "h": 30.0,
+  "z": 30.0,
+  "e-2": 1.717,
+  "e-1": 0.953,
+  "e+0": 0.19,
+  "e+1": 0.983,
+  "e+2": 1.973
  },
  {
   "model": "ncep_hrrr_conus",
   "ven": "tx",
   "day": "2025-04-26",
   "pi": 3,
-  "err_analytic": 0.033,
-  "err_best": 0.033,
-  "shift": [
-   0,
-   0
-  ]
+  "shape": [
+   1059,
+   1799,
+   145
+  ],
+  "hshape": [
+   1059,
+   1799
+  ],
+  "cell": [
+   "yx",
+   207,
+   968
+  ],
+  "h": 22.0,
+  "z": 22.0,
+  "e-2": 1.673,
+  "e-1": 1.003,
+  "e+0": 0.27,
+  "e+1": 0.773,
+  "e+2": 1.63
  },
  {
   "model": "ukmo_uk_deterministic_2km",
   "ven": "wal",
   "day": "2024-09-22",
   "pi": 0,
-  "error": "IndexError('Too many indices for array')"
+  "error": "TypeError(\"unsupported operand type(s) for -: 'NoneType' and 'int'\")"
  },
  {
   "model": "ukmo_uk_deterministic_2km",
   "ven": "wal",
   "day": "2024-09-22",
   "pi": 1,
-  "error": "IndexError('Too many indices for array')"
+  "error": "TypeError(\"unsupported operand type(s) for -: 'NoneType' and 'int'\")"
  },
  {
   "model": "ukmo_uk_deterministic_2km",
   "ven": "wal",
   "day": "2024-09-22",
   "pi": 2,
-  "error": "IndexError('Too many indices for array')"
+  "error": "TypeError(\"unsupported operand type(s) for -: 'NoneType' and 'int'\")"
  },
  {
   "model": "ukmo_uk_deterministic_2km",
   "ven": "wal",
   "day": "2024-09-22",
   "pi": 3,
-  "error": "IndexError('Too many indices for array')"
+  "error": "TypeError(\"unsupported operand type(s) for -: 'NoneType' and 'int'\")"
  },
  {
   "model": "ukmo_uk_deterministic_2km",
   "ven": "wey703",
   "day": "2024-09-15",
   "pi": 0,
-  "error": "IndexError('Too many indices for array')"
+  "error": "TypeError(\"unsupported operand type(s) for -: 'NoneType' and 'int'\")"
  },
  {
   "model": "ukmo_uk_deterministic_2km",
   "ven": "wey703",
   "day": "2024-09-15",
   "pi": 1,
-  "error": "IndexError('Too many indices for array')"
+  "error": "TypeError(\"unsupported operand type(s) for -: 'NoneType' and 'int'\")"
  },
  {
   "model": "ukmo_uk_deterministic_2km",
   "ven": "wey703",
   "day": "2024-09-15",
   "pi": 2,
-  "error": "IndexError('Too many indices for array')"
+  "error": "TypeError(\"unsupported operand type(s) for -: 'NoneType' and 'int'\")"
  },
  {
   "model": "ukmo_uk_deterministic_2km",
   "ven": "wal",
   "day": "2025-09-21",
   "pi": 0,
-  "err_analytic": 1.08,
-  "err_best": 0.603,
-  "shift": [
-   2,
-   -4
-  ]
+  "error": "TypeError(\"unsupported operand type(s) for -: 'NoneType' and 'int'\")"
  },
  {
   "model": "ukmo_uk_deterministic_2km",
   "ven": "wal",
   "day": "2025-09-21",
   "pi": 1,
-  "err_analytic": 0.75,
-  "err_best": 0.683,
-  "shift": [
-   1,
-   3
-  ]
+  "error": "TypeError(\"unsupported operand type(s) for -: 'NoneType' and 'int'\")"
  },
  {
   "model": "ukmo_uk_deterministic_2km",
   "ven": "wal",
   "day": "2025-09-21",
   "pi": 2,
-  "err_analytic": 0.79,
-  "err_best": 0.627,
-  "shift": [
-   3,
-   -3
-  ]
+  "error": "TypeError(\"unsupported operand type(s) for -: 'NoneType' and 'int'\")"
  },
  {
   "model": "ukmo_uk_deterministic_2km",
   "ven": "wal",
   "day": "2025-09-21",
   "pi": 3,
-  "err_analytic": 0.927,
-  "err_best": 0.507,
-  "shift": [
-   4,
-   4
-  ]
+  "error": "TypeError(\"unsupported operand type(s) for -: 'NoneType' and 'int'\")"
  },
  {
   "model": "meteofrance_arome_france_hd",
   "ven": "nice",
   "day": "2024-06-16",
   "pi": 0,
-  "error": "IndexError('Too many indices for array')"
+  "shape": [
+   1791,
+   2801,
+   108
+  ],
+  "hshape": [
+   1791,
+   2801
+  ],
+  "cell": [
+   "yx",
+   620,
+   1927
+  ],
+  "h": 18.0,
+  "z": 15.0,
+  "e-2": 1.209,
+  "e-1": 0.937,
+  "e+0": 0.563,
+  "e+1": 0.027,
+  "e+2": 0.627
  },
  {
   "model": "meteofrance_arome_france_hd",
   "ven": "nice",
   "day": "2024-06-16",
   "pi": 1,
-  "error": "IndexError('Too many indices for array')"
+  "shape": [
+   1791,
+   2801,
+   108
+  ],
+  "hshape": [
+   1791,
+   2801
+  ],
+  "cell": [
+   "yx",
+   622,
+   1912
+  ],
+  "h": 290.0,
+  "z": 301.0,
+  "e-2": 1.564,
+  "e-1": 1.069,
+  "e+0": 0.771,
+  "e+1": 0.14,
+  "e+2": 0.852
  },
  {
   "model": "meteofrance_arome_france_hd",
   "ven": "nice",
   "day": "2024-06-16",
   "pi": 2,
-  "error": "IndexError('Too many indices for array')"
+  "shape": [
+   1791,
+   2801,
+   108
+  ],
+  "hshape": [
+   1791,
+   2801
+  ],
+  "cell": [
+   "yx",
+   624,
+   1893
+  ],
+  "h": 1103.0,
+  "z": 1103.0,
+  "e-2": 2.097,
+  "e-1": 1.55,
+  "e+0": 0.99,
+  "e+1": 0.03,
+  "e+2": 1.04
  },
  {
   "model": "meteofrance_arome_france_hd",
   "ven": "nice",
   "day": "2024-06-16",
   "pi": 3,
-  "error": "IndexError('Too many indices for array')"
+  "shape": [
+   1791,
+   2801,
+   108
+  ],
+  "hshape": [
+   1791,
+   2801
+  ],
+  "cell": [
+   "yx",
+   628,
+   1879
+  ],
+  "h": 1398.0,
+  "z": 1393.0,
+  "e-2": 2.576,
+  "e-1": 1.906,
+  "e+0": 1.178,
+  "e+1": 0.298,
+  "e+2": 1.194
  },
  {
   "model": "meteofrance_arome_france_hd",
   "ven": "nice",
   "day": "2024-06-16",
   "pi": 4,
-  "error": "IndexError('Too many indices for array')"
+  "shape": [
+   1791,
+   2801,
+   108
+  ],
+  "hshape": [
+   1791,
+   2801
+  ],
+  "cell": [
+   "yx",
+   629,
+   1896
+  ],
+  "h": 665.0,
+  "z": 700.0,
+  "e-2": 1.962,
+  "e-1": 1.375,
+  "e+0": 0.736,
+  "e+1": 0.178,
+  "e+2": 1.028
  },
  {
   "model": "meteofrance_arome_france_hd",
   "ven": "nice703",
   "day": "2025-06-29",
   "pi": 0,
-  "err_analytic": 0.54,
-  "err_best": 0.48,
-  "shift": [
-   -1,
-   0
-  ]
+  "shape": [
+   1791,
+   2801,
+   108
+  ],
+  "hshape": [
+   1791,
+   2801
+  ],
+  "cell": [
+   "yx",
+   620,
+   1927
+  ],
+  "h": 18.0,
+  "z": 15.0,
+  "e-2": 1.209,
+  "e-1": 0.801,
+  "e+0": 0.574,
+  "e+1": 0.025,
+  "e+2": 0.595
  },
  {
   "model": "meteofrance_arome_france_hd",
   "ven": "nice703",
   "day": "2025-06-29",
   "pi": 1,
-  "err_analytic": 0.93,
-  "err_best": 0.753,
-  "shift": [
-   -1,
-   0
-  ]
+  "shape": [
+   1791,
+   2801,
+   108
+  ],
+  "hshape": [
+   1791,
+   2801
+  ],
+  "cell": [
+   "yx",
+   622,
+   1912
+  ],
+  "h": 290.0,
+  "z": 301.0,
+  "e-2": 1.961,
+  "e-1": 1.413,
+  "e+0": 0.78,
+  "e+1": 0.245,
+  "e+2": 0.745
  },
  {
   "model": "meteofrance_arome_france_hd",
   "ven": "nice703",
   "day": "2025-06-29",
   "pi": 2,
-  "err_analytic": 0.967,
-  "err_best": 0.55,
-  "shift": [
-   -4,
-   1
-  ]
+  "shape": [
+   1791,
+   2801,
+   108
+  ],
+  "hshape": [
+   1791,
+   2801
+  ],
+  "cell": [
+   "yx",
+   628,
+   1907
+  ],
+  "h": 898.0,
+  "z": 899.0,
+  "e-2": 1.785,
+  "e-1": 1.287,
+  "e+0": 0.717,
+  "e+1": 0.026,
+  "e+2": 0.775
  },
  {
   "model": "dwd_icon_d2",
   "ven": "roth",
   "day": "2024-07-07",
   "pi": 0,
-  "error": "IndexError('Too many indices for array')"
+  "shape": [
+   746,
+   1215,
+   121
+  ],
+  "hshape": [
+   746,
+   1215
+  ],
+  "cell": [
+   "yx",
+   305,
+   751
+  ],
+  "h": 343.0,
+  "z": 342.0,
+  "e-2": 1.23,
+  "e-1": 0.887,
+  "e+0": 0.487,
+  "e+1": 0.157,
+  "e+2": 0.637
  },
  {
   "model": "dwd_icon_d2",
   "ven": "roth",
   "day": "2024-07-07",
   "pi": 1,
-  "error": "IndexError('Too many indices for array')"
+  "shape": [
+   746,
+   1215,
+   121
+  ],
+  "hshape": [
+   746,
+   1215
+  ],
+  "cell": [
+   "yx",
+   299,
+   755
+  ],
+  "h": 379.0,
+  "z": 379.0,
+  "e-2": 0.997,
+  "e-1": 0.667,
+  "e+0": 0.373,
+  "e+1": 0.08,
+  "e+2": 0.503
  },
  {
   "model": "dwd_icon_d2",
   "ven": "roth",
   "day": "2024-07-07",
   "pi": 2,
-  "error": "IndexError('Too many indices for array')"
+  "shape": [
+   746,
+   1215,
+   121
+  ],
+  "hshape": [
+   746,
+   1215
+  ],
+  "cell": [
+   "yx",
+   293,
+   765
+  ],
+  "h": 439.0,
+  "z": 423.0,
+  "e-2": 0.998,
+  "e-1": 0.718,
+  "e+0": 0.368,
+  "e+1": 0.015,
+  "e+2": 0.429
  },
  {
   "model": "dwd_icon_d2",
   "ven": "roth",
   "day": "2024-07-07",
   "pi": 3,
-  "error": "IndexError('Too many indices for array')"
+  "shape": [
+   746,
+   1215,
+   121
+  ],
+  "hshape": [
+   746,
+   1215
+  ],
+  "cell": [
+   "yx",
+   298,
+   754
+  ],
+  "h": 415.0,
+  "z": 415.0,
+  "e-2": 1.017,
+  "e-1": 0.69,
+  "e+0": 0.38,
+  "e+1": 0.05,
+  "e+2": 0.453
  },
  {
   "model": "dwd_icon_d2",
   "ven": "fra",
   "day": "2025-06-29",
   "pi": 0,
-  "err_analytic": 1.22,
-  "err_best": 0.907,
-  "shift": [
-   2,
-   -3
-  ]
+  "shape": [
+   746,
+   1215,
+   121
+  ],
+  "hshape": [
+   746,
+   1215
+  ],
+  "cell": [
+   "yx",
+   343,
+   629
+  ],
+  "h": 126.0,
+  "z": 124.0,
+  "e-2": 3.336,
+  "e-1": 2.387,
+  "e+0": 1.239,
+  "e+1": 0.192,
+  "e+2": 1.318
  },
  {
   "model": "dwd_icon_d2",
   "ven": "fra",
   "day": "2025-06-29",
   "pi": 1,
-  "err_analytic": 0.917,
-  "err_best": 0.813,
-  "shift": [
-   -4,
-   -4
-  ]
+  "shape": [
+   746,
+   1215,
+   121
+  ],
+  "hshape": [
+   746,
+   1215
+  ],
+  "cell": [
+   "yx",
+   346,
+   630
+  ],
+  "h": 106.0,
+  "z": 105.0,
+  "e-2": 2.676,
+  "e-1": 1.817,
+  "e+0": 0.947,
+  "e+1": 0.139,
+  "e+2": 1.056
  },
  {
   "model": "dwd_icon_d2",
   "ven": "fra",
   "day": "2025-06-29",
   "pi": 2,
-  "err_analytic": 1.137,
-  "err_best": 0.62,
-  "shift": [
+  "shape": [
+   746,
+   1215,
+   121
+  ],
+  "hshape": [
+   746,
+   1215
+  ],
+  "cell": [
+   "yx",
+   351,
+   635
+  ],
+  "h": 112.0,
+  "z": 112.0,
+  "e-2": 3.51,
+  "e-1": 2.52,
+  "e+0": 1.377,
+  "e+1": 0.467,
+  "e+2": 1.36
+ },
+ {
+  "model": "dwd_icon_d2",
+  "ven": "fra",
+  "day": "2025-06-29",
+  "pi": 3,
+  "shape": [
+   746,
+   1215,
+   121
+  ],
+  "hshape": [
+   746,
+   1215
+  ],
+  "cell": [
+   "yx",
+   356,
+   642
+  ],
+  "h": 193.0,
+  "z": 202.0,
+  "e-2": 3.002,
+  "e-1": 2.127,
+  "e+0": 1.114,
+  "e+1": 0.033,
+  "e+2": 1.279
+ },
+ {
+  "model": "ecmwf_ifs",
+  "ven": "kona",
+  "day": "2024-10-26",
+  "pi": 0,
+  "shape": [
    1,
-   -4
-  ]
- },
- {
-  "model": "dwd_icon_d2",
-  "ven": "fra",
-  "day": "2025-06-29",
-  "pi": 3,
-  "err_analytic": 0.933,
-  "err_best": 0.79,
-  "shift": [
-   -4,
-   -2
-  ]
- },
- {
-  "model": "ecmwf_ifs",
-  "ven": "kona",
-  "day": "2024-10-26",
-  "pi": 0,
-  "error": "IndexError('Index 2012244 is out of bounds for axis with size 1')"
+   6599680,
+   504
+  ],
+  "hshape": [
+   1,
+   6599680
+  ],
+  "cell": [
+   "f",
+   2024301
+  ],
+  "h": 552.0,
+  "z": 10.0,
+  "e-2": 1.072,
+  "e-1": 0.618,
+  "e+0": 0.024,
+  "e+1": 0.598,
+  "e+2": 1.058
  },
  {
   "model": "ecmwf_ifs",
   "ven": "kona",
   "day": "2024-10-26",
   "pi": 1,
-  "error": "IndexError('Index 2008233 is out of bounds for axis with size 1')"
+  "shape": [
+   1,
+   6599680,
+   504
+  ],
+  "hshape": [
+   1,
+   6599680
+  ],
+  "cell": [
+   "f",
+   2012246
+  ],
+  "h": 528.0,
+  "z": 28.0,
+  "e-2": 1.677,
+  "e-1": 1.197,
+  "e+0": 1.01,
+  "e+1": 1.203,
+  "e+2": 1.247
  },
  {
   "model": "ecmwf_ifs",
   "ven": "kona",
   "day": "2024-10-26",
   "pi": 2,
-  "error": "IndexError('Index 1996228 is out of bounds for axis with size 1')"
+  "shape": [
+   1,
+   6599680,
+   504
+  ],
+  "hshape": [
+   1,
+   6599680
+  ],
+  "cell": [
+   "f",
+   2004231
+  ],
+  "h": 157.0,
+  "z": 34.0,
+  "e-2": 1.423,
+  "e-1": 0.893,
+  "e+0": 0.033,
+  "e+1": 0.907,
+  "e+2": 1.477
  },
  {
   "model": "ecmwf_ifs",
   "ven": "kona",
   "day": "2024-10-26",
   "pi": 3,
-  "error": "IndexError('Index 1988244 is out of bounds for axis with size 1')"
+  "shape": [
+   1,
+   6599680,
+   504
+  ],
+  "hshape": [
+   1,
+   6599680
+  ],
+  "cell": [
+   "f",
+   2000229
+  ],
+  "h": 347.0,
+  "z": 16.0,
+  "e-2": 1.541,
+  "e-1": 0.9,
+  "e+0": 0.02,
+  "e+1": 0.949,
+  "e+2": 1.629
  },
  {
   "model": "ecmwf_ifs",
   "ven": "kona",
   "day": "2024-10-26",
   "pi": 4,
-  "error": "IndexError('Index 1980275 is out of bounds for axis with size 1')"
+  "shape": [
+   1,
+   6599680,
+   504
+  ],
+  "hshape": [
+   1,
+   6599680
+  ],
+  "cell": [
+   "f",
+   1988245
+  ],
+  "h": 88.0,
+  "z": 220.0,
+  "e-2": 0.953,
+  "e-1": 0.852,
+  "e+0": 0.831,
+  "e+1": 0.957,
+  "e+2": 1.082
  },
  {
   "model": "ecmwf_ifs",
   "ven": "taupo",
   "day": "2025-03-01",
   "pi": 0,
-  "error": "IndexError('Index 5516294 is out of bounds for axis with size 1')"
+  "shape": [
+   1,
+   6599680,
+   504
+  ],
+  "hshape": [
+   1,
+   6599680
+  ],
+  "cell": [
+   "f",
+   5519239
+  ],
+  "h": 445.0,
+  "z": 373.0,
+  "e-2": 0.768,
+  "e-1": 0.556,
+  "e+0": 0.636,
+  "e+1": 1.039,
+  "e+2": 1.647
  },
  {
   "model": "ecmwf_ifs",
   "ven": "taupo",
   "day": "2025-03-01",
   "pi": 1,
-  "error": "IndexError('Index 5510398 is out of bounds for axis with size 1')"
+  "shape": [
+   1,
+   6599680,
+   504
+  ],
+  "hshape": [
+   1,
+   6599680
+  ],
+  "cell": [
+   "f",
+   5513350
+  ],
+  "h": 463.0,
+  "z": 454.0,
+  "e-2": 1.169,
+  "e-1": 0.752,
+  "e+0": 0.319,
+  "e+1": 0.532,
+  "e+2": 1.275
  },
  {
   "model": "ecmwf_ifs",
   "ven": "taupo",
   "day": "2025-03-01",
   "pi": 2,
-  "error": "IndexError('Index 5504488 is out of bounds for axis with size 1')"
+  "shape": [
+   1,
+   6599680,
+   504
+  ],
+  "hshape": [
+   1,
+   6599680
+  ],
+  "cell": [
+   "f",
+   5513351
+  ],
+  "h": 345.0,
+  "z": 317.0,
+  "e-2": 1.087,
+  "e-1": 0.635,
+  "e+0": 0.253,
+  "e+1": 0.767,
+  "e+2": 1.515
  },
  {
   "model": "ecmwf_ifs",
   "ven": "taupo",
   "day": "2025-03-01",
   "pi": 3,
-  "error": "IndexError('Index 5510400 is out of bounds for axis with size 1')"
+  "shape": [
+   1,
+   6599680,
+   504
+  ],
+  "hshape": [
+   1,
+   6599680
+  ],
+  "cell": [
+   "f",
+   5513351
+  ],
+  "h": 345.0,
+  "z": 314.0,
+  "e-2": 1.017,
+  "e-1": 0.64,
+  "e+0": 0.364,
+  "e+1": 0.828,
+  "e+2": 1.531
  },
  {
   "model": "ecmwf_ifs",
@@ -458,183 +1079,454 @@
   "ven": "tx",
   "day": "2023-04-22",
   "pi": 0,
-  "error": "IndexError('Index 1455977 is out of bounds for axis with size 1')"
+  "shape": [
+   1,
+   6599680,
+   504
+  ],
+  "hshape": [
+   1,
+   6599680
+  ],
+  "cell": [
+   "f",
+   1462814
+  ],
+  "h": 43.0,
+  "z": 41.0,
+  "e-2": 2.047,
+  "e-1": 1.077,
+  "e+0": 0.124,
+  "e+1": 1.139,
+  "e+2": 2.274
  },
  {
   "model": "ecmwf_ifs",
   "ven": "tx",
   "day": "2023-04-22",
   "pi": 1,
-  "error": "IndexError('Index 1459392 is out of bounds for axis with size 1')"
+  "shape": [
+   1,
+   6599680,
+   504
+  ],
+  "hshape": [
+   1,
+   6599680
+  ],
+  "cell": [
+   "f",
+   1469663
+  ],
+  "h": 41.0,
+  "z": 40.0,
+  "e-2": 1.919,
+  "e-1": 0.969,
+  "e+0": 0.159,
+  "e+1": 1.185,
+  "e+2": 2.328
  },
  {
   "model": "ecmwf_ifs",
   "ven": "tx",
   "day": "2023-04-22",
   "pi": 2,
-  "error": "IndexError('Index 1466235 is out of bounds for axis with size 1')"
+  "shape": [
+   1,
+   6599680,
+   504
+  ],
+  "hshape": [
+   1,
+   6599680
+  ],
+  "cell": [
+   "f",
+   1469665
+  ],
+  "h": 31.0,
+  "z": 30.0,
+  "e-2": 1.921,
+  "e-1": 1.055,
+  "e+0": 0.139,
+  "e+1": 1.035,
+  "e+2": 2.131
  },
  {
   "model": "ecmwf_ifs",
   "ven": "tx",
   "day": "2023-04-22",
   "pi": 3,
-  "error": "IndexError('Index 1473093 is out of bounds for axis with size 1')"
+  "shape": [
+   1,
+   6599680,
+   504
+  ],
+  "hshape": [
+   1,
+   6599680
+  ],
+  "cell": [
+   "f",
+   1476531
+  ],
+  "h": 21.0,
+  "z": 22.0,
+  "e-2": 1.81,
+  "e-1": 0.985,
+  "e+0": 0.26,
+  "e+1": 0.932,
+  "e+2": 1.952
  },
  {
   "model": "copernicus_era5",
   "ven": "kona",
   "day": "2024-10-26",
   "pi": 0,
-  "err_analytic": 0.077,
-  "err_best": 0.077,
-  "shift": [
-   0,
-   0
-  ]
+  "shape": [
+   721,
+   1440,
+   504
+  ],
+  "hshape": [
+   721,
+   1440
+  ],
+  "cell": [
+   "yx",
+   440,
+   97
+  ],
+  "h": 592.0,
+  "z": 10.0,
+  "e-2": 2.656,
+  "e-1": 2.73,
+  "e+0": 2.783,
+  "e+1": 2.866,
+  "e+2": 2.916
  },
  {
   "model": "copernicus_era5",
   "ven": "kona",
   "day": "2024-10-26",
   "pi": 1,
-  "err_analytic": 0.177,
-  "err_best": 0.177,
-  "shift": [
-   0,
-   0
-  ]
+  "shape": [
+   721,
+   1440,
+   504
+  ],
+  "hshape": [
+   721,
+   1440
+  ],
+  "cell": [
+   "yx",
+   440,
+   97
+  ],
+  "h": 592.0,
+  "z": 28.0,
+  "e-2": 2.639,
+  "e-1": 2.713,
+  "e+0": 2.766,
+  "e+1": 2.849,
+  "e+2": 2.899
  },
  {
   "model": "copernicus_era5",
   "ven": "kona",
   "day": "2024-10-26",
   "pi": 2,
-  "err_analytic": 3.633,
-  "err_best": 0.733,
-  "shift": [
-   3,
-   -4
-  ]
+  "shape": [
+   721,
+   1440,
+   504
+  ],
+  "hshape": [
+   721,
+   1440
+  ],
+  "cell": [
+   "yx",
+   440,
+   97
+  ],
+  "h": 592.0,
+  "z": 34.0,
+  "e-2": 0.741,
+  "e-1": 0.479,
+  "e+0": 0.024,
+  "e+1": 0.495,
+  "e+2": 0.725
  },
  {
   "model": "copernicus_era5",
   "ven": "kona",
   "day": "2024-10-26",
   "pi": 3,
-  "err_analytic": 3.733,
-  "err_best": 0.8,
-  "shift": [
-   3,
-   -4
-  ]
+  "shape": [
+   721,
+   1440,
+   504
+  ],
+  "hshape": [
+   721,
+   1440
+  ],
+  "cell": [
+   "yx",
+   440,
+   97
+  ],
+  "h": 592.0,
+  "z": 16.0,
+  "e-2": 0.738,
+  "e-1": 0.482,
+  "e+0": 0.019,
+  "e+1": 0.494,
+  "e+2": 0.729
  },
  {
   "model": "copernicus_era5",
   "ven": "kona",
   "day": "2024-10-26",
   "pi": 4,
-  "err_analytic": 1.193,
-  "err_best": 0.287,
-  "shift": [
-   2,
-   -3
-  ]
+  "shape": [
+   721,
+   1440,
+   504
+  ],
+  "hshape": [
+   721,
+   1440
+  ],
+  "cell": [
+   "yx",
+   440,
+   97
+  ],
+  "h": 592.0,
+  "z": 220.0,
+  "e-2": 0.743,
+  "e-1": 0.477,
+  "e+0": 0.027,
+  "e+1": 0.495,
+  "e+2": 0.724
  },
  {
   "model": "copernicus_era5",
   "ven": "taupo",
   "day": "2025-03-01",
   "pi": 0,
-  "err_analytic": 1.127,
-  "err_best": 0.353,
-  "shift": [
-   2,
-   -1
-  ]
+  "shape": [
+   721,
+   1440,
+   504
+  ],
+  "hshape": [
+   721,
+   1440
+  ],
+  "cell": [
+   "yx",
+   206,
+   1423
+  ],
+  "h": 442.0,
+  "z": 373.0,
+  "e-2": 1.194,
+  "e-1": 0.721,
+  "e+0": 0.168,
+  "e+1": 0.79,
+  "e+2": 1.553
  },
  {
   "model": "copernicus_era5",
   "ven": "taupo",
   "day": "2025-03-01",
   "pi": 1,
-  "err_analytic": 0.277,
-  "err_best": 0.157,
-  "shift": [
-   1,
-   -1
-  ]
+  "shape": [
+   721,
+   1440,
+   504
+  ],
+  "hshape": [
+   721,
+   1440
+  ],
+  "cell": [
+   "yx",
+   206,
+   1424
+  ],
+  "h": 458.0,
+  "z": 454.0,
+  "e-2": 1.145,
+  "e-1": 0.678,
+  "e+0": 0.202,
+  "e+1": 0.846,
+  "e+2": 1.549
  },
  {
   "model": "copernicus_era5",
   "ven": "taupo",
   "day": "2025-03-01",
   "pi": 2,
-  "err_analytic": 1.177,
-  "err_best": 0.153,
-  "shift": [
-   1,
-   -2
-  ]
+  "shape": [
+   721,
+   1440,
+   504
+  ],
+  "hshape": [
+   721,
+   1440
+  ],
+  "cell": [
+   "yx",
+   207,
+   1426
+  ],
+  "h": 385.0,
+  "z": 317.0,
+  "e-2": 1.236,
+  "e-1": 0.8,
+  "e+0": 0.368,
+  "e+1": 0.911,
+  "e+2": 1.719
  },
  {
   "model": "copernicus_era5",
   "ven": "taupo",
   "day": "2025-03-01",
   "pi": 3,
-  "err_analytic": 1.177,
-  "err_best": 0.153,
-  "shift": [
-   1,
-   -2
-  ]
+  "shape": [
+   721,
+   1440,
+   504
+  ],
+  "hshape": [
+   721,
+   1440
+  ],
+  "cell": [
+   "yx",
+   207,
+   1426
+  ],
+  "h": 385.0,
+  "z": 314.0,
+  "e-2": 1.222,
+  "e-1": 0.785,
+  "e+0": 0.348,
+  "e+1": 0.909,
+  "e+2": 1.721
  },
  {
   "model": "copernicus_era5",
   "ven": "roth",
   "day": "2024-07-07",
   "pi": 0,
-  "err_analytic": 0.897,
-  "err_best": 0.453,
-  "shift": [
-   1,
-   0
-  ]
+  "shape": [
+   721,
+   1440,
+   504
+  ],
+  "hshape": [
+   721,
+   1440
+  ],
+  "cell": [
+   "yx",
+   558,
+   763
+  ],
+  "h": 363.0,
+  "z": 342.0,
+  "e-2": 1.21,
+  "e-1": 0.893,
+  "e+0": 0.582,
+  "e+1": 0.557,
+  "e+2": 0.93
  },
  {
   "model": "copernicus_era5",
   "ven": "roth",
   "day": "2024-07-07",
   "pi": 1,
-  "err_analytic": 0.76,
-  "err_best": 0.457,
-  "shift": [
-   2,
-   1
-  ]
+  "shape": [
+   721,
+   1440,
+   504
+  ],
+  "hshape": [
+   721,
+   1440
+  ],
+  "cell": [
+   "yx",
+   558,
+   764
+  ],
+  "h": 375.0,
+  "z": 379.0,
+  "e-2": 1.085,
+  "e-1": 0.818,
+  "e+0": 0.588,
+  "e+1": 0.571,
+  "e+2": 0.938
  },
  {
   "model": "copernicus_era5",
   "ven": "roth",
   "day": "2024-07-07",
   "pi": 2,
-  "err_analytic": 0.613,
-  "err_best": 0.423,
-  "shift": [
-   1,
-   1
-  ]
+  "shape": [
+   721,
+   1440,
+   504
+  ],
+  "hshape": [
+   721,
+   1440
+  ],
+  "cell": [
+   "yx",
+   555,
+   765
+  ],
+  "h": 424.0,
+  "z": 423.0,
+  "e-2": 1.406,
+  "e-1": 1.085,
+  "e+0": 0.733,
+  "e+1": 0.446,
+  "e+2": 0.468
  },
  {
   "model": "copernicus_era5",
   "ven": "roth",
   "day": "2024-07-07",
   "pi": 3,
-  "err_analytic": 0.523,
-  "err_best": 0.337,
-  "shift": [
-   2,
-   2
-  ]
+  "shape": [
+   721,
+   1440,
+   504
+  ],
+  "hshape": [
+   721,
+   1440
+  ],
+  "cell": [
+   "yx",
+   557,
+   763
+  ],
+  "h": 419.0,
+  "z": 415.0,
+  "e-2": 1.271,
+  "e-1": 0.901,
+  "e+0": 0.498,
+  "e+1": 0.162,
+  "e+2": 0.599
  }
 ]
