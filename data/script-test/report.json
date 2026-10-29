@@ -1,0 +1,11 @@
+{
+ "id": "script-test",
+ "started": "2026-10-29T09:49:36Z",
+ "sources": {
+  "script_test": {
+   "status": "ok",
+   "n": 7
+  }
+ },
+ "finished": "2026-10-29T09:56:28Z"
+}
