@@ -1,0 +1,11 @@
+{
+ "id": "wx-s3probe",
+ "started": "2026-10-29T01:52:26Z",
+ "sources": {
+  "s3probe": {
+   "status": "ok",
+   "buckets": 4
+  }
+ },
+ "finished": "2026-10-29T01:52:33Z"
+}
