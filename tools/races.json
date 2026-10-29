@@ -1,0 +1,602 @@
+{
+ "kona": {
+  "tz": "Pacific/Honolulu",
+  "wxp": [
+   [
+    19.64,
+    -155.995
+   ],
+   [
+    19.735,
+    -156.035
+   ],
+   [
+    19.93,
+    -155.86
+   ],
+   [
+    20.04,
+    -155.83
+   ],
+   [
+    20.23,
+    -155.83
+   ]
+  ],
+  "box": {
+   "leftlon": 203.4,
+   "rightlon": 204.8,
+   "toplat": 20.8,
+   "bottomlat": 19.0
+  },
+  "fc": null,
+  "d2": false,
+  "var": "RACE_DATE"
+ },
+ "hawaii703": {
+  "tz": "Pacific/Honolulu",
+  "wxp": [
+   [
+    19.9466,
+    -155.8657
+   ],
+   [
+    20.04,
+    -155.83
+   ],
+   [
+    20.23,
+    -155.83
+   ]
+  ],
+  "box": {
+   "leftlon": 203.5,
+   "rightlon": 204.8,
+   "toplat": 20.8,
+   "bottomlat": 19.3
+  },
+  "fc": null,
+  "d2": false,
+  "var": "RACE_DATE_HAWAII703"
+ },
+ "texas": {
+  "tz": "America/Chicago",
+  "wxp": [
+   [
+    30.163,
+    -95.47
+   ],
+   [
+    30.1,
+    -95.43
+   ],
+   [
+    29.97,
+    -95.385
+   ],
+   [
+    29.86,
+    -95.362
+   ]
+  ],
+  "box": {
+   "leftlon": 263.9,
+   "rightlon": 265.2,
+   "toplat": 30.8,
+   "bottomlat": 29.3
+  },
+  "fc": "hrrr",
+  "d2": false,
+  "var": "RACE_DATE_TEXAS"
+ },
+ "chattanooga": {
+  "tz": "America/New_York",
+  "wxp": [
+   [
+    35.056,
+    -85.31
+   ],
+   [
+    35.15,
+    -85.25
+   ],
+   [
+    35.25,
+    -85.18
+   ]
+  ],
+  "box": {
+   "leftlon": 274.1,
+   "rightlon": 275.4,
+   "toplat": 35.9,
+   "bottomlat": 34.5
+  },
+  "fc": "hrrr",
+  "d2": false,
+  "var": "RACE_DATE_CHATTANOOGA"
+ },
+ "chattanooga703": {
+  "tz": "America/New_York",
+  "wxp": [
+   [
+    35.056,
+    -85.31
+   ],
+   [
+    34.88,
+    -85.36
+   ],
+   [
+    34.73,
+    -85.39
+   ]
+  ],
+  "box": {
+   "leftlon": 274.0,
+   "rightlon": 275.3,
+   "toplat": 35.7,
+   "bottomlat": 34.1
+  },
+  "fc": "hrrr",
+  "d2": false,
+  "var": "RACE_DATE_CHATTANOOGA703"
+ },
+ "bostonmar": {
+  "tz": "America/New_York",
+  "wxp": [
+   [
+    42.2298,
+    -71.5182
+   ],
+   [
+    42.2765,
+    -71.4175
+   ],
+   [
+    42.2963,
+    -71.2952
+   ],
+   [
+    42.3379,
+    -71.199
+   ],
+   [
+    42.3494,
+    -71.0798
+   ]
+  ],
+  "box": {
+   "leftlon": 287.9,
+   "rightlon": 289.5,
+   "toplat": 42.9,
+   "bottomlat": 41.6
+  },
+  "fc": "hrrr",
+  "d2": false,
+  "var": "RACE_DATE_BOSTONMAR"
+ },
+ "chicagomar": {
+  "tz": "America/Chicago",
+  "wxp": [
+   [
+    41.8808,
+    -87.6208
+   ],
+   [
+    41.9351,
+    -87.6394
+   ],
+   [
+    41.858,
+    -87.6536
+   ]
+  ],
+  "box": {
+   "leftlon": 271.7,
+   "rightlon": 273.0,
+   "toplat": 42.5,
+   "bottomlat": 41.3
+  },
+  "fc": "hrrr",
+  "d2": false,
+  "var": "RACE_DATE_CHICAGOMAR"
+ },
+ "nycmar": {
+  "tz": "America/New_York",
+  "wxp": [
+   [
+    40.6033,
+    -74.0621
+   ],
+   [
+    40.6669,
+    -73.9917
+   ],
+   [
+    40.7347,
+    -73.9523
+   ],
+   [
+    40.8009,
+    -73.9318
+   ],
+   [
+    40.7722,
+    -73.9789
+   ]
+  ],
+  "box": {
+   "leftlon": 285.3,
+   "rightlon": 286.7,
+   "toplat": 41.4,
+   "bottomlat": 40.0
+  },
+  "fc": "hrrr",
+  "d2": false,
+  "var": "RACE_DATE_NYCMAR"
+ },
+ "roth": {
+  "tz": "Europe/Berlin",
+  "wxp": [
+   [
+    49.25,
+    11.09
+   ],
+   [
+    49.19,
+    11.19
+   ],
+   [
+    49.05,
+    11.36
+   ],
+   [
+    49.13,
+    11.12
+   ]
+  ],
+  "box": {
+   "leftlon": 10.5,
+   "rightlon": 12.0,
+   "toplat": 49.9,
+   "bottomlat": 48.4
+  },
+  "fc": "dwd",
+  "d2": true,
+  "var": "RACE_DATE_ROTH"
+ },
+ "frankfurt": {
+  "tz": "Europe/Berlin",
+  "wxp": [
+   [
+    50.02,
+    8.62
+   ],
+   [
+    50.11,
+    8.68
+   ],
+   [
+    50.18,
+    8.74
+   ],
+   [
+    50.29,
+    8.92
+   ]
+  ],
+  "box": {
+   "leftlon": 8.0,
+   "rightlon": 9.5,
+   "toplat": 50.9,
+   "bottomlat": 49.4
+  },
+  "fc": "dwd",
+  "d2": true,
+  "var": "RACE_DATE_FRANKFURT"
+ },
+ "berlinmar": {
+  "tz": "Europe/Berlin",
+  "wxp": [
+   [
+    52.5142,
+    13.3463
+   ],
+   [
+    52.5212,
+    13.4193
+   ],
+   [
+    52.4916,
+    13.3608
+   ],
+   [
+    52.4882,
+    13.3063
+   ],
+   [
+    52.5162,
+    13.3761
+   ]
+  ],
+  "box": {
+   "leftlon": 12.7,
+   "rightlon": 14.0,
+   "toplat": 53.1,
+   "bottomlat": 51.9
+  },
+  "fc": "dwd",
+  "d2": true,
+  "var": "RACE_DATE_BERLINMAR"
+ },
+ "nice": {
+  "tz": "Europe/Paris",
+  "wxp": [
+   [
+    43.695,
+    7.265
+   ],
+   [
+    43.73,
+    7.12
+   ],
+   [
+    43.745,
+    6.93
+   ],
+   [
+    43.78,
+    6.78
+   ],
+   [
+    43.795,
+    6.97
+   ]
+  ],
+  "box": {
+   "leftlon": 6.2,
+   "rightlon": 7.9,
+   "toplat": 44.4,
+   "bottomlat": 43.1
+  },
+  "fc": "dwd",
+  "d2": true,
+  "var": "RACE_DATE_NICE"
+ },
+ "nice703": {
+  "tz": "Europe/Paris",
+  "wxp": [
+   [
+    43.695,
+    7.265
+   ],
+   [
+    43.73,
+    7.12
+   ],
+   [
+    43.785,
+    7.06
+   ]
+  ],
+  "box": {
+   "leftlon": 6.5,
+   "rightlon": 7.9,
+   "toplat": 44.4,
+   "bottomlat": 43.1
+  },
+  "fc": "dwd",
+  "d2": true,
+  "var": "RACE_DATE_NICE703"
+ },
+ "wales": {
+  "tz": "Europe/London",
+  "wxp": [
+   [
+    51.672,
+    -4.703
+   ],
+   [
+    51.676,
+    -4.915
+   ],
+   [
+    51.8,
+    -4.74
+   ],
+   [
+    51.68,
+    -5.05
+   ]
+  ],
+  "box": {
+   "leftlon": 354.3,
+   "rightlon": 355.9,
+   "toplat": 52.4,
+   "bottomlat": 51.1
+  },
+  "fc": "dwd",
+  "d2": false,
+  "var": "RACE_DATE_WALES"
+ },
+ "weymouth703": {
+  "tz": "Europe/London",
+  "wxp": [
+   [
+    50.618,
+    -2.452
+   ],
+   [
+    50.728,
+    -2.365
+   ],
+   [
+    50.89,
+    -2.41
+   ]
+  ],
+  "box": {
+   "leftlon": 356.9,
+   "rightlon": 358.2,
+   "toplat": 51.5,
+   "bottomlat": 50.0
+  },
+  "fc": "dwd",
+  "d2": true,
+  "var": "RACE_DATE_WEYMOUTH703"
+ },
+ "londonmar": {
+  "tz": "Europe/London",
+  "wxp": [
+   [
+    51.4731,
+    0.0116
+   ],
+   [
+    51.483,
+    -0.0094
+   ],
+   [
+    51.5093,
+    -0.0651
+   ],
+   [
+    51.5074,
+    -0.0075
+   ],
+   [
+    51.5021,
+    -0.1397
+   ]
+  ],
+  "box": {
+   "leftlon": -0.6,
+   "rightlon": 360.6,
+   "toplat": 52.1,
+   "bottomlat": 50.9
+  },
+  "fc": "dwd",
+  "d2": true,
+  "var": "RACE_DATE_LONDONMAR"
+ },
+ "taupo": {
+  "tz": "Pacific/Auckland",
+  "wxp": [
+   [
+    -38.6919,
+    176.0788
+   ],
+   [
+    -38.592,
+    176.1534
+   ],
+   [
+    -38.4372,
+    176.316
+   ],
+   [
+    -38.5816,
+    176.305
+   ]
+  ],
+  "box": {
+   "leftlon": 175.5,
+   "rightlon": 176.9,
+   "toplat": -37.8,
+   "bottomlat": -39.3
+  },
+  "fc": "ecmwf",
+  "d2": false,
+  "var": "RACE_DATE_TAUPO"
+ },
+ "taupo703": {
+  "tz": "Pacific/Auckland",
+  "wxp": [
+   [
+    -38.6919,
+    176.0788
+   ],
+   [
+    -38.592,
+    176.1534
+   ],
+   [
+    -38.4372,
+    176.316
+   ],
+   [
+    -38.5816,
+    176.305
+   ]
+  ],
+  "box": {
+   "leftlon": 175.5,
+   "rightlon": 176.9,
+   "toplat": -37.8,
+   "bottomlat": -39.3
+  },
+  "fc": "ecmwf",
+  "d2": false,
+  "var": "RACE_DATE_TAUPO"
+ },
+ "sydneymar": {
+  "tz": "Australia/Sydney",
+  "wxp": [
+   [
+    -33.8332,
+    151.208
+   ],
+   [
+    -33.8569,
+    151.2049
+   ],
+   [
+    -33.9176,
+    151.226
+   ],
+   [
+    -33.9043,
+    151.2353
+   ]
+  ],
+  "box": {
+   "leftlon": 150.6,
+   "rightlon": 151.8,
+   "toplat": -33.2,
+   "bottomlat": -34.5
+  },
+  "fc": "ecmwf",
+  "d2": false,
+  "var": "RACE_DATE_SYDNEYMAR"
+ },
+ "tokyomar": {
+  "tz": "Asia/Tokyo",
+  "wxp": [
+   [
+    35.6899,
+    139.6923
+   ],
+   [
+    35.7069,
+    139.7726
+   ],
+   [
+    35.6941,
+    139.7977
+   ],
+   [
+    35.6809,
+    139.7778
+   ]
+  ],
+  "box": {
+   "leftlon": 139.1,
+   "rightlon": 140.4,
+   "toplat": 36.3,
+   "bottomlat": 35.1
+  },
+  "fc": "ecmwf",
+  "d2": false,
+  "var": "RACE_DATE_TOKYOMAR"
+ }
+}

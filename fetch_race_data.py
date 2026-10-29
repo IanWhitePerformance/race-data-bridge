@@ -1559,6 +1559,18 @@ def _urma_days(pts,days,H0,H1,tz,d):
         out[day]=P
     if os.path.exists(os.path.join(d,'u.grb2')):os.remove(os.path.join(d,'u.grb2'))
     return out
+def do_script_test():
+    """Run the site's forecast scripts (tools/) for a few courses with a near race date, to test them against the live servers."""
+    import subprocess
+    subprocess.run([sys.executable,'-m','pip','install','-q','eccodes'],check=False)
+    T=os.path.join(os.path.dirname(os.path.abspath(__file__)),'tools');res={}
+    for t in spec['script_test']:
+        out=os.path.join(OUT,'%s_%s.json'%(t['script'][:-3],t['race']))
+        env=dict(os.environ,RACE=t['race'],RACE_DATE=t['date'],OUT=out)
+        p=subprocess.run([sys.executable,os.path.join(T,t['script'])],env=env,capture_output=True,text=True,timeout=1800)
+        res['%s %s'%(t['script'],t['race'])]=dict(code=p.returncode,log=(p.stdout+p.stderr)[-1500:],out=os.path.exists(out))
+        log(t,p.returncode)
+    json.dump(res,open(os.path.join(OUT,'script_test.json'),'w'),indent=1);done('script_test',n=len(res))
 def do_wx_hist():
     """Race-window weather history for each course from open archives (Open-Meteo open data on AWS, CC BY 4.0; NOAA URMA Hawaii, public domain),
     written as data/<id>/hist/<race>.json in the planner's day format. Model per day: the course's chain, first model whose archive covers the day."""
@@ -1799,7 +1811,7 @@ def run():
     if ONLY:   # re-run selected sources only, keeping the rest of the report
         try:REPORT['sources']=json.load(open(os.path.join(OUT,'report.json'))).get('sources',{})
         except Exception:pass
-        F={'wx_hist':do_wx_hist,'wx_grid':do_wx_grid,'wx_extra':do_wx_extra,'s3probe':do_s3probe,'wx_audit':do_wx_audit,'zenodo_meta':do_zenodo_meta,'s2box':do_s2box,'wx_replay':do_wx_replay,'osm_detail':do_osm_detail,'leaftype':do_leaftype,'osm':do_osm,'terrain':do_terrain,'profile':do_profile,'nz':do_nz,'ndsm':do_nz_ndsm if spec.get('region')=='nz' else None,'bayern':do_bayern,'bayern_probe':do_bayern_probe if spec.get('region')=='bayern' else None,'lod2':do_bayern_lod2 if spec.get('region')=='bayern' else None,'us_lidar':do_us_lidar if spec.get('region')=='us' else None,'us':do_us if spec.get('region')=='us' else None,'hessen':do_hessen if spec.get('region')=='hessen' else None,'hessen_box':do_hessen_box if spec.get('region')=='hessen' else None,'hessen_spots':do_hessen_spots if spec.get('region')=='hessen' else None,'us_spots':do_us_spots if spec.get('region')=='us' else None,'wales':do_wales if spec.get('region')=='wales' else None,'england':do_england if spec.get('region')=='england' else None,'france':do_france if spec.get('region')=='france' else None}
+        F={'script_test':do_script_test,'wx_hist':do_wx_hist,'wx_grid':do_wx_grid,'wx_extra':do_wx_extra,'s3probe':do_s3probe,'wx_audit':do_wx_audit,'zenodo_meta':do_zenodo_meta,'s2box':do_s2box,'wx_replay':do_wx_replay,'osm_detail':do_osm_detail,'leaftype':do_leaftype,'osm':do_osm,'terrain':do_terrain,'profile':do_profile,'nz':do_nz,'ndsm':do_nz_ndsm if spec.get('region')=='nz' else None,'bayern':do_bayern,'bayern_probe':do_bayern_probe if spec.get('region')=='bayern' else None,'lod2':do_bayern_lod2 if spec.get('region')=='bayern' else None,'us_lidar':do_us_lidar if spec.get('region')=='us' else None,'us':do_us if spec.get('region')=='us' else None,'hessen':do_hessen if spec.get('region')=='hessen' else None,'hessen_box':do_hessen_box if spec.get('region')=='hessen' else None,'hessen_spots':do_hessen_spots if spec.get('region')=='hessen' else None,'us_spots':do_us_spots if spec.get('region')=='us' else None,'wales':do_wales if spec.get('region')=='wales' else None,'england':do_england if spec.get('region')=='england' else None,'france':do_france if spec.get('region')=='france' else None}
         for k in ONLY:
             fn=F.get(k)
             if not fn:continue
