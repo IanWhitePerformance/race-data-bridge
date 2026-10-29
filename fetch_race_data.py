@@ -1454,13 +1454,16 @@ def do_wx_grid():
     for R in A['refs']:
         m=R['model'];g=A['grids'][m];chl=A['chunk_len'][m];ref=np.array(R['t'])
         try:
-            G=om_geo(m,g);cell,h=om_pick(m,g,R['lat'],R['lon'],R.get('z'))
-            o=dict(model=m,ven=R['ven'],day=R['day'],pi=R['pi'],shape=G['shape'],hshape=G.get('hshape'),cell=list(cell),h=h,z=R.get('z'))
-            for sh in (-2,-1,0,1,2):
-                t0=(dt.datetime.fromisoformat(R['utc0'])+dt.timedelta(hours=sh)).strftime('%Y-%m-%dT%H:00')
-                v=np.array(om_get(m,g,'temperature_2m',cell,_om_series(m,'',t0,15,chl)))
-                if h is not None and R.get('z') is not None:v=v+0.0065*(h-R['z'])
-                o['e%+d'%sh]=round(float(np.nanmean(abs(v-ref))),3)
+            G=om_geo(m,g);z=R.get('z') if R.get('z') is not None else 0
+            o=dict(model=m,ven=R['ven'],day=R['day'],pi=R['pi'],shape=G['shape'],hshape=G.get('hshape'),z=z)
+            near=om_cells(m,g,R['lat'],R['lon'],0)[0];pick,hp=om_pick(m,g,R['lat'],R['lon'],z);hn=om_hsurf(m,near)
+            for rule,cell,h in (('near',near,hn),('pick',pick,hp)):
+                for sh in (-1,0,1):
+                    t0=(dt.datetime.fromisoformat(R['utc0'])+dt.timedelta(hours=sh)).strftime('%Y-%m-%dT%H:00')
+                    v=np.array(om_get(m,g,'temperature_2m',cell,_om_series(m,'',t0,15,chl)))
+                    o['%s%+d'%(rule,sh)]=round(float(np.nanmean(abs(v-ref))),3)
+                    if h is not None:o['%sL%+d'%(rule,sh)]=round(float(np.nanmean(abs(v+0.0065*(h-z)-ref))),3)
+                o[rule+'_h']=h
             res.append(o)
         except Exception as ex:res.append(dict(model=m,ven=R['ven'],day=R['day'],pi=R['pi'],error=repr(ex)[:300]))
         log('grid',res[-1])
