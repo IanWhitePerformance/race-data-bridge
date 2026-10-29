@@ -1,6 +1,6 @@
 {
  "id": "wx-extra",
- "started": "2026-10-29T09:31:47Z",
+ "started": "2026-10-29T09:40:53Z",
  "sources": {
   "wx_extra": {
    "status": "ok",
@@ -10,8 +10,8 @@
   },
   "wx_grid": {
    "status": "ok",
-   "refs": 69
+   "refs": 11
   }
  },
- "finished": "2026-10-29T09:37:55Z"
+ "finished": "2026-10-29T09:41:29Z"
 }
