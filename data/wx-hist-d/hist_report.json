@@ -1,0 +1,53 @@
+{
+ "wales": {
+  "days": 165,
+  "wanted": 165,
+  "by_src": {
+   "ukv": 75,
+   "ifs": 75,
+   "era5": 15
+  }
+ },
+ "weymouth703": {
+  "days": 165,
+  "wanted": 165,
+  "by_src": {
+   "ukv": 75,
+   "ifs": 75,
+   "era5": 15
+  }
+ },
+ "londonmar": {
+  "days": 165,
+  "wanted": 165,
+  "by_src": {
+   "ukv": 75,
+   "ifs": 75,
+   "era5": 15
+  }
+ },
+ "taupo": {
+  "days": 165,
+  "wanted": 165,
+  "by_src": {
+   "ifs": 150,
+   "era5": 15
+  }
+ },
+ "sydneymar": {
+  "days": 165,
+  "wanted": 165,
+  "by_src": {
+   "ifs": 150,
+   "era5": 15
+  }
+ },
+ "tokyomar": {
+  "days": 165,
+  "wanted": 165,
+  "by_src": {
+   "ifs": 150,
+   "era5": 15
+  }
+ }
+}
