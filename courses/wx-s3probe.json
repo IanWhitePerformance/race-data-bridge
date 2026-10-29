@@ -1,0 +1,58 @@
+{
+ "id": "wx-s3probe",
+ "name": "What history the public weather buckets hold (research only)",
+ "lat0": 51.0,
+ "lon0": 0.0,
+ "margin_km": 0.2,
+ "line": [
+  [
+   51.0,
+   0.0
+  ],
+  [
+   51.001,
+   0.001
+  ]
+ ],
+ "jobs": [
+  "s3probe"
+ ],
+ "s3probe": [
+  {
+   "url": "https://openmeteo.s3.amazonaws.com/",
+   "prefixes": [
+    "",
+    "data/",
+    "data/ncep_hrrr_conus/",
+    "data/dwd_icon_d2/",
+    "data/meteofrance_arome_france_hd/",
+    "data/ukmo_uk_deterministic_2km/",
+    "data/ecmwf_ifs/",
+    "data/copernicus_era5/",
+    "data/ncep_hrrr_conus/temperature_2m/",
+    "data/dwd_icon_d2/temperature_2m/",
+    "data_spatial/"
+   ]
+  },
+  {
+   "url": "https://noaa-rtma-pds.s3.amazonaws.com/",
+   "prefixes": [
+    "",
+    "hirtma/"
+   ]
+  },
+  {
+   "url": "https://noaa-urma-pds.s3.amazonaws.com/",
+   "prefixes": [
+    ""
+   ]
+  },
+  {
+   "url": "https://bom-opendata-climate.s3.ap-southeast-2.amazonaws.com/",
+   "prefixes": [
+    "",
+    "BARRA2/"
+   ]
+  }
+ ]
+}
