@@ -1354,6 +1354,27 @@ def do_wx_replay():
         time.sleep(1)
     if not ok:return failed('wx_replay','no URL answered')
     done('wx_replay',urls=len(urls),saved=ok)
+def do_s3probe():
+    """List public weather buckets (Open-Meteo open data, NOAA RTMA/URMA, BARRA2) to see what history they hold. Research only."""
+    import xml.etree.ElementTree as ET
+    out={}
+    for b in spec.get('s3probe',[]):
+        url=b['url'];res=[]
+        for pre in b.get('prefixes',['']):
+            tok=None
+            for _ in range(b.get('pages',3)):
+                q={'list-type':'2','prefix':pre,'delimiter':'/','max-keys':'1000'}
+                if tok:q['continuation-token']=tok
+                try:
+                    r=requests.get(url,params=q,headers=UA,timeout=60);t=r.text
+                    if r.status_code!=200:res.append({'prefix':pre,'status':r.status_code,'body':t[:300]});break
+                    x=ET.fromstring(t);ns={'s':x.tag.split('}')[0].strip('{')}
+                    res.append({'prefix':pre,'dirs':[e.text for e in x.findall('.//s:CommonPrefixes/s:Prefix',ns)],'keys':[(e.find('s:Key',ns).text,e.find('s:Size',ns).text,e.find('s:LastModified',ns).text) for e in x.findall('.//s:Contents',ns)][:200]})
+                    n=x.find('s:NextContinuationToken',ns);tok=n.text if n is not None else None
+                    if not tok:break
+                except Exception as ex:res.append({'prefix':pre,'error':str(ex)[:200]});break
+        out[url]=res
+    json.dump(out,open(os.path.join(OUT,'s3probe.json'),'w'),indent=1);done('s3probe',buckets=len(out))
 def do_wx_audit():
     """Weather source audit (research only): hourly weather from several free models at each course's weather points and at the
     nearest weather stations, on past race days, so the planner's weather source can be chosen on evidence. Spec key 'wx_audit':
@@ -1434,7 +1455,7 @@ def run():
     if ONLY:   # re-run selected sources only, keeping the rest of the report
         try:REPORT['sources']=json.load(open(os.path.join(OUT,'report.json'))).get('sources',{})
         except Exception:pass
-        F={'wx_audit':do_wx_audit,'zenodo_meta':do_zenodo_meta,'s2box':do_s2box,'wx_replay':do_wx_replay,'osm_detail':do_osm_detail,'leaftype':do_leaftype,'osm':do_osm,'terrain':do_terrain,'profile':do_profile,'nz':do_nz,'ndsm':do_nz_ndsm if spec.get('region')=='nz' else None,'bayern':do_bayern,'bayern_probe':do_bayern_probe if spec.get('region')=='bayern' else None,'lod2':do_bayern_lod2 if spec.get('region')=='bayern' else None,'us_lidar':do_us_lidar if spec.get('region')=='us' else None,'us':do_us if spec.get('region')=='us' else None,'hessen':do_hessen if spec.get('region')=='hessen' else None,'hessen_box':do_hessen_box if spec.get('region')=='hessen' else None,'hessen_spots':do_hessen_spots if spec.get('region')=='hessen' else None,'us_spots':do_us_spots if spec.get('region')=='us' else None,'wales':do_wales if spec.get('region')=='wales' else None,'england':do_england if spec.get('region')=='england' else None,'france':do_france if spec.get('region')=='france' else None}
+        F={'s3probe':do_s3probe,'wx_audit':do_wx_audit,'zenodo_meta':do_zenodo_meta,'s2box':do_s2box,'wx_replay':do_wx_replay,'osm_detail':do_osm_detail,'leaftype':do_leaftype,'osm':do_osm,'terrain':do_terrain,'profile':do_profile,'nz':do_nz,'ndsm':do_nz_ndsm if spec.get('region')=='nz' else None,'bayern':do_bayern,'bayern_probe':do_bayern_probe if spec.get('region')=='bayern' else None,'lod2':do_bayern_lod2 if spec.get('region')=='bayern' else None,'us_lidar':do_us_lidar if spec.get('region')=='us' else None,'us':do_us if spec.get('region')=='us' else None,'hessen':do_hessen if spec.get('region')=='hessen' else None,'hessen_box':do_hessen_box if spec.get('region')=='hessen' else None,'hessen_spots':do_hessen_spots if spec.get('region')=='hessen' else None,'us_spots':do_us_spots if spec.get('region')=='us' else None,'wales':do_wales if spec.get('region')=='wales' else None,'england':do_england if spec.get('region')=='england' else None,'france':do_france if spec.get('region')=='france' else None}
         for k in ONLY:
             fn=F.get(k)
             if not fn:continue
