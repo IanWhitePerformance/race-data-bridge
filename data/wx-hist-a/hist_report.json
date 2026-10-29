@@ -1,0 +1,17 @@
+{
+ "kona": {
+  "days": 166,
+  "wanted": 166,
+  "by_src": {
+   "urma": 166
+  }
+ },
+ "hawaii703": {
+  "days": 165,
+  "wanted": 165,
+  "by_src": {
+   "era5": 15,
+   "urma": 150
+  }
+ }
+}
