@@ -1359,7 +1359,7 @@ def do_wx_extra():
     (b) NOAA URMA Hawaii 2.5 km analyses at the Kona and 70.3 Hawaii weather points on race days; (c) BARRA2 R2 at the Taupō points."""
     import subprocess,datetime as dt
     X=spec['wx_extra'];d=os.path.join(OUT,'x');os.makedirs(d,exist_ok=True);rep={}
-    subprocess.run([sys.executable,'-m','pip','install','-q','omfiles','fsspec','aiohttp','eccodes','cfgrib','xarray','h5netcdf','h5py','netCDF4'],check=False)
+    subprocess.run([sys.executable,'-m','pip','install','-q','omfiles','fsspec','s3fs','aiohttp','eccodes','cfgrib','xarray','h5netcdf','h5py','netCDF4'],check=False)
     # (a) Open-Meteo bucket point read
     try:
         import fsspec,omfiles
@@ -1371,7 +1371,9 @@ def do_wx_extra():
             for var in a['vars']:
                 url='https://openmeteo.s3.amazonaws.com/data/%s/%s/chunk_%d.om'%(a['model'],var,ch)
                 try:
-                    r=omfiles.OmFileReader.from_fsspec(fs,url) if hasattr(omfiles.OmFileReader,'from_fsspec') else omfiles.OmFilePyReader(fs.open(url))
+                    import s3fs
+                    s3=s3fs.S3FileSystem(anon=True);path=url.replace('https://openmeteo.s3.amazonaws.com/','openmeteo/')
+                    r=omfiles.OmFileReader.from_fsspec(s3,path)
                     shp=r.shape;vals={}
                     for nm,(la,lo) in a['pts'].items():
                         iy=int(round((la-a['lat0'])/a['dlat']));ix=int(round((lo-a['lon0'])/a['dlon']))
@@ -1384,7 +1386,8 @@ def do_wx_extra():
     # (b) URMA Hawaii
     try:
         import xarray as xr,numpy as np
-        u=X['urma'];res={}
+        u=X.get('urma') or {'venues':{}};res={}
+        if not u['venues']:raise RuntimeError('skipped')
         for ven,v in u['venues'].items():
             for day in v['days']:
                 T=dt.datetime.fromisoformat(day)+dt.timedelta(hours=5+10)   # 05:00 HST in UTC
