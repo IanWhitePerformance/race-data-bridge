@@ -1,0 +1,640 @@
+[
+ {
+  "model": "ncep_hrrr_conus",
+  "ven": "tx",
+  "day": "2024-04-27",
+  "pi": 0,
+  "error": "IndexError('Too many indices for array')"
+ },
+ {
+  "model": "ncep_hrrr_conus",
+  "ven": "tx",
+  "day": "2024-04-27",
+  "pi": 1,
+  "error": "IndexError('Too many indices for array')"
+ },
+ {
+  "model": "ncep_hrrr_conus",
+  "ven": "tx",
+  "day": "2024-04-27",
+  "pi": 2,
+  "error": "IndexError('Too many indices for array')"
+ },
+ {
+  "model": "ncep_hrrr_conus",
+  "ven": "tx",
+  "day": "2024-04-27",
+  "pi": 3,
+  "error": "IndexError('Too many indices for array')"
+ },
+ {
+  "model": "ncep_hrrr_conus",
+  "ven": "cha",
+  "day": "2025-09-28",
+  "pi": 0,
+  "err_analytic": 0.08,
+  "err_best": 0.08,
+  "shift": [
+   0,
+   0
+  ]
+ },
+ {
+  "model": "ncep_hrrr_conus",
+  "ven": "cha",
+  "day": "2025-09-28",
+  "pi": 1,
+  "err_analytic": 0.07,
+  "err_best": 0.07,
+  "shift": [
+   0,
+   0
+  ]
+ },
+ {
+  "model": "ncep_hrrr_conus",
+  "ven": "cha",
+  "day": "2025-09-28",
+  "pi": 2,
+  "err_analytic": 0.23,
+  "err_best": 0.227,
+  "shift": [
+   4,
+   4
+  ]
+ },
+ {
+  "model": "ncep_hrrr_conus",
+  "ven": "tx",
+  "day": "2025-04-26",
+  "pi": 0,
+  "err_analytic": 0.073,
+  "err_best": 0.073,
+  "shift": [
+   0,
+   0
+  ]
+ },
+ {
+  "model": "ncep_hrrr_conus",
+  "ven": "tx",
+  "day": "2025-04-26",
+  "pi": 1,
+  "err_analytic": 0.027,
+  "err_best": 0.027,
+  "shift": [
+   0,
+   0
+  ]
+ },
+ {
+  "model": "ncep_hrrr_conus",
+  "ven": "tx",
+  "day": "2025-04-26",
+  "pi": 2,
+  "err_analytic": 0.023,
+  "err_best": 0.023,
+  "shift": [
+   0,
+   0
+  ]
+ },
+ {
+  "model": "ncep_hrrr_conus",
+  "ven": "tx",
+  "day": "2025-04-26",
+  "pi": 3,
+  "err_analytic": 0.033,
+  "err_best": 0.033,
+  "shift": [
+   0,
+   0
+  ]
+ },
+ {
+  "model": "ukmo_uk_deterministic_2km",
+  "ven": "wal",
+  "day": "2024-09-22",
+  "pi": 0,
+  "error": "IndexError('Too many indices for array')"
+ },
+ {
+  "model": "ukmo_uk_deterministic_2km",
+  "ven": "wal",
+  "day": "2024-09-22",
+  "pi": 1,
+  "error": "IndexError('Too many indices for array')"
+ },
+ {
+  "model": "ukmo_uk_deterministic_2km",
+  "ven": "wal",
+  "day": "2024-09-22",
+  "pi": 2,
+  "error": "IndexError('Too many indices for array')"
+ },
+ {
+  "model": "ukmo_uk_deterministic_2km",
+  "ven": "wal",
+  "day": "2024-09-22",
+  "pi": 3,
+  "error": "IndexError('Too many indices for array')"
+ },
+ {
+  "model": "ukmo_uk_deterministic_2km",
+  "ven": "wey703",
+  "day": "2024-09-15",
+  "pi": 0,
+  "error": "IndexError('Too many indices for array')"
+ },
+ {
+  "model": "ukmo_uk_deterministic_2km",
+  "ven": "wey703",
+  "day": "2024-09-15",
+  "pi": 1,
+  "error": "IndexError('Too many indices for array')"
+ },
+ {
+  "model": "ukmo_uk_deterministic_2km",
+  "ven": "wey703",
+  "day": "2024-09-15",
+  "pi": 2,
+  "error": "IndexError('Too many indices for array')"
+ },
+ {
+  "model": "ukmo_uk_deterministic_2km",
+  "ven": "wal",
+  "day": "2025-09-21",
+  "pi": 0,
+  "err_analytic": 1.08,
+  "err_best": 0.603,
+  "shift": [
+   2,
+   -4
+  ]
+ },
+ {
+  "model": "ukmo_uk_deterministic_2km",
+  "ven": "wal",
+  "day": "2025-09-21",
+  "pi": 1,
+  "err_analytic": 0.75,
+  "err_best": 0.683,
+  "shift": [
+   1,
+   3
+  ]
+ },
+ {
+  "model": "ukmo_uk_deterministic_2km",
+  "ven": "wal",
+  "day": "2025-09-21",
+  "pi": 2,
+  "err_analytic": 0.79,
+  "err_best": 0.627,
+  "shift": [
+   3,
+   -3
+  ]
+ },
+ {
+  "model": "ukmo_uk_deterministic_2km",
+  "ven": "wal",
+  "day": "2025-09-21",
+  "pi": 3,
+  "err_analytic": 0.927,
+  "err_best": 0.507,
+  "shift": [
+   4,
+   4
+  ]
+ },
+ {
+  "model": "meteofrance_arome_france_hd",
+  "ven": "nice",
+  "day": "2024-06-16",
+  "pi": 0,
+  "error": "IndexError('Too many indices for array')"
+ },
+ {
+  "model": "meteofrance_arome_france_hd",
+  "ven": "nice",
+  "day": "2024-06-16",
+  "pi": 1,
+  "error": "IndexError('Too many indices for array')"
+ },
+ {
+  "model": "meteofrance_arome_france_hd",
+  "ven": "nice",
+  "day": "2024-06-16",
+  "pi": 2,
+  "error": "IndexError('Too many indices for array')"
+ },
+ {
+  "model": "meteofrance_arome_france_hd",
+  "ven": "nice",
+  "day": "2024-06-16",
+  "pi": 3,
+  "error": "IndexError('Too many indices for array')"
+ },
+ {
+  "model": "meteofrance_arome_france_hd",
+  "ven": "nice",
+  "day": "2024-06-16",
+  "pi": 4,
+  "error": "IndexError('Too many indices for array')"
+ },
+ {
+  "model": "meteofrance_arome_france_hd",
+  "ven": "nice703",
+  "day": "2025-06-29",
+  "pi": 0,
+  "err_analytic": 0.54,
+  "err_best": 0.48,
+  "shift": [
+   -1,
+   0
+  ]
+ },
+ {
+  "model": "meteofrance_arome_france_hd",
+  "ven": "nice703",
+  "day": "2025-06-29",
+  "pi": 1,
+  "err_analytic": 0.93,
+  "err_best": 0.753,
+  "shift": [
+   -1,
+   0
+  ]
+ },
+ {
+  "model": "meteofrance_arome_france_hd",
+  "ven": "nice703",
+  "day": "2025-06-29",
+  "pi": 2,
+  "err_analytic": 0.967,
+  "err_best": 0.55,
+  "shift": [
+   -4,
+   1
+  ]
+ },
+ {
+  "model": "dwd_icon_d2",
+  "ven": "roth",
+  "day": "2024-07-07",
+  "pi": 0,
+  "error": "IndexError('Too many indices for array')"
+ },
+ {
+  "model": "dwd_icon_d2",
+  "ven": "roth",
+  "day": "2024-07-07",
+  "pi": 1,
+  "error": "IndexError('Too many indices for array')"
+ },
+ {
+  "model": "dwd_icon_d2",
+  "ven": "roth",
+  "day": "2024-07-07",
+  "pi": 2,
+  "error": "IndexError('Too many indices for array')"
+ },
+ {
+  "model": "dwd_icon_d2",
+  "ven": "roth",
+  "day": "2024-07-07",
+  "pi": 3,
+  "error": "IndexError('Too many indices for array')"
+ },
+ {
+  "model": "dwd_icon_d2",
+  "ven": "fra",
+  "day": "2025-06-29",
+  "pi": 0,
+  "err_analytic": 1.22,
+  "err_best": 0.907,
+  "shift": [
+   2,
+   -3
+  ]
+ },
+ {
+  "model": "dwd_icon_d2",
+  "ven": "fra",
+  "day": "2025-06-29",
+  "pi": 1,
+  "err_analytic": 0.917,
+  "err_best": 0.813,
+  "shift": [
+   -4,
+   -4
+  ]
+ },
+ {
+  "model": "dwd_icon_d2",
+  "ven": "fra",
+  "day": "2025-06-29",
+  "pi": 2,
+  "err_analytic": 1.137,
+  "err_best": 0.62,
+  "shift": [
+   1,
+   -4
+  ]
+ },
+ {
+  "model": "dwd_icon_d2",
+  "ven": "fra",
+  "day": "2025-06-29",
+  "pi": 3,
+  "err_analytic": 0.933,
+  "err_best": 0.79,
+  "shift": [
+   -4,
+   -2
+  ]
+ },
+ {
+  "model": "ecmwf_ifs",
+  "ven": "kona",
+  "day": "2024-10-26",
+  "pi": 0,
+  "error": "IndexError('Index 2012244 is out of bounds for axis with size 1')"
+ },
+ {
+  "model": "ecmwf_ifs",
+  "ven": "kona",
+  "day": "2024-10-26",
+  "pi": 1,
+  "error": "IndexError('Index 2008233 is out of bounds for axis with size 1')"
+ },
+ {
+  "model": "ecmwf_ifs",
+  "ven": "kona",
+  "day": "2024-10-26",
+  "pi": 2,
+  "error": "IndexError('Index 1996228 is out of bounds for axis with size 1')"
+ },
+ {
+  "model": "ecmwf_ifs",
+  "ven": "kona",
+  "day": "2024-10-26",
+  "pi": 3,
+  "error": "IndexError('Index 1988244 is out of bounds for axis with size 1')"
+ },
+ {
+  "model": "ecmwf_ifs",
+  "ven": "kona",
+  "day": "2024-10-26",
+  "pi": 4,
+  "error": "IndexError('Index 1980275 is out of bounds for axis with size 1')"
+ },
+ {
+  "model": "ecmwf_ifs",
+  "ven": "taupo",
+  "day": "2025-03-01",
+  "pi": 0,
+  "error": "IndexError('Index 5516294 is out of bounds for axis with size 1')"
+ },
+ {
+  "model": "ecmwf_ifs",
+  "ven": "taupo",
+  "day": "2025-03-01",
+  "pi": 1,
+  "error": "IndexError('Index 5510398 is out of bounds for axis with size 1')"
+ },
+ {
+  "model": "ecmwf_ifs",
+  "ven": "taupo",
+  "day": "2025-03-01",
+  "pi": 2,
+  "error": "IndexError('Index 5504488 is out of bounds for axis with size 1')"
+ },
+ {
+  "model": "ecmwf_ifs",
+  "ven": "taupo",
+  "day": "2025-03-01",
+  "pi": 3,
+  "error": "IndexError('Index 5510400 is out of bounds for axis with size 1')"
+ },
+ {
+  "model": "ecmwf_ifs",
+  "ven": "kona",
+  "day": "2022-10-08",
+  "pi": 0,
+  "error": "FileNotFoundError('openmeteo/data/ecmwf_ifs/temperature_2m/chunk_917.om')"
+ },
+ {
+  "model": "ecmwf_ifs",
+  "ven": "kona",
+  "day": "2022-10-08",
+  "pi": 1,
+  "error": "FileNotFoundError('openmeteo/data/ecmwf_ifs/temperature_2m/chunk_917.om')"
+ },
+ {
+  "model": "ecmwf_ifs",
+  "ven": "kona",
+  "day": "2022-10-08",
+  "pi": 2,
+  "error": "FileNotFoundError('openmeteo/data/ecmwf_ifs/temperature_2m/chunk_917.om')"
+ },
+ {
+  "model": "ecmwf_ifs",
+  "ven": "kona",
+  "day": "2022-10-08",
+  "pi": 3,
+  "error": "FileNotFoundError('openmeteo/data/ecmwf_ifs/temperature_2m/chunk_917.om')"
+ },
+ {
+  "model": "ecmwf_ifs",
+  "ven": "kona",
+  "day": "2022-10-08",
+  "pi": 4,
+  "error": "FileNotFoundError('openmeteo/data/ecmwf_ifs/temperature_2m/chunk_917.om')"
+ },
+ {
+  "model": "ecmwf_ifs",
+  "ven": "tx",
+  "day": "2023-04-22",
+  "pi": 0,
+  "error": "IndexError('Index 1455977 is out of bounds for axis with size 1')"
+ },
+ {
+  "model": "ecmwf_ifs",
+  "ven": "tx",
+  "day": "2023-04-22",
+  "pi": 1,
+  "error": "IndexError('Index 1459392 is out of bounds for axis with size 1')"
+ },
+ {
+  "model": "ecmwf_ifs",
+  "ven": "tx",
+  "day": "2023-04-22",
+  "pi": 2,
+  "error": "IndexError('Index 1466235 is out of bounds for axis with size 1')"
+ },
+ {
+  "model": "ecmwf_ifs",
+  "ven": "tx",
+  "day": "2023-04-22",
+  "pi": 3,
+  "error": "IndexError('Index 1473093 is out of bounds for axis with size 1')"
+ },
+ {
+  "model": "copernicus_era5",
+  "ven": "kona",
+  "day": "2024-10-26",
+  "pi": 0,
+  "err_analytic": 0.077,
+  "err_best": 0.077,
+  "shift": [
+   0,
+   0
+  ]
+ },
+ {
+  "model": "copernicus_era5",
+  "ven": "kona",
+  "day": "2024-10-26",
+  "pi": 1,
+  "err_analytic": 0.177,
+  "err_best": 0.177,
+  "shift": [
+   0,
+   0
+  ]
+ },
+ {
+  "model": "copernicus_era5",
+  "ven": "kona",
+  "day": "2024-10-26",
+  "pi": 2,
+  "err_analytic": 3.633,
+  "err_best": 0.733,
+  "shift": [
+   3,
+   -4
+  ]
+ },
+ {
+  "model": "copernicus_era5",
+  "ven": "kona",
+  "day": "2024-10-26",
+  "pi": 3,
+  "err_analytic": 3.733,
+  "err_best": 0.8,
+  "shift": [
+   3,
+   -4
+  ]
+ },
+ {
+  "model": "copernicus_era5",
+  "ven": "kona",
+  "day": "2024-10-26",
+  "pi": 4,
+  "err_analytic": 1.193,
+  "err_best": 0.287,
+  "shift": [
+   2,
+   -3
+  ]
+ },
+ {
+  "model": "copernicus_era5",
+  "ven": "taupo",
+  "day": "2025-03-01",
+  "pi": 0,
+  "err_analytic": 1.127,
+  "err_best": 0.353,
+  "shift": [
+   2,
+   -1
+  ]
+ },
+ {
+  "model": "copernicus_era5",
+  "ven": "taupo",
+  "day": "2025-03-01",
+  "pi": 1,
+  "err_analytic": 0.277,
+  "err_best": 0.157,
+  "shift": [
+   1,
+   -1
+  ]
+ },
+ {
+  "model": "copernicus_era5",
+  "ven": "taupo",
+  "day": "2025-03-01",
+  "pi": 2,
+  "err_analytic": 1.177,
+  "err_best": 0.153,
+  "shift": [
+   1,
+   -2
+  ]
+ },
+ {
+  "model": "copernicus_era5",
+  "ven": "taupo",
+  "day": "2025-03-01",
+  "pi": 3,
+  "err_analytic": 1.177,
+  "err_best": 0.153,
+  "shift": [
+   1,
+   -2
+  ]
+ },
+ {
+  "model": "copernicus_era5",
+  "ven": "roth",
+  "day": "2024-07-07",
+  "pi": 0,
+  "err_analytic": 0.897,
+  "err_best": 0.453,
+  "shift": [
+   1,
+   0
+  ]
+ },
+ {
+  "model": "copernicus_era5",
+  "ven": "roth",
+  "day": "2024-07-07",
+  "pi": 1,
+  "err_analytic": 0.76,
+  "err_best": 0.457,
+  "shift": [
+   2,
+   1
+  ]
+ },
+ {
+  "model": "copernicus_era5",
+  "ven": "roth",
+  "day": "2024-07-07",
+  "pi": 2,
+  "err_analytic": 0.613,
+  "err_best": 0.423,
+  "shift": [
+   1,
+   1
+  ]
+ },
+ {
+  "model": "copernicus_era5",
+  "ven": "roth",
+  "day": "2024-07-07",
+  "pi": 3,
+  "err_analytic": 0.523,
+  "err_best": 0.337,
+  "shift": [
+   2,
+   2
+  ]
+ }
+]
