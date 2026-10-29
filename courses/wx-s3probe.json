@@ -21,37 +21,153 @@
   {
    "url": "https://openmeteo.s3.amazonaws.com/",
    "prefixes": [
-    "",
-    "data/",
-    "data/ncep_hrrr_conus/",
-    "data/dwd_icon_d2/",
-    "data/meteofrance_arome_france_hd/",
-    "data/ukmo_uk_deterministic_2km/",
-    "data/ecmwf_ifs/",
-    "data/copernicus_era5/",
-    "data/ncep_hrrr_conus/temperature_2m/",
-    "data/dwd_icon_d2/temperature_2m/",
-    "data_spatial/"
+    "data/ncep_hrrr_conus/temperature_2m/"
+   ],
+   "pages": 6,
+   "get": [
+    "data/ncep_hrrr_conus/static/meta.json"
    ]
+  },
+  {
+   "url": "https://openmeteo.s3.amazonaws.com/",
+   "prefixes": [
+    "data/dwd_icon_d2/temperature_2m/"
+   ],
+   "pages": 6,
+   "get": [
+    "data/dwd_icon_d2/static/meta.json"
+   ]
+  },
+  {
+   "url": "https://openmeteo.s3.amazonaws.com/",
+   "prefixes": [
+    "data/meteofrance_arome_france_hd/temperature_2m/"
+   ],
+   "pages": 6,
+   "get": [
+    "data/meteofrance_arome_france_hd/static/meta.json"
+   ]
+  },
+  {
+   "url": "https://openmeteo.s3.amazonaws.com/",
+   "prefixes": [
+    "data/ukmo_uk_deterministic_2km/temperature_2m/"
+   ],
+   "pages": 6,
+   "get": [
+    "data/ukmo_uk_deterministic_2km/static/meta.json"
+   ]
+  },
+  {
+   "url": "https://openmeteo.s3.amazonaws.com/",
+   "prefixes": [
+    "data/ecmwf_ifs/temperature_2m/"
+   ],
+   "pages": 6,
+   "get": [
+    "data/ecmwf_ifs/static/meta.json"
+   ]
+  },
+  {
+   "url": "https://openmeteo.s3.amazonaws.com/",
+   "prefixes": [
+    "data/copernicus_era5/temperature_2m/"
+   ],
+   "pages": 6,
+   "get": [
+    "data/copernicus_era5/static/meta.json"
+   ]
+  },
+  {
+   "url": "https://openmeteo.s3.amazonaws.com/",
+   "prefixes": [
+    "data/copernicus_era5_land/temperature_2m/"
+   ],
+   "pages": 6,
+   "get": [
+    "data/copernicus_era5_land/static/meta.json"
+   ]
+  },
+  {
+   "url": "https://openmeteo.s3.amazonaws.com/",
+   "prefixes": [
+    "data/dmi_harmonie_arome_europe/temperature_2m/"
+   ],
+   "pages": 6,
+   "get": [
+    "data/dmi_harmonie_arome_europe/static/meta.json"
+   ]
+  },
+  {
+   "url": "https://openmeteo.s3.amazonaws.com/",
+   "prefixes": [
+    "data/ncep_gfs013/temperature_2m/"
+   ],
+   "pages": 6,
+   "get": [
+    "data/ncep_gfs013/static/meta.json"
+   ]
+  },
+  {
+   "url": "https://openmeteo.s3.amazonaws.com/",
+   "prefixes": [
+    "data/bom_access_global/temperature_2m/"
+   ],
+   "pages": 6,
+   "get": [
+    "data/bom_access_global/static/meta.json"
+   ]
+  },
+  {
+   "url": "https://openmeteo.s3.amazonaws.com/",
+   "prefixes": [
+    "data/ncep_hrrr_conus/static/",
+    "data/ecmwf_ifs/static/"
+   ],
+   "pages": 1
   },
   {
    "url": "https://noaa-rtma-pds.s3.amazonaws.com/",
    "prefixes": [
-    "",
-    "hirtma/"
-   ]
+    ""
+   ],
+   "start_after": "hirtma.20220101",
+   "pages": 2
+  },
+  {
+   "url": "https://noaa-rtma-pds.s3.amazonaws.com/",
+   "prefixes": [
+    "hirtma.20241026/"
+   ],
+   "pages": 1
   },
   {
    "url": "https://noaa-urma-pds.s3.amazonaws.com/",
    "prefixes": [
     ""
-   ]
+   ],
+   "start_after": "hiurma.20220101",
+   "pages": 2
+  },
+  {
+   "url": "https://noaa-urma-pds.s3.amazonaws.com/",
+   "prefixes": [
+    "hiurma.20241026/"
+   ],
+   "pages": 1
   },
   {
    "url": "https://bom-opendata-climate.s3.ap-southeast-2.amazonaws.com/",
    "prefixes": [
-    "",
-    "BARRA2/"
+    "BARRA2/output/",
+    "BARRA2/output/reanalysis/",
+    "BARRA2/output/reanalysis/AUS-11/BOM/ERA5/historical/hres/BARRA-R2/v1/1hr/",
+    "BARRA2/output/reanalysis/AUS-11/BOM/ERA5/historical/hres/BARRA-R2/v1/1hr/tas/"
+   ],
+   "pages": 1,
+   "get": [
+    "BARRA2/license.txt",
+    "BARRA2/README.txt"
    ]
   }
  ]
