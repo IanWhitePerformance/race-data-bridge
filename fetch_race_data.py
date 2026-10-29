@@ -1483,40 +1483,50 @@ def _om_range(model,g,var,cell,utc0,n,chl):
         if len(out)<n:raise FileNotFoundError('year file short')
         return out
 def _om_point_days(model,g,rule,shift,lapse,chl,la,lo,z,tz,days,H0,H1):
-    """one course point, one model: {date: {ws,wd,wg,t,rh,ghi,p}} for local hours H0..H1"""
+    """one course point, one model: {date: {ws,wd,wg,t,rh,ghi,p}} for local hours H0..H1; reads each run of consecutive days in one go"""
     from zoneinfo import ZoneInfo
     global omfiles
     import omfiles
     V=_om_vars(model);cell,h=(om_pick(model,g,la,lo,z) if rule=='pick' else (om_cells(model,g,la,lo,0)[0],None))
     if h is None:h=om_hsurf(model,cell)
+    n=H1-H0+1;utc=lambda day:dt.datetime.fromisoformat(day+'T%02d:00'%H0).replace(tzinfo=ZoneInfo(tz)).astimezone(dt.timezone.utc).replace(tzinfo=None)+dt.timedelta(hours=shift)
+    ds=sorted(days);runs=[];cur=[]
+    for x in ds:
+        if cur and (dt.date.fromisoformat(x)-dt.date.fromisoformat(cur[-1])).days!=1:runs.append(cur);cur=[]
+        cur.append(x)
+    if cur:runs.append(cur)
     out={}
-    for day in days:
-        t0=dt.datetime.fromisoformat(day+'T%02d:00'%H0).replace(tzinfo=ZoneInfo(tz)).astimezone(dt.timezone.utc).replace(tzinfo=None)+dt.timedelta(hours=shift)
-        n=H1-H0+1;u0=t0.strftime('%Y-%m-%dT%H:00');rd=lambda v:_om_range(model,g,v,cell,u0,n,chl)
+    for run in runs:
+        t0=utc(run[0]);N=int((utc(run[-1])-t0).total_seconds()//3600)+n;u0=t0.strftime('%Y-%m-%dT%H:00')
+        def rd(v):return _om_range(model,g,v,cell,u0,N,chl)
         try:
             T=rd('temperature_2m')
             if 'wind_u_component_10m' in V:
-                U=rd('wind_u_component_10m');W=rd('wind_v_component_10m');ws=[math.hypot(a,b) for a,b in zip(U,W)];wd=[(math.degrees(math.atan2(-a,-b))+360)%360 for a,b in zip(U,W)]
-            else:ws=rd('wind_speed_10m');wd=rd('wind_direction_10m');ws=[x/3.6 if max(ws)>40 else x for x in ws]
+                U=rd('wind_u_component_10m');W=rd('wind_v_component_10m');WS=[math.hypot(a,b) for a,b in zip(U,W)];WD=[(math.degrees(math.atan2(-a,-b))+360)%360 for a,b in zip(U,W)]
+            else:WS=rd('wind_speed_10m');WD=rd('wind_direction_10m');WS=[x/3.6 for x in WS] if max(WS)>40 else WS
             if 'relative_humidity_2m' in V:RH=rd('relative_humidity_2m')
             else:
-                D=rd('dew_point_2m');RH=[min(100,100*math.exp(17.625*d/(243.04+d))/math.exp(17.625*t/(243.04+t))) for t,d in zip(T,D)]
+                D=rd('dew_point_2m');RH=[min(100,100*math.exp(17.625*d_/(243.04+d_))/math.exp(17.625*t/(243.04+t))) for t,d_ in zip(T,D)]
             try:G=rd('wind_gusts_10m')
-            except Exception:G=[w*1.5 for w in ws]
+            except Exception:G=[w*1.5 for w in WS]
             try:SW=rd('shortwave_radiation')
             except Exception:
                 try:SW=[a+b for a,b in zip(rd('direct_radiation'),rd('diffuse_radiation'))]
-                except Exception:SW=[None]*n
+                except Exception:SW=[None]*N
             if lapse and h is not None and z is not None:T=[t+0.0065*(h-z) for t in T]
-            try:P=rd('surface_pressure');
-            except Exception:P=None
-            if P is None or (h is not None and z is not None and abs(h-z)>30):
+            P=None
+            if 'surface_pressure' in V and not (h is not None and z is not None and abs(h-z)>30):
+                try:P=rd('surface_pressure')
+                except Exception:P=None
+            if P is None:
                 try:M=rd('pressure_msl');P=[m*(1-0.0065*(z or 0)/(t+0.0065*(z or 0)+273.15))**5.257 for m,t in zip(M,T)]
-                except Exception:P=P or [1013.25*math.exp(-(z or 0)/8434)]*n
-            if any(x!=x for x in T+ws):continue
-            out[day]=dict(ws=[round(x,2) for x in ws],wd=[round(x) for x in wd],wg=[round(x,2) for x in G],t=[round(x,2) for x in T],rh=[round(x,1) for x in RH],
-                          ghi=[None if x is None or x!=x else round(x) for x in SW],p=[round(x,1) for x in P])
-        except Exception as ex:log('wx_hist',model,day,repr(ex)[:120])
+                except Exception:P=[1013.25*math.exp(-(z or 0)/8434)]*N
+        except Exception as ex:log('wx_hist',model,run[0],repr(ex)[:160]);continue
+        for day in run:
+            k=int((utc(day)-t0).total_seconds()//3600);sl=slice(k,k+n);tt=T[sl]
+            if len(tt)<n or any(x!=x for x in tt+WS[sl]):continue
+            out[day]=dict(ws=[round(x,2) for x in WS[sl]],wd=[round(x) for x in WD[sl]],wg=[round(x,2) for x in G[sl]],t=[round(x,2) for x in tt],rh=[round(x,1) for x in RH[sl]],
+                          ghi=[None if x is None or x!=x else round(x) for x in SW[sl]],p=[round(x,1) for x in P[sl]])
     return out
 def _urma_days(pts,days,H0,H1,tz,d):
     """NOAA URMA Hawaii 2.5 km analyses at the points: {date: [per point dict]}"""
@@ -1581,19 +1591,20 @@ def do_wx_hist():
                     for day in todo:
                         if all(day in p for p in per):res[day]=[p[day] for p in per];src[day]=link['tag']
             except Exception as ex:log('wx_hist',cid,m,repr(ex)[:200])
-        # sun for URMA days (it has none): the next model in the chain at the same points
-        for day,P in res.items():
-            if src[day]=='urma' or any(x is None for p in P for x in p.get('ghi',[None])):
-                for link in c['chain']:
-                    m=link['model']
-                    if m=='urma':continue
-                    try:
-                        g=A['grids'][m];R=A['rules'][m]
-                        for i,(la,lo,z) in enumerate(c['pts']):
-                            q=_om_point_days(m,g,R['rule'],R['shift'],R['lapse'],A['chunk_len'][m],la,lo,z,c['tz'],[day],H0,H1)
-                            if day in q:P[i]['ghi']=q[day]['ghi']
-                        break
-                    except Exception:continue
+        # sun for URMA days (it has none): the next model in the chain at the same points, all days in one read per point
+        need=[k for k,P in res.items() if src[k]=='urma' or any(x is None for p in P for x in p.get('ghi',[None]))]
+        if need:
+            for link in c['chain']:
+                m=link['model']
+                if m=='urma':continue
+                try:
+                    g=A['grids'][m];R=A['rules'][m]
+                    for i,(la,lo,z) in enumerate(c['pts']):
+                        q=_om_point_days(m,g,R['rule'],R['shift'],R['lapse'],A['chunk_len'][m],la,lo,z,c['tz'],need,H0,H1)
+                        for k in need:
+                            if k in q:res[k][i]['ghi']=q[k]['ghi']
+                    break
+                except Exception as ex:log('wx_hist sun',cid,m,repr(ex)[:120]);continue
         out=dict(id=cid,h0=H0,made=time.strftime('%Y-%m-%d'),sources=sorted(set(src.values())),
                  credit='NOAA URMA and HRRR (public domain), DWD ICON-D2 and ECMWF IFS/ERA5 (CC BY 4.0), Meteo-France AROME (Licence Ouverte 2.0), Met Office UKV (CC BY-SA 4.0), via Open-Meteo open data (CC BY 4.0)',
                  days=[dict(date=k,h0=H0,src=src[k],pts=[{kk:(vv if kk!='ghi' else [0 if x is None else x for x in vv]) for kk,vv in p.items()} for p in res[k]]) for k in sorted(res)])
