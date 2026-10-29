@@ -1385,46 +1385,83 @@ def _om_block(model,var,parts,y0,y1,x0,x1):
     for ch,a,b in parts:
         r=_om_reader(model,var,ch);blocks.append(np.asarray(r[y0:y1,x0:x1,a:b]))
     return np.concatenate(blocks,axis=2)
-def grid_guess(g,la,lo):
-    """analytic cell for a point: ('yx',iy,ix) or ('flat',row,j)"""
-    if g['kind']=='ll':return ('yx',int(round((la-g['lat0'])/g['d'])),int(round(((lo-g['lon0'])%360)/g['d'])))
-    if g['kind'] in('proj','projxy'):
+_GEO={}
+def om_geo(model,g):
+    """grid geometry from a sample chunk's shape and the model's bounding box (Open-Meteo builds projected grids from their corner lat/lon)"""
+    if model in _GEO:return _GEO[model]
+    import numpy as np
+    r=_om_reader(model,'temperature_2m',g['probe_chunk']);shp=list(r.shape);G=dict(shape=shp)
+    try:
+        import s3fs,omfiles
+        h=omfiles.OmFileReader.from_fsspec(_OMS3,'openmeteo/data/%s/static/HSURF.om'%model);G['hshape']=list(h.shape);G['hsurf']=h
+    except Exception as ex:G['hsurf_err']=repr(ex)[:200]
+    if g['kind'] in('proj','ll') and len(shp)>=2:
+        ny,nx=(shp[0],shp[1]) if len(shp)==3 else (None,None)
+        G['ny'],G['nx']=ny,nx
+    if g['kind']=='proj':
         from pyproj import Transformer
-        T=Transformer.from_crs('EPSG:4326',g['proj'],always_xy=True);x,y=T.transform(lo,la)
-        if g['kind']=='proj':x0,y0=T.transform(g['ll'][1],g['ll'][0])
-        else:x0,y0=g['x0'],g['y0']
-        return ('yx',int(round((y-y0)/g['dx'])),int(round((x-x0)/g['dx'])))
+        T=Transformer.from_crs('EPSG:4326',g['proj'],always_xy=True);x0,y0=T.transform(g['bbox'][1],g['bbox'][0]);x1,y1=T.transform(g['bbox'][3],g['bbox'][2])
+        G['T']=T;G['x0'],G['y0']=x0,y0;G['dx']=g.get('dx') or (x1-x0)/(G['nx']-1);G['dy']=g.get('dx') or (y1-y0)/(G['ny']-1)
+    _GEO[model]=G;return G
+def om_cells(model,g,la,lo,rad=1):
+    """candidate cells around the point: list of index tuples into the data array (without the time axis)"""
+    import numpy as np
+    G=om_geo(model,g);shp=G['shape']
     if g['kind']=='o1280':
-        import numpy as np
-        lat,nl,start=_o1280();row=int(np.argmin(abs(lat-la)));j=int(round((lo%360)/(360/nl[row])))%nl[row];return ('flat',row,j)
+        lat,nl,start=_o1280();row=int(np.argmin(abs(lat-la)));out=[]
+        for dr in range(-rad,rad+1):
+            r=row+dr;j=int(round((lo%360)/(360/nl[r])))
+            for dj in range(-rad,rad+1):out.append(('f',int(start[r]+(j+dj)%nl[r])))
+        return out
+    if g['kind']=='ll':iy=int(round((la-g['bbox'][0])/g['d']));ix=int(round(((lo-g['bbox'][1])%360)/g['d']))
+    else:
+        x,y=G['T'].transform(lo,la);iy=int(round((y-G['y0'])/G['dy']));ix=int(round((x-G['x0'])/G['dx']))
+    return [('yx',iy+dy,ix+dx_) for dy in range(-rad,rad+1) for dx_ in range(-rad,rad+1)]
+def om_get(model,g,var,cell,parts):
+    """read one cell's series over the parts; works for [ny,nx,t], [n,t] and [1,n,t] layouts"""
+    out=[]
+    for ch,a,b in parts:
+        r=_om_reader(model,var,ch);shp=r.shape
+        if cell[0]=='yx':
+            v=r[cell[1],cell[2],a:b] if len(shp)==3 and shp[0]>1 else r[0,cell[1]*_GEO[model]['nx']+cell[2],a:b] if len(shp)==3 else r[cell[1]*_GEO[model]['nx']+cell[2],a:b]
+        else:v=r[0,cell[1],a:b] if len(shp)==3 else r[cell[1],a:b]
+        out+=[float(x) for x in np.asarray(v).ravel()]
+    return out
+def om_hsurf(model,cell):
+    G=_GEO[model];h=G.get('hsurf')
+    if h is None:return None
+    s=h.shape
+    try:
+        if cell[0]=='yx':v=h[cell[1],cell[2]] if len(s)==2 else h[cell[1]*G['nx']+cell[2]] if len(s)==1 else h[0,cell[1]*G['nx']+cell[2]]
+        else:v=h[cell[1]] if len(s)==1 else h[0,cell[1]]
+        return float(np.asarray(v).ravel()[0])
+    except Exception:return None
+def om_pick(model,g,la,lo,z):
+    """Open-Meteo's rule as far as we can copy it: among the 3x3 cells round the point, the one whose height is closest to the point's"""
+    best=None
+    for c in om_cells(model,g,la,lo):
+        h=om_hsurf(model,c)
+        if h is None or h<-50:continue   # sea cells carry no height (or a large negative)
+        d=abs(h-(z or 0))
+        if best is None or d<best[0]:best=(d,c,h)
+    if best is None:c=om_cells(model,g,la,lo,0)[0];return c,om_hsurf(model,c)
+    return best[1],best[2]
 def do_wx_grid():
-    """Research only: check the grid lookup for each Open-Meteo open-data model against reference series (same model, API values),
-    searching a small window around the analytic cell. Writes data/<id>/grid_check.json."""
-    import subprocess,numpy as np
+    """Research only: check the copied lookup (cell by height, temperature corrected 0.0065 K/m to the point) against the API series, with hour shifts."""
+    import subprocess
     subprocess.run([sys.executable,'-m','pip','install','-q','omfiles','fsspec','s3fs','pyproj'],check=False)
-    A=spec['wx_grid'];W=A.get('win',4);res=[]
+    A=spec['wx_grid'];res=[]
     for R in A['refs']:
-        m=R['model'];g=A['grids'][m];chl=A['chunk_len'][m];parts=_om_series(m,'temperature_2m',R['utc0'],15,chl);ref=np.array(R['t'])
+        m=R['model'];g=A['grids'][m];chl=A['chunk_len'][m];ref=np.array(R['t'])
         try:
-            kind,a,b=grid_guess(g,R['lat'],R['lon']);best=None
-            if kind=='yx':
-                blk=_om_block(m,'temperature_2m',parts,a-W,a+W+1,b-W,b+W+1)
-                for dy in range(blk.shape[0]):
-                    for dx_ in range(blk.shape[1]):
-                        e=float(np.nanmean(abs(blk[dy,dx_,:]-ref)))
-                        if best is None or e<best[0]:best=(e,dy-W,dx_-W)
-                e0=float(np.nanmean(abs(blk[W,W,:]-ref)))
-            else:
-                lat,nl,start=_o1280();cands=[]
-                for dr in range(-2,3):
-                    r=a+dr;jj=int(round((R['lon']%360)/(360/nl[r])))
-                    for dj in range(-2,3):cands.append((dr,dj,int(start[r]+(jj+dj)%nl[r])))
-                e0=None
-                for dr,dj,i in cands:
-                    v=np.array(_om_read(m,'temperature_2m',parts,(i,)));e=float(np.nanmean(abs(v-ref)))
-                    if dr==0 and dj==0:e0=e
-                    if best is None or e<best[0]:best=(e,dr,dj)
-            res.append(dict(model=m,ven=R['ven'],day=R['day'],pi=R['pi'],err_analytic=round(e0,3),err_best=round(best[0],3),shift=best[1:]))
+            G=om_geo(m,g);cell,h=om_pick(m,g,R['lat'],R['lon'],R.get('z'))
+            o=dict(model=m,ven=R['ven'],day=R['day'],pi=R['pi'],shape=G['shape'],hshape=G.get('hshape'),cell=list(cell),h=h,z=R.get('z'))
+            for sh in (-2,-1,0,1,2):
+                t0=(dt.datetime.fromisoformat(R['utc0'])+dt.timedelta(hours=sh)).strftime('%Y-%m-%dT%H:00')
+                v=np.array(om_get(m,g,'temperature_2m',cell,_om_series(m,'',t0,15,chl)))
+                if h is not None and R.get('z') is not None:v=v+0.0065*(h-R['z'])
+                o['e%+d'%sh]=round(float(np.nanmean(abs(v-ref))),3)
+            res.append(o)
         except Exception as ex:res.append(dict(model=m,ven=R['ven'],day=R['day'],pi=R['pi'],error=repr(ex)[:300]))
         log('grid',res[-1])
     json.dump(res,open(os.path.join(OUT,'grid_check.json'),'w'),indent=1);done('wx_grid',refs=len(res))
