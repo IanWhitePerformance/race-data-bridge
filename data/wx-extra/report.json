@@ -1,13 +1,13 @@
 {
  "id": "wx-extra",
- "started": "2026-10-29T07:19:23Z",
+ "started": "2026-10-29T07:25:22Z",
  "sources": {
   "wx_extra": {
    "status": "ok",
-   "om_test": 0,
-   "urma": 9,
-   "barra": 21
+   "om_test": 3,
+   "urma": "err RuntimeError('skipped')",
+   "barra": 28
   }
  },
- "finished": "2026-10-29T07:22:00Z"
+ "finished": "2026-10-29T07:28:52Z"
 }
