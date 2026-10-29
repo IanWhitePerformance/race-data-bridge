@@ -1363,7 +1363,8 @@ def do_s3probe():
         for pre in b.get('prefixes',['']):
             tok=None
             for _ in range(b.get('pages',3)):
-                q={'list-type':'2','prefix':pre,'delimiter':'/','max-keys':'1000'}
+                q={'list-type':'2','prefix':pre,'delimiter':b.get('delimiter','/'),'max-keys':'1000'}
+                if b.get('start_after') and not tok:q['start-after']=b['start_after']
                 if tok:q['continuation-token']=tok
                 try:
                     r=requests.get(url,params=q,headers=UA,timeout=60);t=r.text
@@ -1373,7 +1374,11 @@ def do_s3probe():
                     n=x.find('s:NextContinuationToken',ns);tok=n.text if n is not None else None
                     if not tok:break
                 except Exception as ex:res.append({'prefix':pre,'error':str(ex)[:200]});break
-        out[url]=res
+        out[url+'|'+','.join(b.get('prefixes',['']))+'|'+b.get('start_after','')]=res
+        for g in b.get('get',[]):
+            try:
+                r=requests.get(url+g,headers=UA,timeout=60);out.setdefault('files',{})[url+g]=r.text[:20000] if r.status_code==200 else r.status_code
+            except Exception as ex:out.setdefault('files',{})[url+g]=str(ex)[:200]
     json.dump(out,open(os.path.join(OUT,'s3probe.json'),'w'),indent=1);done('s3probe',buckets=len(out))
 def do_wx_audit():
     """Weather source audit (research only): hourly weather from several free models at each course's weather points and at the
