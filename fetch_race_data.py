@@ -1588,7 +1588,7 @@ def do_wx_hist():
                 t=dt.date(y,mm,dd)+dt.timedelta(days=k)
                 if t<=dt.date.today()-dt.timedelta(days=6):days.append(t.isoformat())
         days+= [x for x in c.get('extra',[]) if x not in days]
-        res={};src={}
+        res={};src={};src_sun={}
         for link in c['chain']:
             todo=[x for x in days if x not in res and x>=link.get('from','1900') and x<=link.get('to','2999')]
             if not todo:continue
@@ -1603,23 +1603,28 @@ def do_wx_hist():
                     for day in todo:
                         if all(day in p for p in per):res[day]=[p[day] for p in per];src[day]=link['tag']
             except Exception as ex:log('wx_hist',cid,m,repr(ex)[:200])
-        # sun for URMA days (it has none): the next model in the chain at the same points, all days in one read per point
-        need=[k for k,P in res.items() if src[k]=='urma' or any(x is None for p in P for x in p.get('ghi',[None]))]
-        if need:
-            for link in c['chain']:
-                m=link['model']
-                if m=='urma':continue
-                try:
-                    g=A['grids'][m];R=A['rules'][m]
-                    for i,(la,lo,z) in enumerate(c['pts']):
-                        q=_om_point_days(m,g,R['rule'],R['shift'],R['lapse'],A['chunk_len'][m],la,lo,z,c['tz'],need,H0,H1)
-                        for k in need:
-                            if k in q:res[k][i]['ghi']=q[k]['ghi']
-                    break
-                except Exception as ex:log('wx_hist sun',cid,m,repr(ex)[:120]);continue
+        # sun where the source has none (URMA carries no radiation; the AROME archive's radiation is all zero): the next models in the chain,
+        # each filling the days the one before could not
+        nosun=lambda P:any('ghi' not in p or any(x is None for x in p['ghi']) or sum(x or 0 for x in p['ghi'])<1 for p in P)
+        need=[k for k,P in res.items() if src[k] in('urma','arome') or nosun(P)]
+        for link in c['chain']:
+            m=link['model']
+            if not need:break
+            if m in('urma','meteofrance_arome_france_hd'):continue
+            try:
+                g=A['grids'][m];R=A['rules'][m];got=set(need)
+                for i,(la,lo,z) in enumerate(c['pts']):
+                    q=_om_point_days(m,g,R['rule'],R['shift'],R['lapse'],A['chunk_len'][m],la,lo,z,c['tz'],need,H0,H1)
+                    for k in need:
+                        if k in q and q[k]['ghi'] and all(x is not None for x in q[k]['ghi']):res[k][i]['ghi']=q[k]['ghi']
+                        else:got.discard(k)
+                for k in got:src_sun[k]=link['tag']
+                need=[k for k in need if k not in got]
+            except Exception as ex:log('wx_hist sun',cid,m,repr(ex)[:120]);continue
+        if need:log('wx_hist',cid,'days still without sun',len(need))
         out=dict(id=cid,h0=H0,made=time.strftime('%Y-%m-%d'),sources=sorted(set(src.values())),
                  credit='NOAA URMA and HRRR (public domain), DWD ICON-D2 and ECMWF IFS/ERA5 (CC BY 4.0), Meteo-France AROME (Licence Ouverte 2.0), Met Office UKV (CC BY-SA 4.0), via Open-Meteo open data (CC BY 4.0)',
-                 days=[dict(date=k,h0=H0,src=src[k],pts=[{kk:(vv if kk!='ghi' else [0 if x is None else x for x in vv]) for kk,vv in p.items()} for p in res[k]]) for k in sorted(res)])
+                 days=[dict(date=k,h0=H0,src=src[k],**({'sun':src_sun[k]} if k in src_sun else {}),pts=[{kk:(vv if kk!='ghi' else [0 if x is None else x for x in vv]) for kk,vv in p.items()} if 'ghi' in p else dict(p,ghi=[0]*(H1-H0+1)) for p in res[k]]) for k in sorted(res)])
         json.dump(out,open(os.path.join(d,cid+'.json'),'w'),separators=(',',':'))
         rep[cid]=dict(days=len(res),wanted=len(days),by_src={s:sum(1 for v in src.values() if v==s) for s in set(src.values())})
         log('wx_hist',cid,rep[cid]);json.dump(rep,open(os.path.join(OUT,'hist_report.json'),'w'),indent=1)
