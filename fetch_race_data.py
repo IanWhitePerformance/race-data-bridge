@@ -1521,6 +1521,7 @@ def _om_point_days(model,g,rule,shift,lapse,chl,la,lo,z,tz,days,H0,H1):
             if P is None:
                 try:M=rd('pressure_msl');P=[m*(1-0.0065*(z or 0)/(t+0.0065*(z or 0)+273.15))**5.257 for m,t in zip(M,T)]
                 except Exception:P=[1013.25*math.exp(-(z or 0)/8434)]*N
+            P=[x/100 if x is not None and x>2000 else x for x in P]  # some archives store Pa, the app wants hPa
         except Exception as ex:log('wx_hist',model,run[0],repr(ex)[:160]);continue
         for day in run:
             k=int((utc(day)-t0).total_seconds()//3600);sl=slice(k,k+n);tt=T[sl]
