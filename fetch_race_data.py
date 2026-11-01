@@ -1562,65 +1562,74 @@ def _urma_days(pts,days,H0,H1,tz,d):
     return out
 def do_au_dem():
     """Geoscience Australia 5 m bare-earth DEM (LiDAR, CC BY 4.0) at the points in spec['pts'] ([lat, lon], in order).
-    MapServer identify per point; a WCS GeoTIFF over the points' box as a second source when identify gives nothing.
-    Writes dem_ga5m.json: {'best': [...], 'best_src': ...} aligned with the input points."""
-    import numpy as np
+    Tries the MapServer identify per point, then WCS GetCoverage in several dialects; keeps a diagnostic of every attempt.
+    Writes dem_ga5m.json: {'best': [...], 'best_src': ...} aligned with the input points, and ga5m_box.tif when a coverage arrives."""
+    import numpy as np, rasterio
+    from pyproj import Transformer
     from concurrent.futures import ThreadPoolExecutor
-    P=spec['pts'];BASE='https://services.ga.gov.au/gis/rest/services/DEM_LiDAR_5m_2025/MapServer'
-    info={}
-    try:r=requests.get(BASE+'?f=pjson',headers=UA,timeout=60);info['service']=r.status_code;j=r.json();info['layers']=[(l.get('id'),l.get('name')) for l in j.get('layers',[])][:12]
-    except Exception as e:info['service']='err '+str(e)[:120]
-    log('au_dem service',info)
-    def ident(p):
-        la,lo=p;q={'geometry':'%f,%f'%(lo,la),'geometryType':'esriGeometryPoint','sr':'4326','layers':'all','tolerance':'0',
-           'mapExtent':'%f,%f,%f,%f'%(lo-0.001,la-0.001,lo+0.001,la+0.001),'imageDisplay':'200,200,96','returnGeometry':'false','f':'json'}
-        for k in range(4):
+    P=spec['pts'];BASE='https://services.ga.gov.au/gis/rest/services/DEM_LiDAR_5m_2025/MapServer';W='https://services.ga.gov.au/gis/services/DEM_LiDAR_5m_2025/MapServer/WCSServer'
+    info={'tries':[]}
+    def note(k,r):info['tries'].append([k,getattr(r,'status_code',None),(r.content[:300].decode('latin1') if hasattr(r,'content') else str(r)[:300])])
+    def ident(p,keep=False):
+        la,lo=p;q={'geometry':json.dumps({'x':lo,'y':la,'spatialReference':{'wkid':4326}}),'geometryType':'esriGeometryPoint','sr':'4326','layers':'all:0','tolerance':'2',
+           'mapExtent':'%f,%f,%f,%f'%(lo-0.002,la-0.002,lo+0.002,la+0.002),'imageDisplay':'400,400,96','returnGeometry':'false','f':'json'}
+        for k in range(3):
             try:
                 r=requests.get(BASE+'/identify',params=q,headers=UA,timeout=60)
+                if keep:note('identify',r)
                 for res in r.json().get('results',[]):
-                    a=res.get('attributes',{});v=a.get('Pixel Value',a.get('Stretched value',a.get('Value')))
-                    try:
-                        v=float(v)
-                        if -50<v<3000:return v
-                    except (TypeError,ValueError):pass
+                    a=res.get('attributes',{})
+                    for key in ('Pixel Value','Pixel value','Value','value','Stretched value'):
+                        if key in a:
+                            try:
+                                v=float(a[key])
+                                if -50<v<3000:return v
+                            except (TypeError,ValueError):pass
                 return None
-            except Exception:time.sleep(2*(k+1))
+            except Exception as e:
+                if keep:note('identify-exc',e)
+                time.sleep(2*(k+1))
         return None
-    probe=[ident(p) for p in P[:5]];log('au_dem probe',probe)
+    probe=[ident(P[k],keep=(k<2)) for k in (0,1000,2000)];info['probe']=probe;log('au_dem probe',probe)
     out=[None]*len(P)
     if any(v is not None for v in probe):
         with ThreadPoolExecutor(8) as ex:
             for i,v in enumerate(ex.map(ident,P)):out[i]=v
-    ok=sum(v is not None for v in out)
-    if ok<0.9*len(P):
-        # WCS fallback: one GeoTIFF over the box, sampled bilinear
+    if sum(v is not None for v in out)<0.9*len(P):
+        la=[p[0] for p in P];lo=[p[1] for p in P];bb=(min(lo)-0.003,min(la)-0.003,max(lo)+0.003,max(la)+0.003)
         try:
-            import rasterio
-            la=[p[0] for p in P];lo=[p[1] for p in P];bb=(min(lo)-0.002,min(la)-0.002,max(lo)+0.002,max(la)+0.002)
-            W='https://services.ga.gov.au/gis/services/DEM_LiDAR_5m_2025/MapServer/WCSServer'
-            cap=requests.get(W,params={'service':'WCS','version':'1.0.0','request':'GetCapabilities'},headers=UA,timeout=120).text
-            import re as _re
-            names=_re.findall(r'<(?:wcs:)?name>([^<]+)</(?:wcs:)?name>',cap)
-            info['wcs_names']=names[:8];log('au_dem wcs',names[:8])
-            w=int((bb[2]-bb[0])*111320*math.cos(math.radians(sum(la)/len(la)))/5);h=int((bb[3]-bb[1])*110574/5)
-            for cov in names[:3]:
-                r=requests.get(W,params={'service':'WCS','version':'1.0.0','request':'GetCoverage','coverage':cov,'crs':'EPSG:4326','bbox':'%f,%f,%f,%f'%bb,'width':str(w),'height':str(h),'format':'GeoTIFF'},headers=UA,timeout=300)
-                if r.status_code==200 and r.content[:2] in (b'II',b'MM'):
-                    open(os.path.join(OUT,'ga5m_box.tif'),'wb').write(r.content)
-                    with rasterio.open(os.path.join(OUT,'ga5m_box.tif')) as d:
-                        a=d.read(1).astype('float64');inv=~d.transform;nd=d.nodata
-                        for i,(y,x) in enumerate(P):
-                            if out[i] is not None:continue
-                            c,rr=inv*(x,y);c0,r0=int(c),int(rr)
-                            if 0<=r0<a.shape[0]-1 and 0<=c0<a.shape[1]-1:
-                                win=a[r0:r0+2,c0:c0+2];win=win[(win!=nd)&(win>-50)&(win<3000)] if nd is not None else win
-                                if win.size:out[i]=float(win.mean())
-                    info['wcs_cov']=cov;break
-                info.setdefault('wcs_fail',[]).append((cov,r.status_code,r.content[:120].decode('latin1')))
-        except Exception as e:info['wcs_err']=str(e)[:200]
-        ok=sum(v is not None for v in out)
+            r=requests.get(W,params={'service':'WCS','version':'1.0.0','request':'DescribeCoverage','coverage':'1'},headers=UA,timeout=120);note('describe1.0',r)
+            open(os.path.join(OUT,'wcs_describe.xml'),'wb').write(r.content)
+        except Exception as e:note('describe-exc',e)
+        tif=None
+        T3577=Transformer.from_crs(4326,3577,always_xy=True);x0,y0=T3577.transform(bb[0],bb[1]);x1,y1=T3577.transform(bb[2],bb[3])
+        T3857=Transformer.from_crs(4326,3857,always_xy=True);a0,b0=T3857.transform(bb[0],bb[1]);a1,b1=T3857.transform(bb[2],bb[3])
+        w=int(abs(x1-x0)/5);h=int(abs(y1-y0)/5)
+        V=[('wcs1-4326',{'service':'WCS','version':'1.0.0','request':'GetCoverage','coverage':'1','crs':'EPSG:4326','bbox':'%f,%f,%f,%f'%bb,'width':str(w),'height':str(h),'format':'GeoTIFF'}),
+           ('wcs1-3577',{'service':'WCS','version':'1.0.0','request':'GetCoverage','coverage':'1','crs':'EPSG:3577','bbox':'%f,%f,%f,%f'%(min(x0,x1),min(y0,y1),max(x0,x1),max(y0,y1)),'resx':'5','resy':'5','format':'GeoTIFF'}),
+           ('wcs1-3857',{'service':'WCS','version':'1.0.0','request':'GetCoverage','coverage':'1','crs':'EPSG:3857','bbox':'%f,%f,%f,%f'%(a0,b0,a1,b1),'width':str(w),'height':str(h),'format':'GeoTIFF'}),
+           ('wcs1-4283',{'service':'WCS','version':'1.0.0','request':'GetCoverage','coverage':'1','crs':'EPSG:4283','bbox':'%f,%f,%f,%f'%bb,'width':str(w),'height':str(h),'format':'GeoTIFF'}),
+           ('wcs1-name',{'service':'WCS','version':'1.0.0','request':'GetCoverage','coverage':'DEM_LiDAR_5m_2025','crs':'EPSG:4326','bbox':'%f,%f,%f,%f'%bb,'width':str(w),'height':str(h),'format':'GeoTIFF'}),
+           ('wcs2-latlong',[('service','WCS'),('version','2.0.1'),('request','GetCoverage'),('coverageId','1'),('format','image/tiff'),('subset','Lat(%f,%f)'%(bb[1],bb[3])),('subset','Long(%f,%f)'%(bb[0],bb[2]))]),
+           ('wcs2-xy',[('service','WCS'),('version','2.0.1'),('request','GetCoverage'),('coverageId','1'),('format','image/tiff'),('subset','x(%f,%f)'%(bb[0],bb[2])),('subset','y(%f,%f)'%(bb[1],bb[3])),('subsettingCrs','http://www.opengis.net/def/crs/EPSG/0/4326')])]
+        for k,q in V:
+            try:
+                r=requests.get(W,params=q,headers=UA,timeout=300);note(k,r)
+                if r.status_code==200 and r.content[:2] in (b'II',b'MM'):tif=r.content;info['wcs_ok']=k;break
+            except Exception as e:note(k+'-exc',e)
+        if tif:
+            fp=os.path.join(OUT,'ga5m_box.tif');open(fp,'wb').write(tif)
+            with rasterio.open(fp) as d:
+                a=d.read(1).astype('float64');nd=d.nodata;Tr=Transformer.from_crs(4326,d.crs,always_xy=True);inv=~d.transform
+                for i,(y,x) in enumerate(P):
+                    if out[i] is not None:continue
+                    X,Y=Tr.transform(x,y);c,rr=inv*(X,Y);c0,r0=int(c),int(rr)
+                    if 0<=r0<a.shape[0]-1 and 0<=c0<a.shape[1]-1:
+                        win=a[r0:r0+2,c0:c0+2];win=win[(win!=nd)&(win>-50)&(win<3000)] if nd is not None else win[(win>-50)&(win<3000)]
+                        if win.size:out[i]=float(win.mean())
+    ok=sum(v is not None for v in out)
     json.dump({'best':[None if v is None else round(v,2) for v in out],'best_src':'Geoscience Australia DEM of Australia derived from LiDAR, 5 m grid (CC BY 4.0)','info':info},open(os.path.join(OUT,'dem_ga5m.json'),'w'))
-    done('au_dem',points=len(P),ok=ok,info=str(info)[:300])
+    done('au_dem',points=len(P),ok=ok,wcs=info.get('wcs_ok'))
 def do_script_test():
     """Run the site's forecast scripts (tools/) for a few courses with a near race date, to test them against the live servers."""
     import subprocess
