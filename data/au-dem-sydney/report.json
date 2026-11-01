@@ -1,13 +1,13 @@
 {
  "id": "au-dem-sydney",
- "started": "2026-11-01T19:45:45Z",
+ "started": "2026-11-01T19:50:21Z",
  "sources": {
   "au_dem": {
    "status": "ok",
    "points": 4209,
-   "ok": 0,
-   "info": "{'service': 200, 'layers': [(0, 'DEM_LiDAR_5m_2025')], 'wcs_names': ['DEM_LiDAR_5m_2025', '1'], 'wcs_fail': [('DEM_LiDAR_5m_2025', 400, '<html><head><meta http-equiv=\"Content-Security-Policy\" content=\"script-src \\'none\\'; \"><title>ArcGIS Server Error</title><'), ('1', 400, '<html><head><meta http-eq"
+   "ok": 4209,
+   "wcs": "wcs1-4283"
   }
  },
- "finished": "2026-11-01T19:46:09Z"
+ "finished": "2026-11-01T19:50:58Z"
 }
