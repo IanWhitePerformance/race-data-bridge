@@ -1560,6 +1560,67 @@ def _urma_days(pts,days,H0,H1,tz,d):
         out[day]=P
     if os.path.exists(os.path.join(d,'u.grb2')):os.remove(os.path.join(d,'u.grb2'))
     return out
+def do_au_dem():
+    """Geoscience Australia 5 m bare-earth DEM (LiDAR, CC BY 4.0) at the points in spec['pts'] ([lat, lon], in order).
+    MapServer identify per point; a WCS GeoTIFF over the points' box as a second source when identify gives nothing.
+    Writes dem_ga5m.json: {'best': [...], 'best_src': ...} aligned with the input points."""
+    import numpy as np
+    from concurrent.futures import ThreadPoolExecutor
+    P=spec['pts'];BASE='https://services.ga.gov.au/gis/rest/services/DEM_LiDAR_5m_2025/MapServer'
+    info={}
+    try:r=requests.get(BASE+'?f=pjson',headers=UA,timeout=60);info['service']=r.status_code;j=r.json();info['layers']=[(l.get('id'),l.get('name')) for l in j.get('layers',[])][:12]
+    except Exception as e:info['service']='err '+str(e)[:120]
+    log('au_dem service',info)
+    def ident(p):
+        la,lo=p;q={'geometry':'%f,%f'%(lo,la),'geometryType':'esriGeometryPoint','sr':'4326','layers':'all','tolerance':'0',
+           'mapExtent':'%f,%f,%f,%f'%(lo-0.001,la-0.001,lo+0.001,la+0.001),'imageDisplay':'200,200,96','returnGeometry':'false','f':'json'}
+        for k in range(4):
+            try:
+                r=requests.get(BASE+'/identify',params=q,headers=UA,timeout=60)
+                for res in r.json().get('results',[]):
+                    a=res.get('attributes',{});v=a.get('Pixel Value',a.get('Stretched value',a.get('Value')))
+                    try:
+                        v=float(v)
+                        if -50<v<3000:return v
+                    except (TypeError,ValueError):pass
+                return None
+            except Exception:time.sleep(2*(k+1))
+        return None
+    probe=[ident(p) for p in P[:5]];log('au_dem probe',probe)
+    out=[None]*len(P)
+    if any(v is not None for v in probe):
+        with ThreadPoolExecutor(8) as ex:
+            for i,v in enumerate(ex.map(ident,P)):out[i]=v
+    ok=sum(v is not None for v in out)
+    if ok<0.9*len(P):
+        # WCS fallback: one GeoTIFF over the box, sampled bilinear
+        try:
+            import rasterio
+            la=[p[0] for p in P];lo=[p[1] for p in P];bb=(min(lo)-0.002,min(la)-0.002,max(lo)+0.002,max(la)+0.002)
+            W='https://services.ga.gov.au/gis/services/DEM_LiDAR_5m_2025/MapServer/WCSServer'
+            cap=requests.get(W,params={'service':'WCS','version':'1.0.0','request':'GetCapabilities'},headers=UA,timeout=120).text
+            import re as _re
+            names=_re.findall(r'<(?:wcs:)?name>([^<]+)</(?:wcs:)?name>',cap)
+            info['wcs_names']=names[:8];log('au_dem wcs',names[:8])
+            w=int((bb[2]-bb[0])*111320*math.cos(math.radians(sum(la)/len(la)))/5);h=int((bb[3]-bb[1])*110574/5)
+            for cov in names[:3]:
+                r=requests.get(W,params={'service':'WCS','version':'1.0.0','request':'GetCoverage','coverage':cov,'crs':'EPSG:4326','bbox':'%f,%f,%f,%f'%bb,'width':str(w),'height':str(h),'format':'GeoTIFF'},headers=UA,timeout=300)
+                if r.status_code==200 and r.content[:2] in (b'II',b'MM'):
+                    open(os.path.join(OUT,'ga5m_box.tif'),'wb').write(r.content)
+                    with rasterio.open(os.path.join(OUT,'ga5m_box.tif')) as d:
+                        a=d.read(1).astype('float64');inv=~d.transform;nd=d.nodata
+                        for i,(y,x) in enumerate(P):
+                            if out[i] is not None:continue
+                            c,rr=inv*(x,y);c0,r0=int(c),int(rr)
+                            if 0<=r0<a.shape[0]-1 and 0<=c0<a.shape[1]-1:
+                                win=a[r0:r0+2,c0:c0+2];win=win[(win!=nd)&(win>-50)&(win<3000)] if nd is not None else win
+                                if win.size:out[i]=float(win.mean())
+                    info['wcs_cov']=cov;break
+                info.setdefault('wcs_fail',[]).append((cov,r.status_code,r.content[:120].decode('latin1')))
+        except Exception as e:info['wcs_err']=str(e)[:200]
+        ok=sum(v is not None for v in out)
+    json.dump({'best':[None if v is None else round(v,2) for v in out],'best_src':'Geoscience Australia DEM of Australia derived from LiDAR, 5 m grid (CC BY 4.0)','info':info},open(os.path.join(OUT,'dem_ga5m.json'),'w'))
+    done('au_dem',points=len(P),ok=ok,info=str(info)[:300])
 def do_script_test():
     """Run the site's forecast scripts (tools/) for a few courses with a near race date, to test them against the live servers."""
     import subprocess
@@ -1817,7 +1878,7 @@ def run():
     if ONLY:   # re-run selected sources only, keeping the rest of the report
         try:REPORT['sources']=json.load(open(os.path.join(OUT,'report.json'))).get('sources',{})
         except Exception:pass
-        F={'script_test':do_script_test,'wx_hist':do_wx_hist,'wx_grid':do_wx_grid,'wx_extra':do_wx_extra,'s3probe':do_s3probe,'wx_audit':do_wx_audit,'zenodo_meta':do_zenodo_meta,'s2box':do_s2box,'wx_replay':do_wx_replay,'osm_detail':do_osm_detail,'leaftype':do_leaftype,'osm':do_osm,'terrain':do_terrain,'profile':do_profile,'nz':do_nz,'ndsm':do_nz_ndsm if spec.get('region')=='nz' else None,'bayern':do_bayern,'bayern_probe':do_bayern_probe if spec.get('region')=='bayern' else None,'lod2':do_bayern_lod2 if spec.get('region')=='bayern' else None,'us_lidar':do_us_lidar if spec.get('region')=='us' else None,'us':do_us if spec.get('region')=='us' else None,'hessen':do_hessen if spec.get('region')=='hessen' else None,'hessen_box':do_hessen_box if spec.get('region')=='hessen' else None,'hessen_spots':do_hessen_spots if spec.get('region')=='hessen' else None,'us_spots':do_us_spots if spec.get('region')=='us' else None,'wales':do_wales if spec.get('region')=='wales' else None,'england':do_england if spec.get('region')=='england' else None,'france':do_france if spec.get('region')=='france' else None}
+        F={'au_dem':do_au_dem,'script_test':do_script_test,'wx_hist':do_wx_hist,'wx_grid':do_wx_grid,'wx_extra':do_wx_extra,'s3probe':do_s3probe,'wx_audit':do_wx_audit,'zenodo_meta':do_zenodo_meta,'s2box':do_s2box,'wx_replay':do_wx_replay,'osm_detail':do_osm_detail,'leaftype':do_leaftype,'osm':do_osm,'terrain':do_terrain,'profile':do_profile,'nz':do_nz,'ndsm':do_nz_ndsm if spec.get('region')=='nz' else None,'bayern':do_bayern,'bayern_probe':do_bayern_probe if spec.get('region')=='bayern' else None,'lod2':do_bayern_lod2 if spec.get('region')=='bayern' else None,'us_lidar':do_us_lidar if spec.get('region')=='us' else None,'us':do_us if spec.get('region')=='us' else None,'hessen':do_hessen if spec.get('region')=='hessen' else None,'hessen_box':do_hessen_box if spec.get('region')=='hessen' else None,'hessen_spots':do_hessen_spots if spec.get('region')=='hessen' else None,'us_spots':do_us_spots if spec.get('region')=='us' else None,'wales':do_wales if spec.get('region')=='wales' else None,'england':do_england if spec.get('region')=='england' else None,'france':do_france if spec.get('region')=='france' else None}
         for k in ONLY:
             fn=F.get(k)
             if not fn:continue
