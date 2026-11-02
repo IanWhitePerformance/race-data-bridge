@@ -1630,6 +1630,85 @@ def do_au_dem():
     ok=sum(v is not None for v in out)
     json.dump({'best':[None if v is None else round(v,2) for v in out],'best_src':'Geoscience Australia DEM of Australia derived from LiDAR, 5 m grid (CC BY 4.0)','info':info},open(os.path.join(OUT,'dem_ga5m.json'),'w'))
     done('au_dem',points=len(P),ok=ok,wcs=info.get('wcs_ok'))
+def do_be_dem():
+    """Berlin ATKIS DGM1 (1 m bare earth, Geoportal Berlin, Datenlizenz Deutschland Zero 2.0) at the points in spec['pts'] ([lat, lon]).
+    Reads the INSPIRE ATOM download feed, fetches only the tiles under the points, samples a 3 x 3 m median at each point.
+    Writes dem_be1m.json: {'best': [...], 'best_src': ...} aligned with the input points; keeps a diagnostic of every step."""
+    import numpy as np, re, io, zipfile
+    from pyproj import Transformer
+    P=spec['pts'];info={'tries':[]}
+    def note(k,r):info['tries'].append([k,getattr(r,'status_code',None),(r.content[:300].decode('latin1') if hasattr(r,'content') else str(r)[:300])])
+    T=Transformer.from_crs(4326,25833,always_xy=True);XY=[T.transform(lo,la) for la,lo in P]
+    FEEDS=['https://gdi.berlin.de/data/dgm1/atom/','https://gdi.berlin.de/data/dgm1/atom','https://gdi.berlin.de/data/el_dgm/atom/','https://fbinter.stadt-berlin.de/fb/berlin/service_intern.jsp?id=a_dgm@senstadt&type=FEED']
+    links=set();seen=set()
+    def crawl(u,depth):
+        if u in seen or depth>2:return
+        seen.add(u)
+        try:r=requests.get(u,headers=UA,timeout=120);note('feed d%d '%depth+u,r)
+        except Exception as e:note('feed-exc '+u,e);return
+        if r.status_code!=200:return
+        t=r.text;hs=set(re.findall(r'href="([^"]+)"',t))|set(re.findall(r'<id>(http[^<]+)</id>',t))
+        for h in hs:
+            h=h.replace('&amp;','&');h=requests.compat.urljoin(u,h)
+            if re.search(r'\.(zip|tif|tiff|xyz|txt)(\?|$)',h,re.I):links.add(h)
+            elif re.search(r'(atom|feed|\.xml)',h,re.I) and 'gdi.berlin.de' in h or 'service_intern' in h:crawl(h,depth+1)
+    for f in FEEDS:
+        crawl(f,0)
+        if links:break
+    links=sorted(links);info['n_links']=len(links);info['links_sample']=links[:8]
+    def tile_of(h):
+        nums=[int(x) for x in re.findall(r'(?<!\d)(\d{3,7})(?!\d)',h.rsplit('/',1)[-1])]
+        e=[n for n in nums if 300<=n<=500 or 300000<=n<=500000];n_=[n for n in nums if 5700<=n<=5900 or 5700000<=n<=5900000]
+        if not e or not n_:return None
+        E=e[0]*1000 if e[0]<1000 else e[0];N=n_[0]*1000 if n_[0]<10000 else n_[0];return E,N
+    tiles={h:tile_of(h) for h in links};tiles={h:t for h,t in tiles.items() if t}
+    if tiles:
+        es=sorted({t[0] for t in tiles.values()});step=min([b-a for a,b in zip(es,es[1:]) if b>a] or [2000])
+    else:step=2000
+    info['tile_step_m']=step;info['n_tiles_named']=len(tiles)
+    need={}
+    for i,(x,y) in enumerate(XY):
+        for h,(E,N) in tiles.items():
+            if E<=x<E+step and N<=y<N+step:need.setdefault(h,[]).append(i);break
+    info['n_tiles_needed']=len(need);log('be_dem links',len(links),'named',len(tiles),'needed',len(need),'step',step)
+    out=[None]*len(P)
+    def sample(xs,ys,zs,idx):
+        g={}
+        x0=xs.min();y0=ys.min();ix=np.round(xs-x0).astype(int);iy=np.round(ys-y0).astype(int)
+        A=np.full((iy.max()+1,ix.max()+1),np.nan,dtype='float32');A[iy,ix]=zs
+        for i in idx:
+            c=int(round(XY[i][0]-x0));r=int(round(XY[i][1]-y0))
+            w=A[max(0,r-1):r+2,max(0,c-1):c+2];w=w[np.isfinite(w)&(w>-20)&(w<500)]
+            if w.size:out[i]=float(np.median(w))
+    for h,idx in need.items():
+        try:
+            r=requests.get(h,headers=UA,timeout=600)
+            if r.status_code!=200:note('tile '+h,r);continue
+            b=r.content;files=[]
+            if b[:2]==b'PK':
+                z=zipfile.ZipFile(io.BytesIO(b));files=[(n,z.read(n)) for n in z.namelist() if re.search(r'\.(xyz|txt|tif|tiff|csv)$',n,re.I)]
+            else:files=[(h,b)]
+            for n,data in files:
+                if data[:2] in (b'II',b'MM'):
+                    import rasterio
+                    with rasterio.MemoryFile(data) as mf, mf.open() as d:
+                        a=d.read(1).astype('float32');inv=~d.transform
+                        for i in idx:
+                            c,rr=inv*XY[i];c,rr=int(c),int(rr)
+                            w=a[max(0,rr-1):rr+2,max(0,c-1):c+2];w=w[(w>-20)&(w<500)]
+                            if w.size:out[i]=float(np.median(w))
+                else:
+                    import pandas as pd
+                    head=data[:400]
+                    if b';' in head or b',' in head.split(b'\n')[0]:data=data.replace(b';',b' ').replace(b',',b' ')
+                    df=pd.read_csv(io.BytesIO(data),sep=r'\s+',header=None,usecols=[0,1,2],names=['x','y','z'],comment='#')
+                    df=df[pd.to_numeric(df.x,errors='coerce').notna()].astype('float64')
+                    sample(df.x.values,df.y.values,df.z.values.astype('float32'),idx)
+            if len(info['tries'])<60:info['tries'].append(['tile ok',h,len(idx)])
+        except Exception as e:note('tile-exc '+h,e)
+    ok=sum(v is not None for v in out)
+    json.dump({'best':[None if v is None else round(v,2) for v in out],'best_src':'the Berlin ATKIS DGM1 1 m bare-earth model (Geoportal Berlin, dl-de/zero-2-0)','info':info},open(os.path.join(OUT,'dem_be1m.json'),'w'))
+    done('be_dem',points=len(P),ok=ok,tiles=len(need),links=len(links))
 def do_script_test():
     """Run the site's forecast scripts (tools/) for a few courses with a near race date, to test them against the live servers."""
     import subprocess
@@ -1887,7 +1966,7 @@ def run():
     if ONLY:   # re-run selected sources only, keeping the rest of the report
         try:REPORT['sources']=json.load(open(os.path.join(OUT,'report.json'))).get('sources',{})
         except Exception:pass
-        F={'au_dem':do_au_dem,'script_test':do_script_test,'wx_hist':do_wx_hist,'wx_grid':do_wx_grid,'wx_extra':do_wx_extra,'s3probe':do_s3probe,'wx_audit':do_wx_audit,'zenodo_meta':do_zenodo_meta,'s2box':do_s2box,'wx_replay':do_wx_replay,'osm_detail':do_osm_detail,'leaftype':do_leaftype,'osm':do_osm,'terrain':do_terrain,'profile':do_profile,'nz':do_nz,'ndsm':do_nz_ndsm if spec.get('region')=='nz' else None,'bayern':do_bayern,'bayern_probe':do_bayern_probe if spec.get('region')=='bayern' else None,'lod2':do_bayern_lod2 if spec.get('region')=='bayern' else None,'us_lidar':do_us_lidar if spec.get('region')=='us' else None,'us':do_us if spec.get('region')=='us' else None,'hessen':do_hessen if spec.get('region')=='hessen' else None,'hessen_box':do_hessen_box if spec.get('region')=='hessen' else None,'hessen_spots':do_hessen_spots if spec.get('region')=='hessen' else None,'us_spots':do_us_spots if spec.get('region')=='us' else None,'wales':do_wales if spec.get('region')=='wales' else None,'england':do_england if spec.get('region')=='england' else None,'france':do_france if spec.get('region')=='france' else None}
+        F={'au_dem':do_au_dem,'be_dem':do_be_dem,'script_test':do_script_test,'wx_hist':do_wx_hist,'wx_grid':do_wx_grid,'wx_extra':do_wx_extra,'s3probe':do_s3probe,'wx_audit':do_wx_audit,'zenodo_meta':do_zenodo_meta,'s2box':do_s2box,'wx_replay':do_wx_replay,'osm_detail':do_osm_detail,'leaftype':do_leaftype,'osm':do_osm,'terrain':do_terrain,'profile':do_profile,'nz':do_nz,'ndsm':do_nz_ndsm if spec.get('region')=='nz' else None,'bayern':do_bayern,'bayern_probe':do_bayern_probe if spec.get('region')=='bayern' else None,'lod2':do_bayern_lod2 if spec.get('region')=='bayern' else None,'us_lidar':do_us_lidar if spec.get('region')=='us' else None,'us':do_us if spec.get('region')=='us' else None,'hessen':do_hessen if spec.get('region')=='hessen' else None,'hessen_box':do_hessen_box if spec.get('region')=='hessen' else None,'hessen_spots':do_hessen_spots if spec.get('region')=='hessen' else None,'us_spots':do_us_spots if spec.get('region')=='us' else None,'wales':do_wales if spec.get('region')=='wales' else None,'england':do_england if spec.get('region')=='england' else None,'france':do_france if spec.get('region')=='france' else None}
         for k in ONLY:
             fn=F.get(k)
             if not fn:continue
