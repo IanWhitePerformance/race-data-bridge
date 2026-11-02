@@ -1,0 +1,12 @@
+{
+ "id": "pembroke-castle",
+ "name": "Pembroke Castle close-up (Wales course landmark): water, rock, walls",
+ "lat0": 51.67694,
+ "lon0": -4.92056,
+ "margin_km": 1.0,
+ "region": "wales",
+ "jobs": ["osm", "box1m", "wales"],
+ "box1m": [51.6769, -4.9206, 0.6],
+ "spots": [[51.6769, -4.9206, 1.2, "Pembroke Castle and the Mill Pond"]],
+ "line": [[51.6776, -4.9235], [51.6772, -4.9218], [51.6769, -4.9203], [51.6766, -4.9188], [51.6764, -4.9175]]
+}
