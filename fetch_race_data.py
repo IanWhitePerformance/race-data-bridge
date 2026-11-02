@@ -1959,6 +1959,16 @@ def do_wx_audit():
                     time.sleep(1)
     json.dump(rep,open(os.path.join(OUT,'wx_audit_report.json'),'w'),indent=1)
     done('wx_audit',om=sum(1 for x in rep['om'].values() if x=='ok'),om_total=len(rep['om']),isd=len(rep['isd']),iem=len(rep['iem']))
+def do_box1m():
+    """1 m Welsh LiDAR DTM and DSM in a small box (spec box1m = [lat, lon, half-size km]) for a landmark close-up: the water is where the DTM
+    has no data, the rock and the walls come from the DSM. Writes box1m_dtm.tif and box1m_dsm.tif (decimetres, int16, EPSG:27700, -32768 = no data)."""
+    from pyproj import Transformer
+    la,lo,hk=spec['box1m'];T=Transformer.from_crs('EPSG:4326','EPSG:27700',always_xy=True);cx,cy=T.transform(lo,la);h=hk*1000
+    tr=from_origin(cx-h,cy+h,1,1);out={}
+    for kind in('dtm','dsm'):
+        a=_wales_read(kind,cx-h,cy-h,cx+h,cy+h,1);m=np.isfinite(a);d=np.full(a.shape,-32768,np.int16);d[m]=np.round(a[m]*10).astype(np.int16)
+        write_tif(os.path.join(OUT,'box1m_%s.tif'%kind),d[None],tr,CRS.from_epsg(27700),nodata=-32768);out[kind]=round(float(m.mean()),3)
+    done('box1m',valid=out,size_m=int(2*h))
 ONLY=[x for x in os.environ.get('ONLY','').split(',') if x]
 def run():
     global ONLY
@@ -1966,7 +1976,7 @@ def run():
     if ONLY:   # re-run selected sources only, keeping the rest of the report
         try:REPORT['sources']=json.load(open(os.path.join(OUT,'report.json'))).get('sources',{})
         except Exception:pass
-        F={'au_dem':do_au_dem,'be_dem':do_be_dem,'script_test':do_script_test,'wx_hist':do_wx_hist,'wx_grid':do_wx_grid,'wx_extra':do_wx_extra,'s3probe':do_s3probe,'wx_audit':do_wx_audit,'zenodo_meta':do_zenodo_meta,'s2box':do_s2box,'wx_replay':do_wx_replay,'osm_detail':do_osm_detail,'leaftype':do_leaftype,'osm':do_osm,'terrain':do_terrain,'profile':do_profile,'nz':do_nz,'ndsm':do_nz_ndsm if spec.get('region')=='nz' else None,'bayern':do_bayern,'bayern_probe':do_bayern_probe if spec.get('region')=='bayern' else None,'lod2':do_bayern_lod2 if spec.get('region')=='bayern' else None,'us_lidar':do_us_lidar if spec.get('region')=='us' else None,'us':do_us if spec.get('region')=='us' else None,'hessen':do_hessen if spec.get('region')=='hessen' else None,'hessen_box':do_hessen_box if spec.get('region')=='hessen' else None,'hessen_spots':do_hessen_spots if spec.get('region')=='hessen' else None,'us_spots':do_us_spots if spec.get('region')=='us' else None,'wales':do_wales if spec.get('region')=='wales' else None,'england':do_england if spec.get('region')=='england' else None,'france':do_france if spec.get('region')=='france' else None}
+        F={'au_dem':do_au_dem,'be_dem':do_be_dem,'script_test':do_script_test,'wx_hist':do_wx_hist,'wx_grid':do_wx_grid,'wx_extra':do_wx_extra,'s3probe':do_s3probe,'wx_audit':do_wx_audit,'zenodo_meta':do_zenodo_meta,'s2box':do_s2box,'wx_replay':do_wx_replay,'osm_detail':do_osm_detail,'box1m':do_box1m,'leaftype':do_leaftype,'osm':do_osm,'terrain':do_terrain,'profile':do_profile,'nz':do_nz,'ndsm':do_nz_ndsm if spec.get('region')=='nz' else None,'bayern':do_bayern,'bayern_probe':do_bayern_probe if spec.get('region')=='bayern' else None,'lod2':do_bayern_lod2 if spec.get('region')=='bayern' else None,'us_lidar':do_us_lidar if spec.get('region')=='us' else None,'us':do_us if spec.get('region')=='us' else None,'hessen':do_hessen if spec.get('region')=='hessen' else None,'hessen_box':do_hessen_box if spec.get('region')=='hessen' else None,'hessen_spots':do_hessen_spots if spec.get('region')=='hessen' else None,'us_spots':do_us_spots if spec.get('region')=='us' else None,'wales':do_wales if spec.get('region')=='wales' else None,'england':do_england if spec.get('region')=='england' else None,'france':do_france if spec.get('region')=='france' else None}
         for k in ONLY:
             fn=F.get(k)
             if not fn:continue
