@@ -1,0 +1,82 @@
+{
+ "id": "pembroke-castle",
+ "started": "2026-11-02T19:51:40Z",
+ "sources": {
+  "osm": {
+   "status": "failed",
+   "error": "all Overpass endpoints failed and no Geofabrik extract is set for this course"
+  },
+  "box1m": {
+   "status": "ok",
+   "valid": {
+    "dtm": 1.0,
+    "dsm": 1.0
+   },
+   "size_m": 1200
+  },
+  "s2_box": {
+   "status": "ok",
+   "scenes": [
+    "S2A_29UQT_20230904_0_L2A"
+   ],
+   "res_m": 8,
+   "cover": 1.0
+  },
+  "wales_spots": {
+   "status": "ok",
+   "spots": 1,
+   "res_m": 1,
+   "method": "Sentinel-2 colour sharpened with the LiDAR surface model",
+   "colour_cover": [
+    1.0
+   ],
+   "errors": []
+  },
+  "wales_dtm": {
+   "status": "ok",
+   "blocks": 4,
+   "tried": 4,
+   "file": "dem_course_3m_dm.tif",
+   "units": "decimetres",
+   "valid": 0.979
+  },
+  "wales_ndsm": {
+   "status": "ok",
+   "cells": 4,
+   "cells_read": 4,
+   "buildings_with_height": 0,
+   "trees_kept": 4908,
+   "trees_found": 4908,
+   "tile_stats": [
+    {
+     "tile": "s00002.tif",
+     "valid": 1.0,
+     "p50": 0.75,
+     "p99": 18.04
+    },
+    {
+     "tile": "s00000.tif",
+     "valid": 1.0,
+     "p50": 0.05,
+     "p99": 15.39
+    },
+    {
+     "tile": "s00001.tif",
+     "valid": 1.0,
+     "p50": 0.07,
+     "p99": 23.57
+    },
+    {
+     "tile": "s00003.tif",
+     "valid": 1.0,
+     "p50": 0.05,
+     "p99": 19.08
+    }
+   ],
+   "minutes": 0.0,
+   "stopped_on_budget": false,
+   "errors": []
+  }
+ },
+ "finished": "2026-11-02T19:58:09Z"
+}
