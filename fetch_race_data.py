@@ -1709,6 +1709,49 @@ def do_be_dem():
     ok=sum(v is not None for v in out)
     json.dump({'best':[None if v is None else round(v,2) for v in out],'best_src':'the Berlin ATKIS DGM1 1 m bare-earth model (Geoportal Berlin, dl-de/zero-2-0)','info':info},open(os.path.join(OUT,'dem_be1m.json'),'w'))
     done('be_dem',points=len(P),ok=ok,tiles=len(need),links=len(links))
+def do_bayern_ndsm(corr_km=0.45):
+    """Bavaria: building heights and tree crowns from the open surface model (DOM, 40 cm or 20 cm) minus the 1 m terrain model (DGM1),
+    1 km tiles within corr_km of the course (LDBV open data, CC BY 4.0). Tries the known tile paths on the first tile and keeps the one that answers."""
+    from pyproj import Transformer
+    T=Transformer.from_crs('EPSG:4326','EPSG:25832',always_xy=True)
+    cx,cy=course_xy('EPSG:25832');tiles=sorted({(int(x//1000),int(y//1000)) for x,y in zip(cx,cy)})
+    # widen to tiles whose square is within corr_km of the line
+    from scipy.spatial import cKDTree
+    kt=cKDTree(np.c_[cx,cy]);cand=set()
+    for e_,n_ in tiles:
+        for de in(-1,0,1):
+            for dn in(-1,0,1):cand.add((e_+de,n_+dn))
+    tiles=sorted(t for t in cand if kt.query([t[0]*1000+500,t[1]*1000+500])[0]<=corr_km*1000+710)
+    DOM=['https://download1.bayernwolke.de/a/dom40/DOM/{e}_{n}.tif','https://download1.bayernwolke.de/a/dom20/DOM/{e}_{n}.tif','https://download1.bayernwolke.de/a/dom20/dom20/{e}_{n}.tif']
+    DGM=['https://download1.bayernwolke.de/a/dgm/dgm1/{e}_{n}.tif','https://download1.bayernwolke.de/a/dgm/dgm1/dgm1_{e}_{n}.tif']
+    def first_ok(pats,e_,n_):
+        for p in pats:
+            u=p.format(e=e_,n=n_)
+            try:
+                r=requests.head(u,headers=UA,timeout=60,allow_redirects=True)
+                if r.status_code==200:return p
+            except Exception:pass
+        return None
+    mid=tiles[len(tiles)//2];pd=first_ok(DOM,*mid);pg=first_ok(DGM,*mid);log('bayern ndsm tiles',len(tiles),'dom',pd,'dgm',pg)
+    if not pd or not pg:return failed('bayern_ndsm','no DOM or DGM1 tile path answered: dom %s dgm %s'%(pd,pg))
+    os.makedirs('/tmp/bnd',exist_ok=True);pairs=[]
+    def fetch(u):
+        fp='/tmp/bnd/'+u.rsplit('/',1)[-1].replace('.tif','')+('_dom' if '/dom' in u else '_dgm')+'.tif'
+        if os.path.exists(fp):return fp
+        r=requests.get(u,headers=UA,timeout=600)
+        if r.status_code!=200:return None
+        open(fp,'wb').write(r.content);return fp
+    acc=NdsmAcc('EPSG:25832',int(corr_km*1000),200,60000);ok=0
+    for k,(e_,n_) in enumerate(tiles):
+        a=fetch(pd.format(e=e_,n=n_));b=fetch(pg.format(e=e_,n=n_))
+        if a and b:acc.add(a,b,1.0,'%d_%d'%(e_,n_));ok+=1
+        for f in(a,b):
+            try:
+                if f:os.remove(f)
+            except Exception:pass
+        if k%20==0:log('bayern ndsm',k,len(tiles))
+    nb,nt,tot=acc.write()
+    done('bayern_ndsm',tiles=len(tiles),tiles_ok=ok,dom=pd,dgm=pg,buildings_with_height=nb,trees_kept=nt,trees_found=tot,stats=acc.stats)
 def do_script_test():
     """Run the site's forecast scripts (tools/) for a few courses with a near race date, to test them against the live servers."""
     import subprocess
@@ -1976,7 +2019,7 @@ def run():
     if ONLY:   # re-run selected sources only, keeping the rest of the report
         try:REPORT['sources']=json.load(open(os.path.join(OUT,'report.json'))).get('sources',{})
         except Exception:pass
-        F={'au_dem':do_au_dem,'be_dem':do_be_dem,'script_test':do_script_test,'wx_hist':do_wx_hist,'wx_grid':do_wx_grid,'wx_extra':do_wx_extra,'s3probe':do_s3probe,'wx_audit':do_wx_audit,'zenodo_meta':do_zenodo_meta,'s2box':do_s2box,'wx_replay':do_wx_replay,'osm_detail':do_osm_detail,'box1m':do_box1m,'leaftype':do_leaftype,'osm':do_osm,'terrain':do_terrain,'profile':do_profile,'nz':do_nz,'ndsm':do_nz_ndsm if spec.get('region')=='nz' else None,'bayern':do_bayern,'bayern_probe':do_bayern_probe if spec.get('region')=='bayern' else None,'lod2':do_bayern_lod2 if spec.get('region')=='bayern' else None,'us_lidar':do_us_lidar if spec.get('region')=='us' else None,'us':do_us if spec.get('region')=='us' else None,'hessen':do_hessen if spec.get('region')=='hessen' else None,'hessen_box':do_hessen_box if spec.get('region')=='hessen' else None,'hessen_spots':do_hessen_spots if spec.get('region')=='hessen' else None,'us_spots':do_us_spots if spec.get('region')=='us' else None,'wales':do_wales if spec.get('region')=='wales' else None,'england':do_england if spec.get('region')=='england' else None,'france':do_france if spec.get('region')=='france' else None}
+        F={'au_dem':do_au_dem,'bayern_ndsm':do_bayern_ndsm,'be_dem':do_be_dem,'script_test':do_script_test,'wx_hist':do_wx_hist,'wx_grid':do_wx_grid,'wx_extra':do_wx_extra,'s3probe':do_s3probe,'wx_audit':do_wx_audit,'zenodo_meta':do_zenodo_meta,'s2box':do_s2box,'wx_replay':do_wx_replay,'osm_detail':do_osm_detail,'box1m':do_box1m,'leaftype':do_leaftype,'osm':do_osm,'terrain':do_terrain,'profile':do_profile,'nz':do_nz,'ndsm':do_nz_ndsm if spec.get('region')=='nz' else None,'bayern':do_bayern,'bayern_probe':do_bayern_probe if spec.get('region')=='bayern' else None,'lod2':do_bayern_lod2 if spec.get('region')=='bayern' else None,'us_lidar':do_us_lidar if spec.get('region')=='us' else None,'us':do_us if spec.get('region')=='us' else None,'hessen':do_hessen if spec.get('region')=='hessen' else None,'hessen_box':do_hessen_box if spec.get('region')=='hessen' else None,'hessen_spots':do_hessen_spots if spec.get('region')=='hessen' else None,'us_spots':do_us_spots if spec.get('region')=='us' else None,'wales':do_wales if spec.get('region')=='wales' else None,'england':do_england if spec.get('region')=='england' else None,'france':do_france if spec.get('region')=='france' else None}
         for k in ONLY:
             fn=F.get(k)
             if not fn:continue
