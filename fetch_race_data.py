@@ -1732,14 +1732,25 @@ def do_bayern_ndsm(corr_km=0.45):
                 if r.status_code==200:return p
             except Exception:pass
         return None
-    mid=tiles[len(tiles)//2];pd=first_ok(DOM,*mid);pg=first_ok(DGM,*mid);log('bayern ndsm tiles',len(tiles),'dom',pd,'dgm',pg)
-    if not pd or not pg:return failed('bayern_ndsm','no DOM or DGM1 tile path answered: dom %s dgm %s'%(pd,pg))
+    mid=tiles[len(tiles)//2];pd=first_ok(DOM,*mid);pg=first_ok(DGM,*mid)
+    LAZ='https://geodaten.bayern.de/odd_data/laser/{e}_{n}.laz'
+    if not pd and first_ok([LAZ],*mid):pd=LAZ   # the open surface model is not published; the open point cloud is: build the surface from it
+    log('bayern ndsm tiles',len(tiles),'dom',pd,'dgm',pg)
+    if not pd or not pg:return failed('bayern_ndsm','no surface or DGM1 tile path answered: dom %s dgm %s'%(pd,pg))
     os.makedirs('/tmp/bnd',exist_ok=True);pairs=[]
     def fetch(u):
-        fp='/tmp/bnd/'+u.rsplit('/',1)[-1].replace('.tif','')+('_dom' if '/dom' in u else '_dgm')+'.tif'
+        fp='/tmp/bnd/'+u.rsplit('/',1)[-1].replace('.tif','').replace('.laz','')+('_dom' if ('/dom' in u or u.endswith('.laz')) else '_dgm')+'.tif'
         if os.path.exists(fp):return fp
-        r=requests.get(u,headers=UA,timeout=600)
+        r=requests.get(u,headers=UA,timeout=900)
         if r.status_code!=200:return None
+        if u.endswith('.laz'):
+            import laspy
+            from rasterio.transform import from_origin
+            L=laspy.read(io.BytesIO(r.content));x=np.asarray(L.x);y=np.asarray(L.y);z=np.asarray(L.z,dtype=np.float32);c=np.asarray(L.classification)
+            e0=int(u.rsplit('/',1)[-1].split('_')[0])*1000;n0=int(u.rsplit('/',1)[-1].split('_')[1].split('.')[0])*1000
+            k=(c!=7)&(c!=18)&(x>=e0)&(x<e0+1000)&(y>=n0)&(y<n0+1000);ix=(x[k]-e0).astype(np.int32);iy=(n0+999-y[k]).astype(np.int32);iy=np.clip(iy,0,999);zz=z[k]
+            o=np.argsort(zz,kind='stable');g=np.full(1000*1000,-9999,np.float32);g[(iy*1000+ix)[o]]=zz[o];g=g.reshape(1000,1000)
+            write_tif(fp,g[None],from_origin(e0,n0+1000,1,1),CRS.from_epsg(25832),nodata=-9999);del L,x,y,z,c;return fp
         open(fp,'wb').write(r.content);return fp
     acc=NdsmAcc('EPSG:25832',int(corr_km*1000),200,60000);ok=0
     for k,(e_,n_) in enumerate(tiles):
