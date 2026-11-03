@@ -4,8 +4,8 @@
   "wanted": 165,
   "by_src": {
    "era5": 15,
-   "hrrr": 45,
-   "ifs": 105
+   "ifs": 105,
+   "hrrr": 45
   }
  },
  "chattanooga": {
@@ -13,8 +13,8 @@
   "wanted": 165,
   "by_src": {
    "era5": 15,
-   "hrrr": 60,
-   "ifs": 90
+   "ifs": 90,
+   "hrrr": 60
   }
  },
  "chattanooga703": {
@@ -22,8 +22,8 @@
   "wanted": 169,
   "by_src": {
    "era5": 15,
-   "hrrr": 63,
-   "ifs": 91
+   "ifs": 91,
+   "hrrr": 63
   }
  },
  "bostonmar": {
@@ -31,8 +31,8 @@
   "wanted": 165,
   "by_src": {
    "era5": 15,
-   "hrrr": 45,
-   "ifs": 105
+   "ifs": 105,
+   "hrrr": 45
   }
  },
  "chicagomar": {
@@ -40,8 +40,8 @@
   "wanted": 165,
   "by_src": {
    "era5": 15,
-   "hrrr": 60,
-   "ifs": 90
+   "ifs": 90,
+   "hrrr": 60
   }
  },
  "nycmar": {
@@ -49,8 +49,8 @@
   "wanted": 150,
   "by_src": {
    "era5": 15,
-   "hrrr": 45,
-   "ifs": 90
+   "ifs": 90,
+   "hrrr": 45
   }
  }
 }
