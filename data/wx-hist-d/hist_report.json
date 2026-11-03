@@ -4,8 +4,8 @@
   "wanted": 165,
   "by_src": {
    "ukv": 75,
-   "ifs": 75,
-   "era5": 15
+   "era5": 15,
+   "ifs": 75
   }
  },
  "weymouth703": {
@@ -13,8 +13,8 @@
   "wanted": 165,
   "by_src": {
    "ukv": 75,
-   "ifs": 75,
-   "era5": 15
+   "era5": 15,
+   "ifs": 75
   }
  },
  "londonmar": {
@@ -22,32 +22,32 @@
   "wanted": 165,
   "by_src": {
    "ukv": 75,
-   "ifs": 75,
-   "era5": 15
+   "era5": 15,
+   "ifs": 75
   }
  },
  "taupo": {
   "days": 165,
   "wanted": 165,
   "by_src": {
-   "ifs": 150,
-   "era5": 15
+   "era5": 15,
+   "ifs": 150
   }
  },
  "sydneymar": {
   "days": 165,
   "wanted": 165,
   "by_src": {
-   "ifs": 150,
-   "era5": 15
+   "era5": 15,
+   "ifs": 150
   }
  },
  "tokyomar": {
   "days": 165,
   "wanted": 165,
   "by_src": {
-   "ifs": 150,
-   "era5": 15
+   "era5": 15,
+   "ifs": 150
   }
  }
 }
