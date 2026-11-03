@@ -1522,12 +1522,17 @@ def _om_point_days(model,g,rule,shift,lapse,chl,la,lo,z,tz,days,H0,H1):
                 try:M=rd('pressure_msl');P=[m*(1-0.0065*(z or 0)/(t+0.0065*(z or 0)+273.15))**5.257 for m,t in zip(M,T)]
                 except Exception:P=[1013.25*math.exp(-(z or 0)/8434)]*N
             P=[x/100 if x is not None and x>2000 else x for x in P]  # some archives store Pa, the app wants hPa
+            PR=None;PR0=None   # precipitation (mm/h) for the race hours, and the 6 h before the first hour (wet roads at the start)
+            if 'precipitation' in V:
+                try:
+                    q=_om_range(model,g,'precipitation',cell,(t0-dt.timedelta(hours=6)).strftime('%Y-%m-%dT%H:00'),N+6,chl);PR0=q[:6];PR=q[6:]
+                except Exception as ex:log('wx_hist precip',model,run[0],repr(ex)[:120]);PR=None
         except Exception as ex:log('wx_hist',model,run[0],repr(ex)[:160]);continue
         for day in run:
             k=int((utc(day)-t0).total_seconds()//3600);sl=slice(k,k+n);tt=T[sl]
             if len(tt)<n or any(x!=x for x in tt+WS[sl]):continue
             out[day]=dict(ws=[round(x,2) for x in WS[sl]],wd=[round(x) for x in WD[sl]],wg=[round(x,2) for x in G[sl]],t=[round(x,2) for x in tt],rh=[round(x,1) for x in RH[sl]],
-                          ghi=[None if x is None or x!=x else round(x) for x in SW[sl]],p=[round(x,1) for x in P[sl]])
+                          ghi=[None if x is None or x!=x else round(x) for x in SW[sl]],p=[round(x,1) for x in P[sl]],**({'pr':[None if x is None or x!=x else round(max(0,x),2) for x in PR[sl]],'pr6':(None if k<6 and PR0 is None else round(sum(max(0,x) for x in ((PR0 or [])[k:]+PR[max(0,k-6):k]) if x==x),2))} if PR is not None and len(PR)>=k+n else {}))
     return out
 def _urma_days(pts,days,H0,H1,tz,d):
     """NOAA URMA Hawaii 2.5 km analyses at the points: {date: [per point dict]}"""
