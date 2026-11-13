@@ -1780,6 +1780,73 @@ def do_be_dem():
     ok=sum(v is not None for v in out)
     json.dump({'best':[None if v is None else round(v,2) for v in out],'best_src':'the Berlin ATKIS DGM1 1 m bare-earth model (Geoportal Berlin, dl-de/zero-2-0)','info':info},open(os.path.join(OUT,'dem_be1m.json'),'w'))
     done('be_dem',points=len(P),ok=ok,tiles=len(need),links=len(links))
+def do_be_box():
+    """Berlin ATKIS DGM1 (1 m bare earth, Geoportal Berlin, Datenlizenz Deutschland Zero 2.0) as a grid: every 2 km tile within spec['buffer_m'] (default 900 m)
+    of the points in spec['pts'] ([lat, lon]), read from the INSPIRE ATOM feed, averaged to 2 m and written as dem_be2m_box.tif (EPSG:25833, float32, NaN no data).
+    The xyz tiles are read and dropped one at a time. Keeps a diagnostic of every step in be_box.json."""
+    import numpy as np, re, io, zipfile, rasterio
+    from pyproj import Transformer
+    from rasterio.transform import from_origin
+    P=spec['pts'];BUF=float(spec.get('buffer_m',900));info={'tries':[]}
+    def note(k,r):info['tries'].append([k,getattr(r,'status_code',None),(r.content[:200].decode('latin1') if hasattr(r,'content') else str(r)[:200])])
+    T=Transformer.from_crs(4326,25833,always_xy=True);XY=np.array([T.transform(lo,la) for la,lo in P])
+    FEEDS=['https://gdi.berlin.de/data/dgm1/atom/','https://gdi.berlin.de/data/dgm1/atom','https://gdi.berlin.de/data/el_dgm/atom/']
+    links=set();seen=set()
+    def crawl(u,depth):
+        if u in seen or depth>3:return
+        seen.add(u)
+        try:r=requests.get(u,headers=UA,timeout=120);note('feed d%d '%depth+u,r)
+        except Exception as e:note('feed-exc '+u,e);return
+        if r.status_code!=200:return
+        t=r.text;hs=set(re.findall(r'href="([^"]+)"',t))|set(re.findall(r'<id>(http[^<]+)</id>',t))
+        for h in hs:
+            h=h.replace('&amp;','&');h=requests.compat.urljoin(u,h)
+            if re.search(r'\.(zip|tif|tiff|xyz|txt)(\?|$)',h,re.I):links.add(h)
+            elif ('gdi.berlin.de' in h) and re.search(r'(atom|feed|\.xml)',h,re.I):crawl(h,depth+1)
+    for f in FEEDS:
+        crawl(f,0)
+        if links:break
+    links=sorted(links);info['n_links']=len(links);info['links_sample']=links[:10]
+    def tile_of(h):
+        nums=[int(x) for x in re.findall(r'(?<!\d)(\d{3,7})(?!\d)',h.rsplit('/',1)[-1])]
+        e=[n for n in nums if 300<=n<=500 or 300000<=n<=500000];n_=[n for n in nums if 5700<=n<=5900 or 5700000<=n<=5900000]
+        if not e or not n_:return None
+        return (e[0]*1000 if e[0]<1000 else e[0]),(n_[0]*1000 if n_[0]<10000 else n_[0])
+    tiles={h:tile_of(h) for h in links};tiles={h:t for h,t in tiles.items() if t}
+    es=sorted({t[0] for t in tiles.values()});step=min([b-a for a,b in zip(es,es[1:]) if b>a] or [2000]);info['tile_step_m']=step;info['n_tiles_named']=len(tiles)
+    need=[h for h,(E,N) in tiles.items() if (np.hypot(np.clip(XY[:,0],E,E+step)-XY[:,0],np.clip(XY[:,1],N,N+step)-XY[:,1])<=BUF).any()]
+    info['n_tiles_needed']=len(need);log('be_box links',len(links),'named',len(tiles),'needed',len(need),'step',step)
+    if not need:
+        json.dump(info,open(os.path.join(OUT,'be_box.json'),'w'));done('be_box',status='no tiles',links=len(links));return
+    E0=min(tiles[h][0] for h in need);N0=min(tiles[h][1] for h in need);E1=max(tiles[h][0] for h in need)+step;N1=max(tiles[h][1] for h in need)+step
+    R=2.0;W=int((E1-E0)/R);H=int((N1-N0)/R);acc=np.zeros((H,W),np.float32);cnt=np.zeros((H,W),np.uint8);got=0
+    for h in need:
+        try:
+            r=requests.get(h,headers=UA,timeout=900)
+            if r.status_code!=200:note('tile '+h,r);continue
+            b=r.content;files=[]
+            if b[:2]==b'PK':
+                z=zipfile.ZipFile(io.BytesIO(b));files=[(n,z.read(n)) for n in z.namelist() if re.search(r'\.(xyz|txt|tif|tiff|csv)$',n,re.I)]
+            else:files=[(h,b)]
+            for n,data in files:
+                if data[:2] in (b'II',b'MM'):
+                    with rasterio.MemoryFile(data) as mf, mf.open() as d:
+                        a=d.read(1).astype('float32');tr=d.transform;rr,cc=np.mgrid[0:a.shape[0],0:a.shape[1]];xs=tr.c+(cc+0.5)*tr.a;ys=tr.f+(rr+0.5)*tr.e;zs=a.ravel();xs=xs.ravel();ys=ys.ravel()
+                else:
+                    import pandas as pd
+                    head=data[:400]
+                    if b';' in head or b',' in head.split(b'\n')[0]:data=data.replace(b';',b' ').replace(b',',b' ')
+                    df=pd.read_csv(io.BytesIO(data),sep=r'\s+',header=None,usecols=[0,1,2],names=['x','y','z'],comment='#')
+                    df=df[pd.to_numeric(df.x,errors='coerce').notna()].astype('float64');xs=df.x.values;ys=df.y.values;zs=df.z.values.astype('float32')
+                del data
+                ok=(zs>-20)&(zs<500);ci=((xs-E0)/R).astype(int);ri=((N1-ys)/R).astype(int);ok&=(ci>=0)&(ci<W)&(ri>=0)&(ri<H)
+                np.add.at(acc,(ri[ok],ci[ok]),zs[ok]);np.add.at(cnt,(ri[ok],ci[ok]),1);got+=1
+            log('be_box tile',h.rsplit('/',1)[-1],'ok')
+        except Exception as e:note('tile-exc '+h,e)
+    out=np.where(cnt>0,acc/np.maximum(cnt,1),np.nan).astype(np.float32)
+    with rasterio.open(os.path.join(OUT,'dem_be2m_box.tif'),'w',driver='GTiff',height=H,width=W,count=1,dtype='float32',crs='EPSG:25833',transform=from_origin(E0,N1,R,R),nodata=float('nan'),compress='deflate',predictor=3,tiled=True) as d:d.write(out,1)
+    json.dump(info,open(os.path.join(OUT,'be_box.json'),'w'))
+    done('be_box',tiles=len(need),got=got,cover=round(float(np.isfinite(out).mean()),3),credit='Berlin ATKIS DGM1, Geoportal Berlin (dl-de/zero-2-0)')
 def do_bayern_ndsm(corr_km=0.45):
     """Bavaria: building heights and tree crowns from the open surface model (DOM, 40 cm or 20 cm) minus the 1 m terrain model (DGM1),
     1 km tiles within corr_km of the course (LDBV open data, CC BY 4.0). Tries the known tile paths on the first tile and keeps the one that answers."""
@@ -2101,7 +2168,7 @@ def run():
     if ONLY:   # re-run selected sources only, keeping the rest of the report
         try:REPORT['sources']=json.load(open(os.path.join(OUT,'report.json'))).get('sources',{})
         except Exception:pass
-        F={'au_dem':do_au_dem,'au_box':do_au_box,'jp_dem':do_jp_dem,'bayern_ndsm':do_bayern_ndsm,'be_dem':do_be_dem,'script_test':do_script_test,'wx_hist':do_wx_hist,'wx_grid':do_wx_grid,'wx_extra':do_wx_extra,'s3probe':do_s3probe,'wx_audit':do_wx_audit,'zenodo_meta':do_zenodo_meta,'s2box':do_s2box,'wx_replay':do_wx_replay,'osm_detail':do_osm_detail,'box1m':do_box1m,'leaftype':do_leaftype,'osm':do_osm,'terrain':do_terrain,'profile':do_profile,'nz':do_nz,'ndsm':do_nz_ndsm if spec.get('region')=='nz' else None,'bayern':do_bayern,'bayern_probe':do_bayern_probe if spec.get('region')=='bayern' else None,'lod2':do_bayern_lod2 if spec.get('region')=='bayern' else None,'us_lidar':do_us_lidar if spec.get('region')=='us' else None,'us':do_us if spec.get('region')=='us' else None,'hessen':do_hessen if spec.get('region')=='hessen' else None,'hessen_box':do_hessen_box if spec.get('region')=='hessen' else None,'hessen_spots':do_hessen_spots if spec.get('region')=='hessen' else None,'us_spots':do_us_spots if spec.get('region')=='us' else None,'wales':do_wales if spec.get('region')=='wales' else None,'england':do_england if spec.get('region')=='england' else None,'france':do_france if spec.get('region')=='france' else None}
+        F={'be_box':do_be_box,'au_dem':do_au_dem,'au_box':do_au_box,'jp_dem':do_jp_dem,'bayern_ndsm':do_bayern_ndsm,'be_dem':do_be_dem,'script_test':do_script_test,'wx_hist':do_wx_hist,'wx_grid':do_wx_grid,'wx_extra':do_wx_extra,'s3probe':do_s3probe,'wx_audit':do_wx_audit,'zenodo_meta':do_zenodo_meta,'s2box':do_s2box,'wx_replay':do_wx_replay,'osm_detail':do_osm_detail,'box1m':do_box1m,'leaftype':do_leaftype,'osm':do_osm,'terrain':do_terrain,'profile':do_profile,'nz':do_nz,'ndsm':do_nz_ndsm if spec.get('region')=='nz' else None,'bayern':do_bayern,'bayern_probe':do_bayern_probe if spec.get('region')=='bayern' else None,'lod2':do_bayern_lod2 if spec.get('region')=='bayern' else None,'us_lidar':do_us_lidar if spec.get('region')=='us' else None,'us':do_us if spec.get('region')=='us' else None,'hessen':do_hessen if spec.get('region')=='hessen' else None,'hessen_box':do_hessen_box if spec.get('region')=='hessen' else None,'hessen_spots':do_hessen_spots if spec.get('region')=='hessen' else None,'us_spots':do_us_spots if spec.get('region')=='us' else None,'wales':do_wales if spec.get('region')=='wales' else None,'england':do_england if spec.get('region')=='england' else None,'france':do_france if spec.get('region')=='france' else None}
         for k in ONLY:
             fn=F.get(k)
             if not fn:continue
