@@ -1635,6 +1635,25 @@ def do_au_dem():
     ok=sum(v is not None for v in out)
     json.dump({'best':[None if v is None else round(v,2) for v in out],'best_src':'Geoscience Australia DEM of Australia derived from LiDAR, 5 m grid (CC BY 4.0)','info':info},open(os.path.join(OUT,'dem_ga5m.json'),'w'))
     done('au_dem',points=len(P),ok=ok,wcs=info.get('wcs_ok'))
+def do_au_box():
+    """Geoscience Australia 5 m bare-earth DEM (LiDAR, CC BY 4.0) over spec['bbox'] = [west, south, east, north], by WCS in pieces of at most 1,200 cells a side
+    (the dialect that answered for the Sydney line: WCS 1.0.0, coverage 1, EPSG:4283). Writes ga5m_box_<row>_<col>.tif."""
+    Wc='https://services.ga.gov.au/gis/services/DEM_LiDAR_5m_2025/MapServer/WCSServer'
+    w,s_,e,n=spec['bbox'];dlon=5/(111320*math.cos(math.radians((s_+n)/2)));dlat=5/110574
+    nx=max(1,math.ceil((e-w)/dlon/1200));ny=max(1,math.ceil((n-s_)/dlat/1200));got=0;fail=[]
+    for j in range(ny):
+        for i in range(nx):
+            bb=(w+(e-w)*i/nx,s_+(n-s_)*j/ny,w+(e-w)*(i+1)/nx,s_+(n-s_)*(j+1)/ny);wd=int(round((bb[2]-bb[0])/dlon));ht=int(round((bb[3]-bb[1])/dlat));ok=False
+            for k in range(3):
+                try:
+                    r=requests.get(Wc,params={'service':'WCS','version':'1.0.0','request':'GetCoverage','coverage':'1','crs':'EPSG:4283','bbox':'%f,%f,%f,%f'%bb,'width':str(wd),'height':str(ht),'format':'GeoTIFF'},headers=UA,timeout=300)
+                    if r.status_code==200 and r.content[:2] in (b'II',b'MM'):
+                        open(os.path.join(OUT,'ga5m_box_%d_%d.tif'%(j,i)),'wb').write(r.content);got+=1;ok=True;break
+                    fail.append([j,i,r.status_code,r.content[:120].decode('latin1')])
+                except Exception as ex:fail.append([j,i,'exc',str(ex)[:120]])
+                time.sleep(4*(k+1))
+            log('au_box piece',j,i,ok)
+    done('au_box',pieces=nx*ny,got=got,fail=fail[:6],credit='Geoscience Australia DEM of Australia derived from LiDAR, 5 m grid (CC BY 4.0)')
 def do_jp_dem():
     """Japan: GSI elevation tiles (Geospatial Information Authority of Japan, Government of Japan Standard Terms of Use 2.0, credit GSI) over spec['bbox'] = [west, south, east, north].
     Bare-earth 5 m models first (DEM5A airborne laser, then DEM5B, DEM5C), the 10 m model where none of them has a value. PNG encoding: x = 65536 R + 256 G + B;
@@ -2082,7 +2101,7 @@ def run():
     if ONLY:   # re-run selected sources only, keeping the rest of the report
         try:REPORT['sources']=json.load(open(os.path.join(OUT,'report.json'))).get('sources',{})
         except Exception:pass
-        F={'au_dem':do_au_dem,'jp_dem':do_jp_dem,'bayern_ndsm':do_bayern_ndsm,'be_dem':do_be_dem,'script_test':do_script_test,'wx_hist':do_wx_hist,'wx_grid':do_wx_grid,'wx_extra':do_wx_extra,'s3probe':do_s3probe,'wx_audit':do_wx_audit,'zenodo_meta':do_zenodo_meta,'s2box':do_s2box,'wx_replay':do_wx_replay,'osm_detail':do_osm_detail,'box1m':do_box1m,'leaftype':do_leaftype,'osm':do_osm,'terrain':do_terrain,'profile':do_profile,'nz':do_nz,'ndsm':do_nz_ndsm if spec.get('region')=='nz' else None,'bayern':do_bayern,'bayern_probe':do_bayern_probe if spec.get('region')=='bayern' else None,'lod2':do_bayern_lod2 if spec.get('region')=='bayern' else None,'us_lidar':do_us_lidar if spec.get('region')=='us' else None,'us':do_us if spec.get('region')=='us' else None,'hessen':do_hessen if spec.get('region')=='hessen' else None,'hessen_box':do_hessen_box if spec.get('region')=='hessen' else None,'hessen_spots':do_hessen_spots if spec.get('region')=='hessen' else None,'us_spots':do_us_spots if spec.get('region')=='us' else None,'wales':do_wales if spec.get('region')=='wales' else None,'england':do_england if spec.get('region')=='england' else None,'france':do_france if spec.get('region')=='france' else None}
+        F={'au_dem':do_au_dem,'au_box':do_au_box,'jp_dem':do_jp_dem,'bayern_ndsm':do_bayern_ndsm,'be_dem':do_be_dem,'script_test':do_script_test,'wx_hist':do_wx_hist,'wx_grid':do_wx_grid,'wx_extra':do_wx_extra,'s3probe':do_s3probe,'wx_audit':do_wx_audit,'zenodo_meta':do_zenodo_meta,'s2box':do_s2box,'wx_replay':do_wx_replay,'osm_detail':do_osm_detail,'box1m':do_box1m,'leaftype':do_leaftype,'osm':do_osm,'terrain':do_terrain,'profile':do_profile,'nz':do_nz,'ndsm':do_nz_ndsm if spec.get('region')=='nz' else None,'bayern':do_bayern,'bayern_probe':do_bayern_probe if spec.get('region')=='bayern' else None,'lod2':do_bayern_lod2 if spec.get('region')=='bayern' else None,'us_lidar':do_us_lidar if spec.get('region')=='us' else None,'us':do_us if spec.get('region')=='us' else None,'hessen':do_hessen if spec.get('region')=='hessen' else None,'hessen_box':do_hessen_box if spec.get('region')=='hessen' else None,'hessen_spots':do_hessen_spots if spec.get('region')=='hessen' else None,'us_spots':do_us_spots if spec.get('region')=='us' else None,'wales':do_wales if spec.get('region')=='wales' else None,'england':do_england if spec.get('region')=='england' else None,'france':do_france if spec.get('region')=='france' else None}
         for k in ONLY:
             fn=F.get(k)
             if not fn:continue
