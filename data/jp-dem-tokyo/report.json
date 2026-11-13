@@ -1,0 +1,23 @@
+{
+ "id": "jp-dem-tokyo",
+ "started": "2026-11-13T09:29:25Z",
+ "sources": {
+  "jp_dem": {
+   "status": "ok",
+   "tiles": 240,
+   "size": [
+    4096,
+    3840
+   ],
+   "share": {
+    "none": 0.0699,
+    "dem5a": 0.8965,
+    "dem5b": 0.0,
+    "dem5c": 0.0,
+    "dem10": 0.0336
+   },
+   "credit": "Geospatial Information Authority of Japan (GSI) elevation tiles"
+  }
+ },
+ "finished": "2026-11-13T09:30:15Z"
+}
