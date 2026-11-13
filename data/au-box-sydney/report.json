@@ -1,0 +1,14 @@
+{
+ "id": "au-box-sydney",
+ "started": "2026-11-13T09:30:55Z",
+ "sources": {
+  "au_box": {
+   "status": "ok",
+   "pieces": 6,
+   "got": 6,
+   "fail": [],
+   "credit": "Geoscience Australia DEM of Australia derived from LiDAR, 5 m grid (CC BY 4.0)"
+  }
+ },
+ "finished": "2026-11-13T09:31:12Z"
+}
