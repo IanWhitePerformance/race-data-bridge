@@ -1635,6 +1635,53 @@ def do_au_dem():
     ok=sum(v is not None for v in out)
     json.dump({'best':[None if v is None else round(v,2) for v in out],'best_src':'Geoscience Australia DEM of Australia derived from LiDAR, 5 m grid (CC BY 4.0)','info':info},open(os.path.join(OUT,'dem_ga5m.json'),'w'))
     done('au_dem',points=len(P),ok=ok,wcs=info.get('wcs_ok'))
+def do_jp_dem():
+    """Japan: GSI elevation tiles (Geospatial Information Authority of Japan, Government of Japan Standard Terms of Use 2.0, credit GSI) over spec['bbox'] = [west, south, east, north].
+    Bare-earth 5 m models first (DEM5A airborne laser, then DEM5B, DEM5C), the 10 m model where none of them has a value. PNG encoding: x = 65536 R + 256 G + B;
+    x < 2^23 is x * 0.01 m, x = 2^23 is no data, x > 2^23 is (x - 2^24) * 0.01 m. Writes gsi_dem_box.tif (EPSG:3857, float32, no data NaN) and gsi_src_box.tif (which layer each cell came from)."""
+    import numpy as np, rasterio, io
+    from PIL import Image
+    from rasterio.transform import from_bounds
+    from concurrent.futures import ThreadPoolExecutor
+    w,s_,e,n=spec['bbox'];Z=15;N=2**Z
+    def tx(lon):return int((lon+180)/360*N)
+    def ty(lat):r=math.radians(lat);return int((1-math.log(math.tan(r)+1/math.cos(r))/math.pi)/2*N)
+    x0,x1,y0,y1=tx(w),tx(e),ty(n),ty(s_);W=(x1-x0+1)*256;H=(y1-y0+1)*256
+    out=np.full((H,W),np.nan,np.float32);src=np.zeros((H,W),np.uint8);stats={}
+    def get(layer,z,x,y):
+        u='https://cyberjapandata.gsi.go.jp/xyz/%s/%d/%d/%d.png'%(layer,z,x,y)
+        for k in range(3):
+            try:
+                r=requests.get(u,headers=UA,timeout=60)
+                if r.status_code==404:return None
+                if r.status_code==200:
+                    a=np.asarray(Image.open(io.BytesIO(r.content)).convert('RGB')).astype(np.int64);v=a[:,:,0]*65536+a[:,:,1]*256+a[:,:,2]
+                    h=np.where(v<2**23,v*0.01,(v-2**24)*0.01).astype(np.float32);h[v==2**23]=np.nan;return h
+            except Exception:pass
+            time.sleep(1.5*(k+1))
+        return None
+    jobs=[(x,y) for x in range(x0,x1+1) for y in range(y0,y1+1)]
+    def one(xy):
+        x,y=xy;tile=np.full((256,256),np.nan,np.float32);ts=np.zeros((256,256),np.uint8)
+        for li,layer in enumerate(('dem5a_png','dem5b_png','dem5c_png')):
+            if not np.isnan(tile).any():break
+            h=get(layer,Z,x,y)
+            if h is None:continue
+            m=np.isnan(tile)&np.isfinite(h);tile[m]=h[m];ts[m]=li+1
+        if np.isnan(tile).any():   # the 10 m model stops at zoom 14: take the parent tile and its quarter, doubled
+            h=get('dem_png',14,x//2,y//2)
+            if h is not None:
+                q=h[(y%2)*128:(y%2)*128+128,(x%2)*128:(x%2)*128+128];q=np.repeat(np.repeat(q,2,0),2,1);m=np.isnan(tile)&np.isfinite(q);tile[m]=q[m];ts[m]=4
+        return x,y,tile,ts
+    with ThreadPoolExecutor(6) as ex:
+        for x,y,tile,ts in ex.map(one,jobs):
+            out[(y-y0)*256:(y-y0+1)*256,(x-x0)*256:(x-x0+1)*256]=tile;src[(y-y0)*256:(y-y0+1)*256,(x-x0)*256:(x-x0+1)*256]=ts
+    R=6378137.0;mx=lambda xt:(xt/N*2-1)*math.pi*R;my=lambda yt:(1-yt/N*2)*math.pi*R
+    tr=from_bounds(mx(x0),my(y1+1),mx(x1+1),my(y0),W,H)
+    with rasterio.open(os.path.join(OUT,'gsi_dem_box.tif'),'w',driver='GTiff',height=H,width=W,count=1,dtype='float32',crs='EPSG:3857',transform=tr,nodata=float('nan'),compress='deflate',predictor=3,tiled=True) as d:d.write(out,1)
+    with rasterio.open(os.path.join(OUT,'gsi_src_box.tif'),'w',driver='GTiff',height=H,width=W,count=1,dtype='uint8',crs='EPSG:3857',transform=tr,compress='deflate',tiled=True) as d:d.write(src,1)
+    for k,nm in enumerate(('none','dem5a','dem5b','dem5c','dem10')):stats[nm]=round(float((src==k).mean()),4)
+    done('jp_dem',tiles=len(jobs),size=[W,H],share=stats,credit='Geospatial Information Authority of Japan (GSI) elevation tiles')
 def do_be_dem():
     """Berlin ATKIS DGM1 (1 m bare earth, Geoportal Berlin, Datenlizenz Deutschland Zero 2.0) at the points in spec['pts'] ([lat, lon]).
     Reads the INSPIRE ATOM download feed, fetches only the tiles under the points, samples a 3 x 3 m median at each point.
@@ -2035,7 +2082,7 @@ def run():
     if ONLY:   # re-run selected sources only, keeping the rest of the report
         try:REPORT['sources']=json.load(open(os.path.join(OUT,'report.json'))).get('sources',{})
         except Exception:pass
-        F={'au_dem':do_au_dem,'bayern_ndsm':do_bayern_ndsm,'be_dem':do_be_dem,'script_test':do_script_test,'wx_hist':do_wx_hist,'wx_grid':do_wx_grid,'wx_extra':do_wx_extra,'s3probe':do_s3probe,'wx_audit':do_wx_audit,'zenodo_meta':do_zenodo_meta,'s2box':do_s2box,'wx_replay':do_wx_replay,'osm_detail':do_osm_detail,'box1m':do_box1m,'leaftype':do_leaftype,'osm':do_osm,'terrain':do_terrain,'profile':do_profile,'nz':do_nz,'ndsm':do_nz_ndsm if spec.get('region')=='nz' else None,'bayern':do_bayern,'bayern_probe':do_bayern_probe if spec.get('region')=='bayern' else None,'lod2':do_bayern_lod2 if spec.get('region')=='bayern' else None,'us_lidar':do_us_lidar if spec.get('region')=='us' else None,'us':do_us if spec.get('region')=='us' else None,'hessen':do_hessen if spec.get('region')=='hessen' else None,'hessen_box':do_hessen_box if spec.get('region')=='hessen' else None,'hessen_spots':do_hessen_spots if spec.get('region')=='hessen' else None,'us_spots':do_us_spots if spec.get('region')=='us' else None,'wales':do_wales if spec.get('region')=='wales' else None,'england':do_england if spec.get('region')=='england' else None,'france':do_france if spec.get('region')=='france' else None}
+        F={'au_dem':do_au_dem,'jp_dem':do_jp_dem,'bayern_ndsm':do_bayern_ndsm,'be_dem':do_be_dem,'script_test':do_script_test,'wx_hist':do_wx_hist,'wx_grid':do_wx_grid,'wx_extra':do_wx_extra,'s3probe':do_s3probe,'wx_audit':do_wx_audit,'zenodo_meta':do_zenodo_meta,'s2box':do_s2box,'wx_replay':do_wx_replay,'osm_detail':do_osm_detail,'box1m':do_box1m,'leaftype':do_leaftype,'osm':do_osm,'terrain':do_terrain,'profile':do_profile,'nz':do_nz,'ndsm':do_nz_ndsm if spec.get('region')=='nz' else None,'bayern':do_bayern,'bayern_probe':do_bayern_probe if spec.get('region')=='bayern' else None,'lod2':do_bayern_lod2 if spec.get('region')=='bayern' else None,'us_lidar':do_us_lidar if spec.get('region')=='us' else None,'us':do_us if spec.get('region')=='us' else None,'hessen':do_hessen if spec.get('region')=='hessen' else None,'hessen_box':do_hessen_box if spec.get('region')=='hessen' else None,'hessen_spots':do_hessen_spots if spec.get('region')=='hessen' else None,'us_spots':do_us_spots if spec.get('region')=='us' else None,'wales':do_wales if spec.get('region')=='wales' else None,'england':do_england if spec.get('region')=='england' else None,'france':do_france if spec.get('region')=='france' else None}
         for k in ONLY:
             fn=F.get(k)
             if not fn:continue

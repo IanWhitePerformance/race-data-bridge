@@ -13,6 +13,8 @@ Inputs here are public: course lines from the organisers' published course maps,
 - New Zealand: LINZ aerial imagery and LiDAR, CC BY 4.0.
 - Bavaria and Hesse: geodata of the state survey offices, CC BY 4.0 / DL-DE BY 2.0.
 - France: IGN open data, Etalab Open Licence.
+- Japan: GSI elevation tiles (Geospatial Information Authority of Japan), Government of Japan Standard Terms of Use 2.0; credit GSI.
+- Australia: Geoscience Australia 5 m DEM derived from LiDAR, CC BY 4.0.
 - Sentinel-2: Copernicus, free and open.
 - Elevation profile check: Open-Meteo (CC BY 4.0).
 
