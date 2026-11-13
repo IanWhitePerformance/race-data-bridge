@@ -1833,11 +1833,11 @@ def do_be_box():
                     with rasterio.MemoryFile(data) as mf, mf.open() as d:
                         a=d.read(1).astype('float32');tr=d.transform;rr,cc=np.mgrid[0:a.shape[0],0:a.shape[1]];xs=tr.c+(cc+0.5)*tr.a;ys=tr.f+(rr+0.5)*tr.e;zs=a.ravel();xs=xs.ravel();ys=ys.ravel()
                 else:
-                    import pandas as pd
-                    head=data[:400]
-                    if b';' in head or b',' in head.split(b'\n')[0]:data=data.replace(b';',b' ').replace(b',',b' ')
-                    df=pd.read_csv(io.BytesIO(data),sep=r'\s+',header=None,usecols=[0,1,2],names=['x','y','z'],comment='#')
-                    df=df[pd.to_numeric(df.x,errors='coerce').notna()].astype('float64');xs=df.x.values;ys=df.y.values;zs=df.z.values.astype('float32')
+                    # plain numpy (pandas is not on the runner): x y z per line, separators normalised, any header line dropped
+                    data=data.replace(b';',b' ').replace(b',',b' ').replace(b'\t',b' ').replace(b'\r',b'')
+                    first=data.split(b'\n',1)[0]
+                    if any(ch.isalpha() for ch in first.decode('latin1')):data=data.split(b'\n',1)[1]
+                    v=np.array(data.split(),dtype=np.float64);ncol=3 if len(v)%3==0 else 4;v=v[:len(v)//ncol*ncol].reshape(-1,ncol);xs=v[:,0];ys=v[:,1];zs=v[:,2].astype('float32');del v
                 del data
                 ok=(zs>-20)&(zs<500);ci=((xs-E0)/R).astype(int);ri=((N1-ys)/R).astype(int);ok&=(ci>=0)&(ci<W)&(ri>=0)&(ri<H)
                 np.add.at(acc,(ri[ok],ci[ok]),zs[ok]);np.add.at(cnt,(ri[ok],ci[ok]),1);got+=1
