@@ -1,0 +1,1 @@
+{"id": "jp-dem-tokyo", "name": "Tokyo Marathon box: bare-earth heights from the GSI elevation tiles (public data, no athlete data)", "lat0": 35.6859, "lon0": 139.7673, "margin_km": 0.2, "line": [[35.68994, 139.69234], [35.68118, 139.76319]], "jobs": ["jp_dem"], "bbox": [139.66, 35.615, 139.833, 35.742]}
