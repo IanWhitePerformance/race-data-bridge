@@ -1,0 +1,38 @@
+{
+ "id": "taupo-ground",
+ "started": "2026-11-13T12:56:53Z",
+ "sources": {
+  "nz_imagery": {
+   "status": "ok",
+   "collections": [
+    "Bay of Plenty West 0.2m Rural Aerial Photos (2024-2025)",
+    "Waikato 0.3m Rural Aerial Photos (2021-2024)"
+   ],
+   "items": 469,
+   "spots": 3,
+   "cover": 1.0
+  },
+  "nz_dem": {
+   "status": "ok",
+   "collections": [
+    "Bay of Plenty LiDAR 1m DEM (2019-2022)",
+    "Waikato LiDAR 1m DEM (2021)"
+   ],
+   "items": 53,
+   "cover": 1.0
+  },
+  "terrain_z11": {
+   "status": "ok",
+   "tiles": 12,
+   "got": 12,
+   "file": "terrain_z11_box.tif"
+  },
+  "terrain_z13": {
+   "status": "ok",
+   "tiles": 51,
+   "got": 51,
+   "file": "terrain_z13_course.tif"
+  }
+ },
+ "finished": "2026-11-13T13:20:40Z"
+}
