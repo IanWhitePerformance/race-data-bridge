@@ -1,14 +1,14 @@
 {
  "id": "be-box-berlin",
- "started": "2026-11-13T19:55:45Z",
+ "started": "2026-11-13T20:06:13Z",
  "sources": {
   "be_box": {
    "status": "ok",
    "tiles": 29,
-   "got": 0,
-   "cover": 0.0,
+   "got": 29,
+   "cover": 0.69,
    "credit": "Berlin ATKIS DGM1, Geoportal Berlin (dl-de/zero-2-0)"
   }
  },
- "finished": "2026-11-13T20:02:50Z"
+ "finished": "2026-11-13T20:14:36Z"
 }
