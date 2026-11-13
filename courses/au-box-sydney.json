@@ -1,0 +1,1 @@
+{"id": "au-box-sydney", "name": "Sydney Marathon box: bare-earth heights from the Geoscience Australia 5 m LiDAR DEM (public data, no athlete data)", "lat0": -33.8833, "lon0": 151.2168, "margin_km": 0.2, "line": [[-33.833204, 151.208004], [-33.833293, 151.207986]], "jobs": ["au_box"], "bbox": [151.159, -33.959, 151.274, -33.806]}
