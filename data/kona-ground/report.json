@@ -1,0 +1,20 @@
+{
+ "id": "kona-ground",
+ "started": "2026-11-15T13:07:44Z",
+ "sources": {
+  "us_naip": {
+   "status": "ok",
+   "chunks": 10,
+   "spots": 0,
+   "res_m": 8
+  },
+  "us_3dep_dem": {
+   "status": "ok",
+   "blocks": 139,
+   "tried": 139,
+   "file": "dem_course_3m_dm.tif",
+   "units": "decimetres"
+  }
+ },
+ "finished": "2026-11-15T13:37:42Z"
+}
